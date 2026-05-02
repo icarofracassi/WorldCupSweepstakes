@@ -1,0 +1,21 @@
+{
+  "name": "bolao-copa",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:api": "cd api && npm run dev",
+    "dev:web": "cd web && npm run dev",
+    "install:all": "cd api && npm install && cd ../web && npm install",
+    "seed": "cd api && npm run db:seed"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.100.7",
+    "axios": "^1.15.2",
+    "react-router-dom": "^7.14.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.13",
+    "tailwindcss": "^4.2.4"
+  }
+}
