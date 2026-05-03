@@ -1,7 +1,10 @@
 import axios from "axios";
 
+// Look for VITE_API_URL, fallback to localhost for dev
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+
 export const api = axios.create({
-  baseURL: "/api",
+  baseURL: API_URL,
 });
 
 // Attach token to every request
