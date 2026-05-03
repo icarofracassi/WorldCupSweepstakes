@@ -38,18 +38,23 @@ model Team {
 
 model Match {
   id              Int          @id @default(autoincrement())
-  externalId      Int?         @unique  // API-Football fixture_id
+  externalId      Int?         @unique
+  groupName       String?      // "GROUP_A" ... "GROUP_L" or null for knockout
   teamA           Team         @relation("TeamA", fields: [teamAId], references: [id])
   teamAId         Int
   teamB           Team         @relation("TeamB", fields: [teamBId], references: [id])
   teamBId         Int
-  phase           String       // "group"|"r16"|"qf"|"sf"|"final"
+  phase           String
   phaseMultiplier Float
   matchDate       DateTime
   scoreAReal      Int?
   scoreBReal      Int?
   isFinished      Boolean      @default(false)
   predictions     Prediction[]
+
+  @@index([phase])
+  @@index([matchDate])
+  @@index([groupName])
 }
 
 model Prediction {

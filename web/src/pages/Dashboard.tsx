@@ -23,7 +23,7 @@ export default function Dashboard() {
 
   const { data: upcomingMatches = [] } = useQuery({
     queryKey: ["matches", "group"],
-    queryFn: () => getMatches("group"),
+    queryFn: () => getMatches(),
   });
 
   const me = leaderboard.find((e: any) => e.id === user?.id);

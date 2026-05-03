@@ -21,7 +21,7 @@ const ELIM_PHASES = [
 
 export default function Admin() {
   const qc = useQueryClient();
-  const [tab, setTab] = useState<"matches" | "results" | "teams">("matches");
+  const [tab, setTab] = useState<"matches" | "results" | "teams" | "import">("matches");
 
   const { data: teams = [] } = useQuery({ queryKey: ["teams"], queryFn: getTeams });
   const { data: matches = [] } = useQuery({ queryKey: ["matches-all"], queryFn: () => getMatches() });
@@ -57,6 +57,14 @@ export default function Admin() {
     mutationFn: () => api.post("/precup/finalize").then((r) => r.data),
   });
 
+  const [bulkJson, setBulkJson] = useState("");
+  const bulkImport = useMutation({
+    mutationFn: () => {
+      const matches = JSON.parse(bulkJson);
+      return api.post("/sync/bulk", { matches }).then((r) => r.data);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["matches-all"] }),
+  });
   return (
     <div>
       <div className="mb-6">
@@ -66,7 +74,7 @@ export default function Admin() {
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
-        {(["matches", "results", "teams"] as const).map((t) => (
+        {(["matches", "results", "teams", "import"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -74,7 +82,7 @@ export default function Admin() {
               tab === t ? "bg-green-700 text-white" : "bg-white border text-gray-600 hover:bg-gray-50"
             }`}
           >
-            {{ matches: "Criar Jogos", results: "Lançar Resultados", teams: "Times" }[t]}
+            {{ matches: "Criar Jogos", results: "Lançar Resultados", teams: "Times", import: "📥 Importar Jogos" }[t]}
           </button>
         ))}
       </div>
@@ -250,6 +258,51 @@ export default function Admin() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {/* Import tab */}
+      {tab === "import" && (
+        <div className="max-w-2xl space-y-4">
+          <h2 className="font-black text-lg">Importar Jogos em Massa</h2>
+          <p className="text-sm text-gray-500">
+            Cole um JSON com os jogos. Use os códigos dos times (BRA, ARG, etc.) e fases: group, r16, qf, sf, final.
+          </p>
+          <div className="bg-gray-50 rounded-xl p-4 text-xs font-mono text-gray-500 border">
+            {`[
+  { "teamACode": "BRA", "teamBCode": "ARG", "phase": "group", "matchDate": "2026-06-15T18:00:00Z" },
+  { "teamACode": "ESP", "teamBCode": "FRA", "phase": "group", "matchDate": "2026-06-15T21:00:00Z" }
+]`}
+          </div>
+          <textarea
+            rows={14}
+            value={bulkJson}
+            onChange={(e) => setBulkJson(e.target.value)}
+            placeholder="Cole o JSON aqui..."
+            className="w-full border-2 rounded-xl p-3 font-mono text-xs focus:border-green-500 outline-none"
+          />
+          <button
+            onClick={() => bulkImport.mutate()}
+            disabled={bulkImport.isPending || !bulkJson.trim()}
+            className="bg-green-700 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-green-800 disabled:opacity-50 transition"
+          >
+            {bulkImport.isPending ? "Importando..." : "Importar Jogos"}
+          </button>
+          {bulkImport.isSuccess && (
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
+              <p className="font-bold text-green-800">✅ Importação concluída!</p>
+              <p>Criados: {(bulkImport.data as any).created} | Ignorados: {(bulkImport.data as any).skipped}</p>
+              {(bulkImport.data as any).errors?.length > 0 && (
+                <ul className="mt-2 text-red-600 list-disc pl-4">
+                  {(bulkImport.data as any).errors.map((e: string, i: number) => <li key={i}>{e}</li>)}
+                </ul>
+              )}
+            </div>
+          )}
+          {bulkImport.isError && (
+            <p className="text-red-500 text-sm">
+              Erro: {(bulkImport.error as any)?.response?.data?.error ?? "JSON inválido"}
+            </p>
+          )}
         </div>
       )}
     </div>
