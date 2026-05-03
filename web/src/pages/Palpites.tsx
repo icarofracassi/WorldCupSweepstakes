@@ -77,7 +77,6 @@ export default function Palpites() {
   function MatchRow({ match }: { match: Match }) {
     const isOpen = selectedMatchId === match.id;
     const kickoff = new Date(match.matchDate);
-    const myPred = matchPreds.find((p) => p.userId === user?.id);
 
     return (
       <div className={`rounded-2xl border overflow-hidden transition ${
