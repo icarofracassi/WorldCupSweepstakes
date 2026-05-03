@@ -6,7 +6,9 @@
     "dev:api": "cd api && npm run dev",
     "dev:web": "cd web && npm run dev",
     "install:all": "cd api && npm install && cd ../web && npm install",
-    "seed": "cd api && npm run db:seed"
+    "seed": "cd api && npm run db:seed",
+    "build": "npx prisma generate && tsc",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.7",
