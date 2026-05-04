@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import Flag from "react-world-flags";
 import { getMatches, getTeams, api } from "../api/client";
+import { PhasePicker } from '../components/PhasePicker';
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",DEN:"DK",POR:"PT",ESP:"ES",FRA:"FR",
@@ -277,27 +278,53 @@ export default function Admin() {
             </div>
           )}
 
-          {/* TEAMS */}
+          {/* TEAMS TAB */}
           {tab === "teams" && (
             <div className="space-y-3">
-              <h2 className="text-white font-black">Marcar Eliminações</h2>
+              <h2 className="text-white font-black text-lg mb-4">Marcar Eliminações</h2>
+              
               {teams.map((team) => (
                 <div key={team.id} className="bg-white/[0.03] border border-white/8 rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap">
-                  <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
-                    <Flag code={getFlagCode(team.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                  
+                  {/* Team Flag & Info */}
+                  <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10 flex-shrink-0">
+                    <Flag code={getFlagCode(team.code)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
+                  
                   <div className="flex-1 min-w-0">
-                    <span className="font-semibold text-white/80 text-sm">{team.name}</span>
-                    <span className="ml-2 text-white/20 text-xs">#{team.fifaRanking}</span>
-                    {team.isTop14 && <span className="ml-2 text-[10px] bg-red-500/15 text-red-400 px-1.5 py-0.5 rounded font-bold">Top14</span>}
-                    {team.eliminatedPhase && <span className="ml-2 text-[10px] bg-white/5 text-white/30 px-2 py-0.5 rounded">{team.eliminatedPhase} · idx: {team.shameIndex ?? team.surpriseIndex}</span>}
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-white/80 text-sm truncate">{team.name}</span>
+                      <span className="text-white/20 text-xs">#{team.fifaRanking}</span>
+                      {team.isTop14 && (
+                        <span className="text-[10px] bg-red-500/15 text-red-400 px-1.5 py-0.5 rounded font-bold">Top14</span>
+                      )}
+                    </div>
+                    {team.eliminatedPhase && (
+                      <div className="text-[10px] text-white/30 mt-0.5">
+                        {team.eliminatedPhase} · idx: {team.shameIndex ?? team.surpriseIndex}
+                      </div>
+                    )}
                   </div>
+
+                  {/* New Phase Picker & Action Button */}
                   <div className="flex items-center gap-2">
-                    <Select value={elimPhase[team.id] ?? ""} onChange={(e) => setElimPhase((p) => ({ ...p, [team.id]: e.target.value }))} style={{ width: "160px" }}>
-                      <option value="">Fase eliminada...</option>
-                      {ELIM_PHASES.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
-                    </Select>
-                    <Btn variant="danger" onClick={() => { const phase = elimPhase[team.id]; if (phase) eliminateTeam.mutate({ id: team.id, phase }); }}>Marcar</Btn>
+                    <PhasePicker 
+                      options={ELIM_PHASES}
+                      value={elimPhase[team.id] ?? ""}
+                      onChange={(val) => setElimPhase((p) => ({ ...p, [team.id]: val }))}
+                      placeholder="Fase eliminada..."
+                    />
+                    
+                    <Btn 
+                      variant="danger" 
+                      className="h-[38px] px-4"
+                      onClick={() => { 
+                        const phase = elimPhase[team.id]; 
+                        if (phase) eliminateTeam.mutate({ id: team.id, phase }); 
+                      }}
+                    >
+                      Marcar
+                    </Btn>
                   </div>
                 </div>
               ))}
