@@ -5,6 +5,7 @@ import Flag from "react-world-flags";
 import { getMatches, getTeams, api } from "../api/client";
 import { TeamPicker } from '../components/TeamPicker';
 import { PhasePicker } from '../components/PhasePicker';
+import { DatePicker } from '../components/DatePicker';
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",DEN:"DK",POR:"PT",ESP:"ES",FRA:"FR",
@@ -47,10 +48,6 @@ const TABS: { key: TabType; label: string; icon: string }[] = [
   { key: "import", label: "Importar JSON", icon: "📥" },
   { key: "sync", label: "Sincronizar API", icon: "🔄" },
 ];
-
-function Input({ ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-white/30 transition" />;
-}
 
 function Btn({ children, variant = "primary", className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "danger" | "purple" }) {
   const styles = {
@@ -233,12 +230,13 @@ export default function Admin() {
 
                 {/* Date Input */}
                 <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-5 transition hover:border-white/20">
-                  <div className="font-black text-white text-sm mb-3 uppercase tracking-wider opacity-50">Data e Hora</div>
-                  <Input 
-                    type="datetime-local" 
-                    value={newMatch.matchDate} 
-                    onChange={(e) => setNewMatch((p) => ({ ...p, matchDate: e.target.value }))}
-                    className="bg-white/5 border-white/10 text-white rounded-xl focus:ring-[#f5c842]"
+                  <div className="font-black text-white text-sm mb-3 uppercase tracking-wider opacity-50">
+                    Data e Hora
+                  </div>
+                  
+                  <DatePicker 
+                    date={newMatch.matchDate ? new Date(newMatch.matchDate) : undefined}
+                    setDate={(date) => setNewMatch((p) => ({ ...p, matchDate: date ? date.toISOString() : ""}))}
                   />
                 </div>
               </div>
