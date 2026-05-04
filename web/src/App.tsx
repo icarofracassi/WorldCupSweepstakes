@@ -8,6 +8,7 @@ import Jogos from "./pages/Games";
 import PreCopa from "./pages/PreCup";
 import Leaderboard from "./pages/Leaderboard";
 import Admin from "./pages/Admin";
+import Palpites from "./pages/Palpites";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/jogos" element={<PrivateRoute><Jogos /></PrivateRoute>} />
         <Route path="/pre-copa" element={<PrivateRoute><PreCopa /></PrivateRoute>} />
         <Route path="/placar" element={<PrivateRoute><Leaderboard /></PrivateRoute>} />
+        <Route path="/palpites" element={<PrivateRoute><Palpites /></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><AdminRoute><Admin /></AdminRoute></PrivateRoute>} />
       </Routes>
     </AuthProvider>

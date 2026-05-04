@@ -6,10 +6,10 @@ import { useState } from "react";
 const NAV = [
   { to: "/", icon: "⚡", label: "Início" },
   { to: "/jogos", icon: "⚽", label: "Jogos" },
+  { to: "/palpites", icon: "👁", label: "Palpites" },
   { to: "/pre-copa", icon: "🎯", label: "Pré-Copa" },
   { to: "/placar", icon: "🏆", label: "Placar" },
 ];
-
 const ADMIN_NAV = { to: "/admin", icon: "⚙️", label: "Admin" };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -17,42 +17,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const allNav = isAdmin ? [...NAV, ADMIN_NAV] : NAV;
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white flex">
+      {/* Sidebar desktop */}
       <aside className="hidden lg:flex flex-col w-64 bg-[#0d0d14] border-r border-white/5 fixed h-full z-20">
-        <div className="px-6 py-8">
+        <div className="px-6 py-7">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#f5c842] to-[#e8a020] flex items-center justify-center text-lg shadow-lg shadow-yellow-500/20">
-              🏆
-            </div>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#f5c842] to-[#e8a020] flex items-center justify-center text-lg shadow-lg shadow-yellow-500/20">🏆</div>
             <div>
-              <div className="font-black text-sm tracking-tight text-white">Bolão</div>
-              <div className="text-[10px] text-white/30 font-medium tracking-widest uppercase">Copa 2026</div>
+              <div className="font-black text-sm tracking-tight">Bolão</div>
+              <div className="text-[10px] text-white/25 tracking-widest uppercase">Copa 2026</div>
             </div>
           </div>
         </div>
-        <nav className="flex-1 px-3 space-y-1">
+
+        <nav className="flex-1 px-3 space-y-0.5">
           {allNav.map((item) => {
             const active = location.pathname === item.to;
             return (
               <Link key={item.to} to={item.to}>
-                <motion.div
-                  whileHover={{ x: 4 }}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${
-                    active
-                      ? "bg-[#f5c842]/10 text-[#f5c842] border border-[#f5c842]/20"
-                      : "text-white/40 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <span className="text-lg">{item.icon}</span>
+                <motion.div whileHover={{ x: 3 }} transition={{ type: "spring", stiffness: 400 }}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
+                    active ? "bg-[#f5c842]/10 text-[#f5c842] border border-[#f5c842]/15" : "text-white/35 hover:text-white/80 hover:bg-white/4"
+                  }`}>
+                  <span className="text-base">{item.icon}</span>
                   <span className="text-sm font-semibold">{item.label}</span>
                   {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#f5c842]" />}
                 </motion.div>
@@ -60,62 +50,57 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-white/5">
-          <div className="flex items-center gap-3 px-2 py-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f5c842] to-[#e8a020] flex items-center justify-center text-xs font-black text-black">
+
+        <div className="p-4 mx-3 mb-4 bg-white/[0.02] border border-white/6 rounded-2xl">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f5c842] to-[#e8a020] flex items-center justify-center text-xs font-black text-black flex-shrink-0">
               {user?.name?.[0]?.toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-white truncate">{user?.name}</div>
-              <div className="text-[10px] text-white/30 truncate">{user?.email}</div>
+              <div className="text-xs font-bold text-white/70 truncate">{user?.name}</div>
+              <div className="text-[10px] text-white/25 truncate">{user?.email}</div>
             </div>
-            <button onClick={handleLogout} className="text-white/20 hover:text-red-400 transition text-xs" title="Sair">✕</button>
+            <button onClick={() => { logout(); navigate("/login"); }} className="text-white/15 hover:text-red-400 transition text-sm p-1" title="Sair">✕</button>
           </div>
         </div>
       </aside>
 
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-[#0d0d14]/90 backdrop-blur-xl border-b border-white/5 px-4 h-14 flex items-center justify-between">
+      {/* Mobile header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-[#0d0d14]/95 backdrop-blur-xl border-b border-white/5 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-lg">🏆</span>
+          <span>🏆</span>
           <span className="font-black text-sm">Bolão Copa 2026</span>
         </div>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-white/60 hover:text-white transition p-1">
-          {mobileOpen ? "✕" : "☰"}
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-white/50 hover:text-white p-1 transition">
+          <span className="text-lg">{mobileOpen ? "✕" : "☰"}</span>
         </button>
       </header>
 
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="lg:hidden fixed top-14 left-0 right-0 z-20 bg-[#0d0d14] border-b border-white/5 p-4 space-y-1"
-          >
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            className="lg:hidden fixed top-14 left-0 right-0 z-20 bg-[#0d0d14] border-b border-white/5 p-3 space-y-1">
             {allNav.map((item) => (
               <Link key={item.to} to={item.to} onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl ${
-                  location.pathname === item.to ? "bg-[#f5c842]/10 text-[#f5c842]" : "text-white/50 hover:text-white"
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
+                  location.pathname === item.to ? "bg-[#f5c842]/10 text-[#f5c842]" : "text-white/40 hover:text-white"
                 }`}>
-                <span>{item.icon}</span>
-                <span className="text-sm font-semibold">{item.label}</span>
+                <span>{item.icon}</span>{item.label}
               </Link>
             ))}
-            <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-4 py-3 text-red-400/70 hover:text-red-400 text-sm">
-              <span>🚪</span> Sair
+            <button onClick={() => { logout(); navigate("/login"); }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-red-400/60 hover:text-red-400 text-sm">
+              🚪 Sair
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
       <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 min-h-screen">
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="max-w-5xl mx-auto px-4 lg:px-8 py-8"
-        >
+        <motion.div key={location.pathname}
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="max-w-5xl mx-auto px-4 lg:px-8 py-8">
           {children}
         </motion.div>
       </main>
