@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import Flag from "react-world-flags";
 import { getMatches, getTeams, api } from "../api/client";
+import { TeamPicker } from '../components/TeamPicker';
 import { PhasePicker } from '../components/PhasePicker';
 
 const FIFA_TO_ISO: Record<string, string> = {
@@ -47,19 +48,10 @@ const TABS: { key: TabType; label: string; icon: string }[] = [
   { key: "sync", label: "Sincronizar API", icon: "🔄" },
 ];
 
-function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1.5">{children}</label>;
-}
 function Input({ ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-white/30 transition" />;
 }
-function Select({ children, style, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select {...props} style={style} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-white/30 transition appearance-none">
-      {children}
-    </select>
-  );
-}
+
 function Btn({ children, variant = "primary", className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "danger" | "purple" }) {
   const styles = {
     primary: "bg-[#f5c842] text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/10",
@@ -132,7 +124,7 @@ function SyncCard({ icon, title, description, onRun, isPending, result, color }:
 export default function Admin() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<TabType>("matches");
-  const [newMatch, setNewMatch] = useState({ teamAId: "", teamBId: "", phase: "group", matchDate: "" });
+  const [newMatch, setNewMatch] = useState({ teamAId: 0, teamBId: 0, phase: "group", matchDate: "" });
   const [scores, setScores] = useState<Record<number, { a: string; b: string }>>({});
   const [elimPhase, setElimPhase] = useState<Record<number, string>>({});
   const [bulkJson, setBulkJson] = useState("");
@@ -142,7 +134,7 @@ export default function Admin() {
 
   const createMatch = useMutation({
     mutationFn: () => api.post("/matches", newMatch).then((r) => r.data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["matches-all"] }); setNewMatch({ teamAId: "", teamBId: "", phase: "group", matchDate: "" }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["matches-all"] }); setNewMatch({ teamAId: 0, teamBId: 0, phase: "group", matchDate: "" }); },
   });
   const finalizeMatch = useMutation({
     mutationFn: ({ id, a, b }: { id: number; a: number; b: number }) =>
@@ -198,36 +190,73 @@ export default function Admin() {
       <AnimatePresence mode="wait">
         <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
 
-          {/* CREATE */}
+          {/* CREATE MATCH TAB */}
           {tab === "matches" && (
             <Section title="Novo Jogo">
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Time A (Casa)</Label>
-                  <Select value={newMatch.teamAId} onChange={(e) => setNewMatch((p) => ({ ...p, teamAId: e.target.value }))}>
-                    <option value="">Selecione...</option>
-                    {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                  </Select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                
+                {/* Team A Picker */}
+                <TeamPicker
+                  label="Time A (Casa)"
+                  emoji="🏠"
+                  description="Seleção mandante da partida"
+                  accent="group-hover:border-blue-500/30"
+                  options={teams}
+                  value={newMatch.teamAId}
+                  onChange={(id) => setNewMatch((p) => ({ ...p, teamAId: id }))}
+                />
+
+                {/* Team B Picker */}
+                <TeamPicker
+                  label="Time B (Fora)"
+                  emoji="🚌"
+                  description="Seleção visitante da partida"
+                  accent="group-hover:border-red-500/30"
+                  options={teams}
+                  value={newMatch.teamBId}
+                  onChange={(id) => setNewMatch((p) => ({ ...p, teamBId: id }))}
+                />
+
+                {/* Phase Picker */}
+                <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-5 transition hover:border-white/20">
+                  <div className="font-black text-white text-sm mb-3 uppercase tracking-wider opacity-50">Fase do Torneio</div>
+                  <PhasePicker 
+                    options={PHASES} // Uses the PHASES array with multipliers
+                    value={newMatch.phase}
+                    onChange={(val) => setNewMatch((p) => ({ ...p, phase: val }))}
+                    placeholder="Selecione a fase..."
+                  />
+                  <div className="text-white/20 text-[10px] mt-2">
+                    O multiplicador de pontos será aplicado automaticamente.
+                  </div>
                 </div>
-                <div><Label>Time B (Fora)</Label>
-                  <Select value={newMatch.teamBId} onChange={(e) => setNewMatch((p) => ({ ...p, teamBId: e.target.value }))}>
-                    <option value="">Selecione...</option>
-                    {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                  </Select>
-                </div>
-                <div><Label>Fase</Label>
-                  <Select value={newMatch.phase} onChange={(e) => setNewMatch((p) => ({ ...p, phase: e.target.value }))}>
-                    {PHASES.map((p) => <option key={p.key} value={p.key}>{p.label} (×{p.multiplier})</option>)}
-                  </Select>
-                </div>
-                <div><Label>Data e Hora</Label>
-                  <Input type="datetime-local" value={newMatch.matchDate} onChange={(e) => setNewMatch((p) => ({ ...p, matchDate: e.target.value }))} />
+
+                {/* Date Input */}
+                <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-5 transition hover:border-white/20">
+                  <div className="font-black text-white text-sm mb-3 uppercase tracking-wider opacity-50">Data e Hora</div>
+                  <Input 
+                    type="datetime-local" 
+                    value={newMatch.matchDate} 
+                    onChange={(e) => setNewMatch((p) => ({ ...p, matchDate: e.target.value }))}
+                    className="bg-white/5 border-white/10 text-white rounded-xl focus:ring-[#f5c842]"
+                  />
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Btn onClick={() => createMatch.mutate()} disabled={!newMatch.teamAId || !newMatch.teamBId || !newMatch.matchDate || createMatch.isPending}>
+
+              <div className="flex items-center gap-4">
+                <Btn 
+                  onClick={() => createMatch.mutate()} 
+                  disabled={!newMatch.teamAId || !newMatch.teamBId || !newMatch.matchDate || createMatch.isPending}
+                  className="px-8 py-3 rounded-xl font-bold"
+                >
                   {createMatch.isPending ? "Criando..." : "Criar Jogo"}
                 </Btn>
-                {createMatch.isSuccess && <span className="text-green-400 text-sm font-bold">✅ Jogo criado!</span>}
+                
+                {createMatch.isSuccess && (
+                  <span className="text-green-400 text-sm font-bold animate-pulse">
+                    ✅ Jogo criado com sucesso!
+                  </span>
+                )}
               </div>
             </Section>
           )}
