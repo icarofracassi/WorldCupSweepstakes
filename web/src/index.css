@@ -20,3 +20,82 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin
 input[type=number] { -moz-appearance: textfield; }
 
 ::selection { background: rgba(245,200,66,0.3); }
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 95%;
+    --popover: 222 20% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 45 93% 62%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 50%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 95%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 45 93% 62%;
+    --radius: 0.75rem;
+  }
+}
+/* react-day-picker v9 dark overrides */
+.rdp-custom {
+  --rdp-accent-color: #f5c842;
+  --rdp-accent-background-color: rgba(245, 200, 66, 0.15);
+  --rdp-day-width: 36px;
+  --rdp-day-height: 36px;
+  --rdp-day_button-width: 36px;
+  --rdp-day_button-height: 36px;
+  color: rgba(255,255,255,0.7);
+}
+.rdp-custom .rdp-day_button {
+  border-radius: 8px;
+  color: rgba(255,255,255,0.6);
+  transition: background 0.15s, color 0.15s;
+}
+.rdp-custom .rdp-day_button:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+.rdp-custom .rdp-selected .rdp-day_button {
+  background: #f5c842;
+  color: black;
+  font-weight: 900;
+}
+.rdp-custom .rdp-today .rdp-day_button {
+  background: rgba(255,255,255,0.06);
+  color: white;
+  font-weight: 700;
+}
+.rdp-custom .rdp-outside .rdp-day_button {
+  color: rgba(255,255,255,0.15);
+}
+.rdp-custom .rdp-caption_label {
+  font-weight: 800;
+  font-size: 0.875rem;
+  color: white;
+}
+.rdp-custom .rdp-nav button {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.5);
+  padding: 4px;
+  transition: background 0.15s;
+}
+.rdp-custom .rdp-nav button:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+.rdp-custom .rdp-weekday {
+  color: rgba(255,255,255,0.25);
+  font-size: 0.75rem;
+  font-weight: 600;
+}

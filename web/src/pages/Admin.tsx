@@ -230,14 +230,12 @@ export default function Admin() {
 
                 {/* Date Input */}
                 <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-5 transition hover:border-white/20">
-                  <div className="font-black text-white text-sm mb-3 uppercase tracking-wider opacity-50">
-                    Data e Hora
+                  <div>
+                    <DatePicker
+                      date={newMatch.matchDate ? new Date(newMatch.matchDate) : undefined}
+                      setDate={(d) => setNewMatch((p) => ({ ...p, matchDate: d ? d.toISOString() : "" }))}
+                    />
                   </div>
-                  
-                  <DatePicker 
-                    date={newMatch.matchDate ? new Date(newMatch.matchDate) : undefined}
-                    setDate={(date) => setNewMatch((p) => ({ ...p, matchDate: date ? date.toISOString() : ""}))}
-                  />
                 </div>
               </div>
 

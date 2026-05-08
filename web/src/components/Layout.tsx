@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 
 const NAV = [
-  { to: "/", icon: "⚡", label: "Início" },
+  { to: "/dashboard", icon: "⚡", label: "Início" },
   { to: "/jogos", icon: "⚽", label: "Jogos" },
   { to: "/palpites", icon: "👁", label: "Palpites" },
   { to: "/pre-copa", icon: "🎯", label: "Pré-Copa" },

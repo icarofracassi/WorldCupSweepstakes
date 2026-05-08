@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Layout from "./components/Layout";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -12,21 +13,30 @@ import Palpites from "./pages/Palpites";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
-  return token ? <Layout>{children}</Layout> : <Navigate to="/login" />;
+  return token ? <Layout>{children}</Layout> : <Navigate to="/" replace />;
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { isAdmin } = useAuth();
-  return isAdmin ? <>{children}</> : <Navigate to="/" />;
+  return isAdmin ? <>{children}</> : <Navigate to="/dashboard" replace />;
+}
+
+function RootRoute() {
+  const { token } = useAuth();
+  return token ? <Navigate to="/dashboard" replace /> : <Landing />;
 }
 
 export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        {/* Public */}
+        <Route path="/" element={<RootRoute />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+
+        {/* Protected */}
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/jogos" element={<PrivateRoute><Jogos /></PrivateRoute>} />
         <Route path="/pre-copa" element={<PrivateRoute><PreCopa /></PrivateRoute>} />
         <Route path="/placar" element={<PrivateRoute><Leaderboard /></PrivateRoute>} />
