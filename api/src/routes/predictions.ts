@@ -4,30 +4,49 @@ import { authMiddleware, AuthRequest } from "../middleware/auth";
 
 const router = Router();
 
-// Get my predictions
 router.get("/mine", authMiddleware, async (req: AuthRequest, res: Response) => {
   const predictions = await prisma.prediction.findMany({
     where: { userId: req.userId },
-    include: {
-      match: { include: { teamA: true, teamB: true } },
-    },
+    include: { match: { include: { teamA: true, teamB: true } } },
     orderBy: { match: { matchDate: "asc" } },
   });
   res.json(predictions);
 });
 
-// Get predictions for a specific match
+// Get predictions for a match — scoped to league if leagueId provided
 router.get("/match/:matchId", authMiddleware, async (req: AuthRequest, res: Response) => {
   const matchId = Number(req.params.matchId);
-  const where = req.isAdmin ? { matchId } : { matchId, userId: req.userId };
+  const { leagueId } = req.query;
+
+  const match = await prisma.match.findUnique({ where: { id: matchId } });
+  if (!match) return res.status(404).json({ error: "Match not found" });
+
+  // Only show predictions for started matches (unless admin)
+  const isStarted = new Date() >= match.matchDate;
+  if (!isStarted && !req.isAdmin) {
+    return res.json([]);
+  }
+
+  let userIds: number[] | undefined;
+  if (leagueId) {
+    const league = await prisma.league.findUnique({
+      where: { id: Number(leagueId) },
+      include: { members: { select: { id: true } } },
+    });
+    userIds = league?.members.map((m) => m.id);
+  }
+
   const predictions = await prisma.prediction.findMany({
-    where,
+    where: {
+      matchId,
+      ...(userIds ? { userId: { in: userIds } } : {}),
+    },
     include: { user: { select: { id: true, name: true } } },
   });
+
   res.json(predictions);
 });
 
-// Submit or update prediction — locked after match starts
 router.post("/:matchId", authMiddleware, async (req: AuthRequest, res: Response) => {
   const matchId = Number(req.params.matchId);
   const { scoreA, scoreB } = req.body;
@@ -38,7 +57,6 @@ router.post("/:matchId", authMiddleware, async (req: AuthRequest, res: Response)
 
   const match = await prisma.match.findUnique({ where: { id: matchId } });
   if (!match) return res.status(404).json({ error: "Match not found" });
-
   if (new Date() >= match.matchDate) {
     return res.status(403).json({ error: "Predictions are locked — match already started" });
   }

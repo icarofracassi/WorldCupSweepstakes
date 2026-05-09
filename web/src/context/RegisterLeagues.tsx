@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "./AuthContext";
 import { useLeague } from "../context/LeagueContext";
 import { createLeague, joinLeague, api } from "../api/client";
 

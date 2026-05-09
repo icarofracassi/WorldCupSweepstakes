@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { LeagueProvider } from "./context/LeagueContext";
 import Layout from "./components/Layout";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -10,6 +11,7 @@ import PreCopa from "./pages/PreCup";
 import Leaderboard from "./pages/Leaderboard";
 import Admin from "./pages/Admin";
 import Palpites from "./pages/Palpites";
+import Liga from "./pages/League";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
@@ -29,20 +31,20 @@ function RootRoute() {
 export default function App() {
   return (
     <AuthProvider>
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={<RootRoute />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* Protected */}
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/jogos" element={<PrivateRoute><Jogos /></PrivateRoute>} />
-        <Route path="/pre-copa" element={<PrivateRoute><PreCopa /></PrivateRoute>} />
-        <Route path="/placar" element={<PrivateRoute><Leaderboard /></PrivateRoute>} />
-        <Route path="/palpites" element={<PrivateRoute><Palpites /></PrivateRoute>} />
-        <Route path="/admin" element={<PrivateRoute><AdminRoute><Admin /></AdminRoute></PrivateRoute>} />
-      </Routes>
+      <LeagueProvider>
+        <Routes>
+          <Route path="/" element={<RootRoute />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/jogos" element={<PrivateRoute><Jogos /></PrivateRoute>} />
+          <Route path="/pre-copa" element={<PrivateRoute><PreCopa /></PrivateRoute>} />
+          <Route path="/placar" element={<PrivateRoute><Leaderboard /></PrivateRoute>} />
+          <Route path="/palpites" element={<PrivateRoute><Palpites /></PrivateRoute>} />
+          <Route path="/liga" element={<PrivateRoute><Liga /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute><AdminRoute><Admin /></AdminRoute></PrivateRoute>} />
+        </Routes>
+      </LeagueProvider>
     </AuthProvider>
   );
 }
