@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "./AuthContext";
 import { useLeague } from "../context/LeagueContext";
 import { createLeague, joinLeague, api } from "../api/client";
 
@@ -11,8 +11,6 @@ export default function Register() {
   const { register } = useAuth();
   const { refetch, setActiveLeague } = useLeague();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const inviteCode = (searchParams.get("league") ?? localStorage.getItem("pendingLeagueCode") ?? "").toUpperCase();
 
   const [step, setStep] = useState<Step>("account");
   const [name, setName] = useState("");
@@ -22,9 +20,9 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   // League step
-  const [leagueTab, setLeagueTab] = useState<"create" | "join">(inviteCode ? "join" : "create");
+  const [leagueTab, setLeagueTab] = useState<"create" | "join">("create");
   const [leagueName, setLeagueName] = useState("");
-  const [joinCode, setJoinCode] = useState(inviteCode);
+  const [joinCode, setJoinCode] = useState("");
   const [joinPreview, setJoinPreview] = useState<any>(null);
   const [joinError, setJoinError] = useState("");
   const [leagueLoading, setLeagueLoading] = useState(false);
@@ -69,7 +67,6 @@ export default function Register() {
       }
       await refetch();
       setActiveLeague(league);
-      localStorage.removeItem("pendingLeagueCode");
       navigate("/dashboard");
     } catch (err: any) {
       setJoinError(err.response?.data?.error ?? "Erro ao entrar na liga");
@@ -78,10 +75,7 @@ export default function Register() {
     }
   };
 
-  const skipLeague = () => {
-    localStorage.removeItem("pendingLeagueCode");
-    navigate("/dashboard");
-  };
+  const skipLeague = () => navigate("/dashboard");
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4 relative overflow-hidden">

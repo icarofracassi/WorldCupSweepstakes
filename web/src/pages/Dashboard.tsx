@@ -7,6 +7,14 @@ import { getLeaderboard, getMyPredictions, getMyPreCup } from "../api/client";
 
 const CUP_START = new Date("2026-06-11T19:00:00Z");
 
+interface LeaderboardEntry {
+  id: number;
+  name: string;
+  matchPoints: number;
+  preCupPoints: number;
+  total: number;
+}
+
 function useCountdown(target: Date) {
   const [diff, setDiff] = useState(target.getTime() - Date.now());
   useEffect(() => {
@@ -50,12 +58,15 @@ export default function Dashboard() {
   const { user } = useAuth();
   const countdown = useCountdown(CUP_START);
 
-  const { data: leaderboard = [] } = useQuery({ queryKey: ["leaderboard"], queryFn: getLeaderboard });
+  const { data: leaderboard = [] } = useQuery<LeaderboardEntry[]>({
+    queryKey: ["leaderboard"],
+    queryFn: () => getLeaderboard(),
+  });
   const { data: myPreds = [] } = useQuery({ queryKey: ["my-predictions"], queryFn: getMyPredictions });
   const { data: preCup } = useQuery({ queryKey: ["my-precup"], queryFn: getMyPreCup });
 
-  const me = leaderboard.find((e: any) => e.id === user?.id);
-  const myRank = (leaderboard.findIndex((e: any) => e.id === user?.id) + 1) || null;
+  const me = leaderboard.find((e) => e.id === user?.id);
+  const myRank = (leaderboard.findIndex((e) => e.id === user?.id) + 1) || null;
 
   const MEDALS = ["🥇", "🥈", "🥉"];
 
@@ -161,7 +172,7 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           <h2 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">Top 5</h2>
           <div className="bg-white/[0.03] border border-white/8 rounded-2xl overflow-hidden">
-            {leaderboard.slice(0, 5).map((entry: any, i: number) => (
+            {leaderboard.slice(0, 5).map((entry, i) => (
               <div key={entry.id}
                 className={`flex items-center gap-3 px-4 py-3 border-b border-white/5 last:border-0 ${entry.id === user?.id ? "bg-[#f5c842]/5" : ""}`}>
                 <span className="text-lg w-8 text-center">{i < 3 ? MEDALS[i] : <span className="text-white/20 text-sm">{i + 1}</span>}</span>
