@@ -72,7 +72,8 @@ export default function Leaderboard() {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Falha ao baixar o CSV do placar:", error);
+      const details = error instanceof Error ? error.message : error;
+      console.error("Falha ao baixar o CSV do placar:", details);
     }
   };
 

@@ -11,8 +11,9 @@ function generateCode(): string {
 }
 
 // Get all leagues (for browsing)
-router.get("/", authMiddleware, async (_req, res: Response) => {
+router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
   const leagues = await prisma.league.findMany({
+    where: req.isAdmin ? undefined : { members: { some: { id: req.userId } } },
     select: {
       id: true,
       name: true,
