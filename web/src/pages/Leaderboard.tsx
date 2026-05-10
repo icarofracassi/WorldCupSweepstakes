@@ -134,7 +134,7 @@ export default function Leaderboard() {
       ) : (
         <motion.div variants={container} initial="hidden" animate="show"
           className="bg-white/[0.02] border border-white/8 rounded-2xl overflow-hidden">
-          {data.map((entry, i) => {
+          {data.map((entry) => {
             const isMe = entry.id === user?.id;
             return (
               <motion.div key={entry.id} variants={row}

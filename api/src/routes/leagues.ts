@@ -38,6 +38,19 @@ router.get("/mine", authMiddleware, async (req: AuthRequest, res: Response) => {
   res.json(user?.leagues ?? []);
 });
 
+// Get league by invite code
+router.get("/code/:code", authMiddleware, async (req: AuthRequest, res: Response) => {
+  const league = await prisma.league.findUnique({
+    where: { code: req.params.code.toUpperCase() },
+    include: {
+      _count: { select: { members: true } },
+      createdBy: { select: { name: true } },
+    },
+  });
+  if (!league) return res.status(404).json({ error: "Liga não encontrada com esse código" });
+  res.json(league);
+});
+
 // Get single league with members + leaderboard
 router.get("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
   const id = Number(req.params.id);
@@ -85,19 +98,6 @@ router.get("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
     .map((e, i) => ({ ...e, rank: i + 1 }));
 
   res.json({ ...league, leaderboard });
-});
-
-// Get league by invite code
-router.get("/code/:code", authMiddleware, async (req: AuthRequest, res: Response) => {
-  const league = await prisma.league.findUnique({
-    where: { code: req.params.code.toUpperCase() },
-    include: {
-      _count: { select: { members: true } },
-      createdBy: { select: { name: true } },
-    },
-  });
-  if (!league) return res.status(404).json({ error: "Liga não encontrada com esse código" });
-  res.json(league);
 });
 
 // Create a league

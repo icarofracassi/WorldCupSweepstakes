@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import Flag from "react-world-flags";
-import { getMyLeagues, getLeague, createLeague, joinLeague, leaveLeague } from "../api/client";
+import { getLeague, getLeagueByCode, createLeague, joinLeague, leaveLeague } from "../api/client";
 import { useLeague } from "../context/LeagueContext";
 import { useAuth } from "../context/AuthContext";
 
@@ -21,7 +21,7 @@ const MEDALS = ["🥇", "🥈", "🥉"];
 interface LeagueSummary {
   id: number; name: string; code: string; createdById: number;
   _count: { members: number };
-  createdBy: { name: string };
+  createdBy?: { name: string };
 }
 
 interface LeaderboardEntry {
@@ -131,9 +131,7 @@ export default function Liga() {
     setJoinError("");
     if (joinCode.length < 6) return;
     try {
-      const data = await getLeague(joinCode.toUpperCase().trim()).catch(() =>
-        fetch(`/api/leagues/code/${joinCode.toUpperCase().trim()}`).then((r) => r.json())
-      );
+      const data = await getLeagueByCode(joinCode.toUpperCase().trim());
       setJoinPreview(data);
     } catch {
       setJoinError("Liga não encontrada");
@@ -301,7 +299,7 @@ export default function Liga() {
                         <div className="text-white/15 text-sm text-center py-8">Nenhum participante com pontos ainda</div>
                       ) : (
                         <div className="bg-white/[0.02] border border-white/6 rounded-2xl overflow-hidden">
-                          {leagueDetail.leaderboard.map((entry, i) => {
+                          {leagueDetail.leaderboard.map((entry) => {
                             const isMe = entry.id === user?.id;
                             return (
                               <div key={entry.id}
