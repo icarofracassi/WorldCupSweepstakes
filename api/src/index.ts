@@ -7,7 +7,6 @@ import predictionsRoutes from "./routes/predictions";
 import preCupRoutes from "./routes/preCup";
 import leaderboardRoutes from "./routes/leaderboard";
 import syncRoutes from "./routes/sync";
-import leaguesRoutes from "./routes/leagues";
 
 const app = express();
 
@@ -31,7 +30,6 @@ app.use("/api/predictions", predictionsRoutes);
 app.use("/api/precup", preCupRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/sync", syncRoutes);
-app.use("/api/leagues", leaguesRoutes);
 
 app.use((_req, res) => res.status(404).json({ error: "Route not found" }));
 
