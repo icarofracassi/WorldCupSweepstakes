@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Flag from "react-world-flags";
-import { getLeague, getLeagueByCode, createLeague, joinLeague, leaveLeague } from "../api/client";
+import { getLeague, getLeagueByCode, createLeague, joinLeague, leaveLeague, deleteLeague } from "../api/client";
 import { useLeague } from "../context/LeagueContext";
 import { useAuth } from "../context/AuthContext";
 
@@ -53,6 +54,29 @@ function CodeBadge({ code }: { code: string }) {
   );
 }
 
+function ShareButton({ league }: { league: LeagueSummary }) {
+  const [copied, setCopied] = useState(false);
+  const inviteUrl = `${window.location.origin}/convite/${league.code}`;
+
+  const share = async () => {
+    const text = `Entre na liga ${league.name} no Bolao Copa 2026: ${inviteUrl}`;
+    if (navigator.share) {
+      await navigator.share({ title: league.name, text, url: inviteUrl });
+      return;
+    }
+    await navigator.clipboard.writeText(inviteUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button onClick={share}
+      className="px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-300 hover:bg-blue-500/15 text-xs font-bold transition">
+      {copied ? "Link copiado!" : "Compartilhar link"}
+    </button>
+  );
+}
+
 function LeagueCard({ league, isActive, onClick }: {
   league: LeagueSummary; isActive: boolean; onClick: () => void;
 }) {
@@ -81,12 +105,14 @@ export default function Liga() {
   const { user } = useAuth();
   const { leagues, activeLeague, setActiveLeague, refetch } = useLeague();
   const qc = useQueryClient();
+  const [searchParams] = useSearchParams();
 
   const [tab, setTab] = useState<"overview" | "create" | "join">("overview");
   const [newName, setNewName] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [joinPreview, setJoinPreview] = useState<LeagueSummary | null>(null);
   const [joinError, setJoinError] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const { data: leagueDetail } = useQuery<LeagueDetail>({
     queryKey: ["league", activeLeague?.id],
@@ -127,6 +153,18 @@ export default function Liga() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deleteLeague(id),
+    onSuccess: async () => {
+      await refetch();
+      setActiveLeague(null);
+      setDeleteConfirm(false);
+      qc.invalidateQueries({ queryKey: ["league"] });
+      qc.invalidateQueries({ queryKey: ["leaderboard"] });
+    },
+    onError: (err: any) => setJoinError(err.response?.data?.error ?? "Erro ao excluir liga"),
+  });
+
   const previewCode = async () => {
     setJoinError("");
     if (joinCode.length < 6) return;
@@ -138,6 +176,21 @@ export default function Liga() {
       setJoinPreview(null);
     }
   };
+
+  useEffect(() => {
+    const pendingCode = (searchParams.get("code") ?? localStorage.getItem("pendingLeagueCode") ?? "").toUpperCase();
+    if (!pendingCode) return;
+    setTab("join");
+    setJoinCode(pendingCode);
+    setJoinError("");
+    setJoinPreview(null);
+    localStorage.removeItem("pendingLeagueCode");
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (tab !== "join" || joinCode.length !== 6 || joinPreview || joinError) return;
+    previewCode();
+  }, [joinCode, tab, joinPreview, joinError]);
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -281,13 +334,36 @@ export default function Liga() {
                         </div>
                       </div>
 
-                      {activeLeague.createdById !== user?.id && (
-                        <button onClick={() => leaveMutation.mutate(activeLeague.id)}
-                          disabled={leaveMutation.isPending}
-                          className="mt-4 text-xs text-red-400/50 hover:text-red-400 transition font-semibold">
-                          {leaveMutation.isPending ? "Saindo..." : "Sair desta liga"}
-                        </button>
-                      )}
+                      <div className="mt-4 flex items-center gap-3 flex-wrap">
+                        <ShareButton league={activeLeague} />
+                        {activeLeague.createdById !== user?.id && (
+                          <button onClick={() => leaveMutation.mutate(activeLeague.id)}
+                            disabled={leaveMutation.isPending}
+                            className="text-xs text-red-400/50 hover:text-red-400 transition font-semibold">
+                            {leaveMutation.isPending ? "Saindo..." : "Sair desta liga"}
+                          </button>
+                        )}
+                        {activeLeague.createdById === user?.id && (
+                          deleteConfirm ? (
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => deleteMutation.mutate(activeLeague.id)}
+                                disabled={deleteMutation.isPending}
+                                className="px-3 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500/25 text-xs font-bold transition disabled:opacity-40">
+                                {deleteMutation.isPending ? "Excluindo..." : "Confirmar exclusao"}
+                              </button>
+                              <button onClick={() => setDeleteConfirm(false)}
+                                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white text-xs font-bold transition">
+                                Cancelar
+                              </button>
+                            </div>
+                          ) : (
+                            <button onClick={() => setDeleteConfirm(true)}
+                              className="text-xs text-red-400/50 hover:text-red-400 transition font-semibold">
+                              Excluir liga
+                            </button>
+                          )
+                        )}
+                      </div>
                     </div>
 
                     {/* Leaderboard */}

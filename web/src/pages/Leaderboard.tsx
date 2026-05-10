@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Flag from "react-world-flags";
@@ -32,16 +33,34 @@ const row = { hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0 } };
 export default function Leaderboard() {
   const { user } = useAuth();
   const { activeLeague, leagues } = useLeague();
+  const [scope, setScope] = useState<number | "all">(activeLeague?.id ?? "all");
+  const [hasChosenScope, setHasChosenScope] = useState(false);
+  const selectedLeague = scope === "all" ? null : leagues.find((l) => l.id === scope) ?? null;
+
+  useEffect(() => {
+    if (!hasChosenScope && activeLeague) {
+      setScope(activeLeague.id);
+      return;
+    }
+    if (scope !== "all" && !leagues.some((l) => l.id === scope)) {
+      setScope(activeLeague?.id ?? "all");
+    }
+  }, [activeLeague, hasChosenScope, leagues, scope]);
+
+  const chooseScope = (nextScope: number | "all") => {
+    setHasChosenScope(true);
+    setScope(nextScope);
+  };
 
   const { data = [], isLoading } = useQuery<LeaderboardEntry[]>({
-    queryKey: ["leaderboard", activeLeague?.id],
-    queryFn: () => getLeaderboard(activeLeague?.id),
+    queryKey: ["leaderboard", scope],
+    queryFn: () => getLeaderboard(selectedLeague?.id),
     refetchInterval: 30_000,
   });
 
   const top3 = data.slice(0, 3);
-  const csvUrl = activeLeague
-    ? `/api/leaderboard/export.csv?leagueId=${activeLeague.id}`
+  const csvUrl = selectedLeague
+    ? `/api/leaderboard/export.csv?leagueId=${selectedLeague.id}`
     : "/api/leaderboard/export.csv";
 
   if (isLoading) {
@@ -59,9 +78,9 @@ export default function Leaderboard() {
         <div>
           <h1 className="text-2xl font-black text-white">🏆 Placar Geral</h1>
           <div className="flex items-center gap-2 mt-1">
-            {activeLeague ? (
+            {selectedLeague ? (
               <span className="text-xs bg-[#f5c842]/10 border border-[#f5c842]/20 text-[#f5c842] px-2.5 py-1 rounded-full font-bold">
-                🏟️ {activeLeague.name}
+                🏟️ {selectedLeague.name}
               </span>
             ) : (
               <span className="text-xs text-white/20">Todos os participantes</span>
@@ -83,8 +102,30 @@ export default function Leaderboard() {
         </div>
       </div>
 
+      {/* Scope filter */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        <button onClick={() => chooseScope("all")}
+          className={`px-4 py-2 rounded-full text-xs font-bold transition border whitespace-nowrap ${
+            scope === "all"
+              ? "bg-white text-black border-white"
+              : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
+          }`}>
+          Todos
+        </button>
+        {leagues.map((league) => (
+          <button key={league.id} onClick={() => chooseScope(league.id)}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition border whitespace-nowrap ${
+              scope === league.id
+                ? "bg-[#f5c842] text-black border-[#f5c842]"
+                : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
+            }`}>
+            {league.name}
+          </button>
+        ))}
+      </div>
+
       {/* No league prompt */}
-      {leagues.length === 0 && data.length > 0 && (
+      {leagues.length === 0 && scope === "all" && data.length > 0 && (
         <div className="bg-orange-500/5 border border-orange-500/15 rounded-2xl p-4 flex items-center gap-4">
           <span className="text-2xl">🏟️</span>
           <div className="flex-1">
@@ -129,7 +170,7 @@ export default function Leaderboard() {
       {/* Table */}
       {data.length === 0 ? (
         <div className="text-center py-16 text-white/15">
-          {activeLeague ? "Nenhum participante nesta liga ainda." : "Nenhum participante ainda."}
+          {selectedLeague ? "Nenhum participante nesta liga ainda." : "Nenhum participante ainda."}
         </div>
       ) : (
         <motion.div variants={container} initial="hidden" animate="show"

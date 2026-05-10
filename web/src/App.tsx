@@ -14,6 +14,7 @@ const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Palpites = lazy(() => import("./pages/Palpites"));
 const Liga = lazy(() => import("./pages/League"));
+const Invite = lazy(() => import("./pages/Invite"));
 
 function LoadingFallback() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<RootRoute />} />
+            <Route path="/convite/:code" element={<Invite />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

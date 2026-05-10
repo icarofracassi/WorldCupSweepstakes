@@ -56,3 +56,4 @@ export const getLeagueByCode = (code: string) => api.get(`/leagues/code/${code}`
 export const createLeague = (name: string) => api.post("/leagues", { name }).then((r) => r.data);
 export const joinLeague = (code: string) => api.post("/leagues/join", { code }).then((r) => r.data);
 export const leaveLeague = (id: number) => api.post(`/leagues/${id}/leave`).then((r) => r.data);
+export const deleteLeague = (id: number) => api.delete(`/leagues/${id}`).then((r) => r.data);

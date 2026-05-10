@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Flag from "react-world-flags";
@@ -35,10 +35,33 @@ const PHASE_LABELS: Record<string, string> = {
 export default function Palpites() {
   const { user } = useAuth();
   const { activeLeague, leagues } = useLeague();
+  const [scope, setScope] = useState<number | "all">(activeLeague?.id ?? "all");
+  const [hasChosenScope, setHasChosenScope] = useState(false);
   const [selectedPhase, setSelectedPhase] = useState("group");
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [matchPreds, setMatchPreds] = useState<UserPred[]>([]);
   const [loadingPreds, setLoadingPreds] = useState(false);
+  const selectedLeague = scope === "all" ? null : leagues.find((l) => l.id === scope) ?? null;
+
+  useEffect(() => {
+    if (!hasChosenScope && activeLeague) {
+      setScope(activeLeague.id);
+      return;
+    }
+    if (scope !== "all" && !leagues.some((l) => l.id === scope)) {
+      setScope(activeLeague?.id ?? "all");
+    }
+  }, [activeLeague, hasChosenScope, leagues, scope]);
+
+  useEffect(() => {
+    setSelectedMatchId(null);
+    setMatchPreds([]);
+  }, [scope]);
+
+  const chooseScope = (nextScope: number | "all") => {
+    setHasChosenScope(true);
+    setScope(nextScope);
+  };
 
   const { data: matches = [], isLoading } = useQuery<Match[]>({
     queryKey: ["matches", selectedPhase],
@@ -46,8 +69,8 @@ export default function Palpites() {
   });
 
   const { data: leaderboard = [] } = useQuery<LeaderboardEntry[]>({
-    queryKey: ["leaderboard", activeLeague?.id],
-    queryFn: () => getLeaderboard(activeLeague?.id),
+    queryKey: ["leaderboard", scope],
+    queryFn: () => getLeaderboard(selectedLeague?.id),
   });
 
   const userMap = Object.fromEntries(leaderboard.map((u) => [u.id, u.name]));
@@ -57,7 +80,7 @@ export default function Palpites() {
     setSelectedMatchId(matchId);
     setLoadingPreds(true);
     try {
-      const params = activeLeague ? { params: { leagueId: activeLeague.id } } : {};
+      const params = selectedLeague ? { params: { leagueId: selectedLeague.id } } : {};
       const res = await api.get(`/predictions/match/${matchId}`, params);
       const preds = res.data.map((p: any) => ({
         userId: p.userId,
@@ -115,10 +138,10 @@ export default function Palpites() {
             className="border-t border-white/8 px-4 py-4">
 
             {/* League scope notice */}
-            {activeLeague && (
+            {selectedLeague && (
               <div className="text-[10px] text-white/20 mb-3 flex items-center gap-1">
                 <span>🏟️</span>
-                <span>Mostrando apenas membros de <span className="text-white/40">{activeLeague.name}</span></span>
+                <span>Mostrando apenas membros de <span className="text-white/40">{selectedLeague.name}</span></span>
               </div>
             )}
 
@@ -211,9 +234,9 @@ export default function Palpites() {
       <div>
         <h1 className="text-2xl font-black text-white">👁 Palpites de Todos</h1>
         <div className="flex items-center gap-2 mt-1">
-          {activeLeague ? (
+          {selectedLeague ? (
             <span className="text-xs bg-[#f5c842]/10 border border-[#f5c842]/20 text-[#f5c842] px-2.5 py-1 rounded-full font-bold">
-              🏟️ {activeLeague.name}
+              🏟️ {selectedLeague.name}
             </span>
           ) : (
             <span className="text-xs text-white/25">Todos os participantes</span>
@@ -221,8 +244,30 @@ export default function Palpites() {
         </div>
       </div>
 
+      {/* Scope filter */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        <button onClick={() => chooseScope("all")}
+          className={`px-4 py-2 rounded-full text-xs font-bold transition border whitespace-nowrap ${
+            scope === "all"
+              ? "bg-white text-black border-white"
+              : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
+          }`}>
+          Todos
+        </button>
+        {leagues.map((league) => (
+          <button key={league.id} onClick={() => chooseScope(league.id)}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition border whitespace-nowrap ${
+              scope === league.id
+                ? "bg-[#f5c842] text-black border-[#f5c842]"
+                : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
+            }`}>
+            {league.name}
+          </button>
+        ))}
+      </div>
+
       {/* No league prompt */}
-      {leagues.length === 0 && (
+      {leagues.length === 0 && scope === "all" && (
         <div className="bg-white/[0.02] border border-white/8 border-dashed rounded-2xl p-4 flex items-center gap-3">
           <span className="text-xl">🏟️</span>
           <div className="flex-1 text-xs text-white/30">

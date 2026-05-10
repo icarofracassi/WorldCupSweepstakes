@@ -176,4 +176,19 @@ router.post("/:id/leave", authMiddleware, async (req: AuthRequest, res: Response
   res.json({ ok: true });
 });
 
+// Delete a league (creator or app admin only)
+router.delete("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
+  const id = Number(req.params.id);
+
+  const league = await prisma.league.findUnique({ where: { id } });
+  if (!league) return res.status(404).json({ error: "League not found" });
+  if (league.createdById !== req.userId && !req.isAdmin) {
+    return res.status(403).json({ error: "Apenas o criador pode excluir esta liga" });
+  }
+
+  await prisma.league.delete({ where: { id } });
+
+  res.json({ ok: true });
+});
+
 export default router;
