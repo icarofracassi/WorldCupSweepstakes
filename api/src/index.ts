@@ -11,7 +11,15 @@ import leaguesRoutes from "./routes/leagues";
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN ?? "*" }));
+app.use(cors({
+  origin: process.env.CORS_ORIGIN ?? "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
+
+// Explicitly handle OPTIONS preflight
+app.options("*", cors());
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
