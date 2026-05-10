@@ -72,7 +72,7 @@ export default function Leaderboard() {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch {
-      // no-op
+      console.error("Falha ao baixar o CSV do placar");
     }
   };
 
