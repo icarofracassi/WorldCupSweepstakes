@@ -30,7 +30,7 @@ router.get("/match/:matchId", authMiddleware, async (req: AuthRequest, res: Resp
   let userIds: number[] | undefined;
   if (leagueId) {
     const parsedLeagueId = Number(leagueId);
-    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "Invalid leagueId" });
+    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "leagueId must be an integer" });
 
     const league = await prisma.league.findUnique({
       where: { id: parsedLeagueId },

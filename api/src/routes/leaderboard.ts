@@ -10,7 +10,7 @@ router.get("/export.csv", authMiddleware, async (req: AuthRequest, res: Response
   let userIds: number[] | undefined;
   if (leagueId) {
     const parsedLeagueId = Number(leagueId);
-    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "Invalid leagueId" });
+    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "leagueId must be an integer" });
 
     const league = await prisma.league.findUnique({
       where: { id: parsedLeagueId },
@@ -50,7 +50,7 @@ router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
   let userIds: number[] | undefined;
   if (leagueId) {
     const parsedLeagueId = Number(leagueId);
-    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "Invalid leagueId" });
+    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "leagueId must be an integer" });
 
     const league = await prisma.league.findUnique({
       where: { id: parsedLeagueId },
