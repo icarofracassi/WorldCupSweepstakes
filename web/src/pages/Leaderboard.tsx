@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Flag from "react-world-flags";
-import { getLeaderboard } from "../api/client";
+import { exportLeaderboardCsv, getLeaderboard } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { useLeague } from "../context/LeagueContext";
 import { Link } from "react-router-dom";
@@ -59,9 +59,22 @@ export default function Leaderboard() {
   });
 
   const top3 = data.slice(0, 3);
-  const csvUrl = selectedLeague
-    ? `/api/leaderboard/export.csv?leagueId=${selectedLeague.id}`
-    : "/api/leaderboard/export.csv";
+
+  const downloadCsv = async () => {
+    try {
+      const blob = await exportLeaderboardCsv(selectedLeague?.id);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = selectedLeague ? `leaderboard-league-${selectedLeague.id}.csv` : "leaderboard.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      // no-op
+    }
+  };
 
   if (isLoading) {
     return (
@@ -95,10 +108,10 @@ export default function Leaderboard() {
               + Criar liga
             </Link>
           )}
-          <a href={csvUrl}
+          <button onClick={downloadCsv}
             className="text-xs bg-white/5 border border-white/10 text-white/40 hover:text-white hover:border-white/30 px-4 py-2 rounded-xl font-semibold transition">
             📥 CSV
-          </a>
+          </button>
         </div>
       </div>
 

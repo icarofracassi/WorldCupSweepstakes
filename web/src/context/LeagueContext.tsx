@@ -36,7 +36,12 @@ export function LeagueProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   const fetchLeagues = async () => {
-    if (!token) return;
+    if (!token) {
+      setLeagues([]);
+      setActiveLeagueState(null);
+      localStorage.removeItem("activeLeagueId");
+      return;
+    }
     setLoading(true);
     try {
       const data = await getMyLeagues();
@@ -46,10 +51,21 @@ export function LeagueProvider({ children }: { children: ReactNode }) {
       const savedId = localStorage.getItem("activeLeagueId");
       if (savedId) {
         const found = data.find((l: League) => l.id === Number(savedId));
-        setActiveLeagueState(found ?? data[0] ?? null);
+        if (found) {
+          setActiveLeagueState(found);
+        } else if (data[0]) {
+          setActiveLeagueState(data[0]);
+          localStorage.setItem("activeLeagueId", String(data[0].id));
+        } else {
+          setActiveLeagueState(null);
+          localStorage.removeItem("activeLeagueId");
+        }
       } else if (data.length > 0) {
         setActiveLeagueState(data[0]);
         localStorage.setItem("activeLeagueId", String(data[0].id));
+      } else {
+        setActiveLeagueState(null);
+        localStorage.removeItem("activeLeagueId");
       }
     } finally {
       setLoading(false);

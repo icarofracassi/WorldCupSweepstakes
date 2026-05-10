@@ -163,7 +163,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="pb-2 mb-2 border-b border-white/5">
                 <div className="text-[10px] text-white/25 uppercase tracking-widest px-3 mb-1">Liga ativa</div>
                 {leagues.map((l) => (
-                  <button key={l.id} onClick={() => setActiveLeague(l)}
+                  <button key={l.id} onClick={() => { setActiveLeague(l); setMobileOpen(false); }}
                     className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition ${
                       activeLeague?.id === l.id ? "bg-[#f5c842]/8 text-[#f5c842]" : "text-white/40 hover:text-white"
                     }`}

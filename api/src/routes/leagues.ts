@@ -13,7 +13,11 @@ function generateCode(): string {
 // Get all leagues (for browsing)
 router.get("/", authMiddleware, async (_req, res: Response) => {
   const leagues = await prisma.league.findMany({
-    include: {
+    select: {
+      id: true,
+      name: true,
+      createdById: true,
+      createdAt: true,
       _count: { select: { members: true } },
       createdBy: { select: { name: true } },
     },
@@ -78,6 +82,8 @@ router.get("/:id", authMiddleware, async (req: AuthRequest, res: Response) => {
   });
 
   if (!league) return res.status(404).json({ error: "League not found" });
+  const isMember = league.members.some((m) => m.id === req.userId);
+  if (!isMember && !req.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
   // Build leaderboard for this league
   const leaderboard = league.members

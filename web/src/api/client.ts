@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const api = axios.create({ baseURL: "/api" });
+export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || "/api" });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -47,6 +47,8 @@ export const submitPreCup = (data: { championId: number; shameTeamId: number; su
 // Leaderboard
 export const getLeaderboard = (leagueId?: number) =>
   api.get("/leaderboard", { params: leagueId ? { leagueId } : {} }).then((r) => r.data);
+export const exportLeaderboardCsv = (leagueId?: number) =>
+  api.get("/leaderboard/export.csv", { params: leagueId ? { leagueId } : {}, responseType: "blob" }).then((r) => r.data);
 
 // Leagues
 export const getMyLeagues = () => api.get("/leagues/mine").then((r) => r.data);

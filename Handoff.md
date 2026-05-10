@@ -140,7 +140,7 @@ npm run dev
 cd web
 npm install
 npm run dev
-# → http://localhost:5174
+# → http://localhost:5173
 ```
 
 **Admin credentials (from seed):**
@@ -359,7 +359,7 @@ Set `CORS_ORIGIN` in Railway to your Vercel domain once deployed.
 1. Open `WorldCupSweepstakes/` in VS Code
 2. Check `api/src/routes/sync.ts` and `api/src/services/footballApi.ts` exist — recreate from handoff if missing
 3. Start both servers (`npm run dev` in `api/` and `web/`)
-4. Verify `http://localhost:5174` shows the landing page
+4. Verify `http://localhost:5173` shows the landing page
 5. Login as `admin@bolao.com` / `admin123`
 6. Go to Admin → Sync tab → run "Importar Fixtures" to refresh match data
 7. Pick up from the TODO list above

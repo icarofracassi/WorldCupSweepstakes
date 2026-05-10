@@ -37,42 +37,51 @@ interface LeagueDetail extends LeagueSummary {
 }
 
 function CodeBadge({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setStatus("copied");
+    } catch {
+      setStatus("error");
+    }
+    setTimeout(() => setStatus("idle"), 2000);
   };
   return (
     <button onClick={copy}
       className="flex items-center gap-2 bg-white/5 border border-white/10 hover:border-white/25 rounded-xl px-4 py-2.5 transition group">
       <span className="font-mono font-black text-[#f5c842] tracking-widest text-lg">{code}</span>
       <span className="text-xs text-white/30 group-hover:text-white/60 transition ml-1">
-        {copied ? "✓ copiado!" : "copiar"}
+        {status === "copied" ? "✓ copiado!" : status === "error" ? "erro" : "copiar"}
       </span>
     </button>
   );
 }
 
 function ShareButton({ league }: { league: LeagueSummary }) {
-  const [copied, setCopied] = useState(false);
+  const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   const inviteUrl = `${window.location.origin}/convite/${league.code}`;
 
   const share = async () => {
-    const text = `Entre na liga ${league.name} no Bolao Copa 2026: ${inviteUrl}`;
-    if (navigator.share) {
-      await navigator.share({ title: league.name, text, url: inviteUrl });
-      return;
+    try {
+      const text = `Entre na liga ${league.name} no Bolão Copa 2026: ${inviteUrl}`;
+      if (navigator.share) {
+        await navigator.share({ title: league.name, text, url: inviteUrl });
+        return;
+      }
+      await navigator.clipboard.writeText(inviteUrl);
+      setStatus("copied");
+      setTimeout(() => setStatus("idle"), 2000);
+    } catch {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 2000);
     }
-    await navigator.clipboard.writeText(inviteUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <button onClick={share}
       className="px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-300 hover:bg-blue-500/15 text-xs font-bold transition">
-      {copied ? "Link copiado!" : "Compartilhar link"}
+      {status === "copied" ? "Link copiado!" : status === "error" ? "Falha ao compartilhar" : "Compartilhar link"}
     </button>
   );
 }
@@ -349,7 +358,7 @@ export default function Liga() {
                               <button onClick={() => deleteMutation.mutate(activeLeague.id)}
                                 disabled={deleteMutation.isPending}
                                 className="px-3 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500/25 text-xs font-bold transition disabled:opacity-40">
-                                {deleteMutation.isPending ? "Excluindo..." : "Confirmar exclusao"}
+                                {deleteMutation.isPending ? "Excluindo..." : "Confirmar exclusão"}
                               </button>
                               <button onClick={() => setDeleteConfirm(false)}
                                 className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white text-xs font-bold transition">

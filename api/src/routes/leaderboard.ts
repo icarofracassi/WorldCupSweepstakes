@@ -9,11 +9,17 @@ router.get("/export.csv", authMiddleware, async (req: AuthRequest, res: Response
 
   let userIds: number[] | undefined;
   if (leagueId) {
+    const parsedLeagueId = Number(leagueId);
+    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "Invalid leagueId" });
+
     const league = await prisma.league.findUnique({
-      where: { id: Number(leagueId) },
+      where: { id: parsedLeagueId },
       include: { members: { select: { id: true } } },
     });
-    userIds = league?.members.map((m) => m.id);
+    if (!league) return res.status(404).json({ error: "League not found" });
+    const isMember = league.members.some((m) => m.id === req.userId);
+    if (!isMember && !req.isAdmin) return res.status(403).json({ error: "Forbidden" });
+    userIds = league.members.map((m) => m.id);
   }
 
   const users = await prisma.user.findMany({
@@ -43,11 +49,17 @@ router.get("/", authMiddleware, async (req: AuthRequest, res: Response) => {
 
   let userIds: number[] | undefined;
   if (leagueId) {
+    const parsedLeagueId = Number(leagueId);
+    if (!Number.isInteger(parsedLeagueId)) return res.status(400).json({ error: "Invalid leagueId" });
+
     const league = await prisma.league.findUnique({
-      where: { id: Number(leagueId) },
+      where: { id: parsedLeagueId },
       include: { members: { select: { id: true } } },
     });
-    userIds = league?.members.map((m) => m.id);
+    if (!league) return res.status(404).json({ error: "League not found" });
+    const isMember = league.members.some((m) => m.id === req.userId);
+    if (!isMember && !req.isAdmin) return res.status(403).json({ error: "Forbidden" });
+    userIds = league.members.map((m) => m.id);
   }
 
   const users = await prisma.user.findMany({
