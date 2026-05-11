@@ -3,20 +3,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useLeague } from "../context/LeagueContext";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 const NAV = [
-  { to: "/dashboard", icon: "⚡", label: "Início" },
-  { to: "/jogos", icon: "⚽", label: "Jogos" },
-  { to: "/palpites", icon: "👁", label: "Palpites" },
-  { to: "/pre-copa", icon: "🎯", label: "Pré-Copa" },
-  { to: "/placar", icon: "🏆", label: "Placar" },
-  { to: "/liga", icon: "🏟️", label: "Liga" },
+  { to: "/dashboard", icon: "⚡", labelKey: "nav.dashboard" },
+  { to: "/jogos", icon: "⚽", labelKey: "nav.jogos" },
+  { to: "/palpites", icon: "👁", labelKey: "nav.palpites" },
+  { to: "/pre-copa", icon: "🎯", labelKey: "nav.preCopa" },
+  { to: "/placar", icon: "🏆", labelKey: "nav.leaderboard" },
+  { to: "/liga", icon: "🏟️", labelKey: "nav.liga" },
 ];
-const ADMIN_NAV = { to: "/admin", icon: "⚙️", label: "Admin" };
+const ADMIN_NAV = { to: "/admin", icon: "⚙️", labelKey: "nav.admin" };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout, isAdmin } = useAuth();
   const { leagues, activeLeague, setActiveLeague } = useLeague();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -38,7 +41,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-
+        <div className="px-3 mb-3">
+          <LanguageSwitcher className="w-full rounded-xl border border-white/8 bg-white/[0.03] py-2 text-xs text-white/60 hover:border-white/15 hover:text-white" />
+        </div>
         {/* League switcher */}
         {leagues.length > 0 && (
           <div className="px-3 mb-2">
@@ -50,10 +55,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="text-base">🏟️</span>
                 <div className="flex-1 text-left min-w-0">
                   <div className="text-xs font-bold text-white/60 truncate">
-                    {activeLeague?.name ?? "Selecionar liga"}
+                    {activeLeague?.name ?? t("layout.selectLeague")}
                   </div>
                   {activeLeague && (
-                    <div className="text-[10px] text-white/25">{activeLeague._count.members} membros</div>
+                    <div className="text-[10px] text-white/25">
+                      {t("layout.memberCount", { count: activeLeague._count.members })}
+                    </div>
                   )}
                 </div>
                 <span className="text-white/20 text-xs">{leagueSwitcherOpen ? "▲" : "▼"}</span>
@@ -83,7 +90,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     ))}
                     <Link to="/liga" onClick={() => setLeagueSwitcherOpen(false)}
                       className="flex items-center gap-2 px-3 py-2.5 border-t border-white/5 text-xs text-white/30 hover:text-white transition">
-                      <span>+</span> Gerenciar ligas
+                      <span>+</span> {t("layout.manageLeagues")}
                     </Link>
                   </motion.div>
                 )}
@@ -106,14 +113,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   }`}
                 >
                   <span className="text-base">{item.icon}</span>
-                  <span className="text-sm font-semibold">{item.label}</span>
+                  <span className="text-sm font-semibold">{t(item.labelKey)}</span>
                   {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#f5c842]" />}
                 </motion.div>
               </Link>
             );
           })}
         </nav>
-
         {/* User card */}
         <div className="p-4 mx-3 mb-4 bg-white/[0.02] border border-white/6 rounded-2xl">
           <div className="flex items-center gap-3">
@@ -129,7 +135,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <button
               onClick={() => { logout(); navigate("/"); }}
               className="text-white/15 hover:text-red-400 transition text-sm p-1"
-              title="Sair"
+              title={t("nav.logout")}
             >✕</button>
           </div>
         </div>
@@ -137,16 +143,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-[#0d0d14]/95 backdrop-blur-xl border-b border-white/5 px-4 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <span>🏆</span>
-          <span className="font-black text-sm">Bolão Copa 2026</span>
+          <span className="font-black text-sm whitespace-nowrap">Bolão Copa 2026</span>
           {activeLeague && (
-            <span className="text-[10px] text-white/25 bg-white/5 px-2 py-0.5 rounded-full">{activeLeague.name}</span>
+            <span className="text-[10px] text-white/25 bg-white/5 px-2 py-0.5 rounded-full truncate">{activeLeague.name}</span>
           )}
         </div>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-white/50 hover:text-white p-1 transition">
-          <span className="text-lg">{mobileOpen ? "✕" : "☰"}</span>
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <LanguageSwitcher className="px-2.5 py-1 text-xs" />
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="text-white/50 hover:text-white p-1 transition">
+            <span className="text-lg">{mobileOpen ? "✕" : "☰"}</span>
+          </button>
+        </div>
       </header>
 
       {/* Mobile menu */}
@@ -161,7 +170,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* League switcher mobile */}
             {leagues.length > 0 && (
               <div className="pb-2 mb-2 border-b border-white/5">
-                <div className="text-[10px] text-white/25 uppercase tracking-widest px-3 mb-1">Liga ativa</div>
+                <div className="text-[10px] text-white/25 uppercase tracking-widest px-3 mb-1">{t("layout.activeLeague")}</div>
                 {leagues.map((l) => (
                   <button key={l.id} onClick={() => { setActiveLeague(l); setMobileOpen(false); }}
                     className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition ${
@@ -182,12 +191,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   location.pathname === item.to ? "bg-[#f5c842]/10 text-[#f5c842]" : "text-white/40 hover:text-white"
                 }`}
               >
-                <span>{item.icon}</span>{item.label}
+                <span>{item.icon}</span>{t(item.labelKey)}
               </Link>
             ))}
             <button onClick={() => { logout(); navigate("/"); }}
               className="w-full flex items-center gap-3 px-4 py-3 text-red-400/60 hover:text-red-400 text-sm">
-              🚪 Sair
+              🚪 {t("nav.logout")}
             </button>
           </motion.div>
         )}
