@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 
 // ── Countdown ──────────────────────────────────────────────
 const CUP_START = new Date("2026-06-11T19:00:00Z");
@@ -60,6 +62,8 @@ function Ticker() {
   );
 }
 
+type TFunction = ReturnType<typeof useTranslation>["t"];
+
 // ── Countdown digit ────────────────────────────────────────
 function Digit({ value, label }: { value: number; label: string }) {
   const str = String(value).padStart(2, "0");
@@ -92,7 +96,7 @@ function Digit({ value, label }: { value: number; label: string }) {
 }
 
 // ── Score demo card ────────────────────────────────────────
-function ScoreDemo() {
+function ScoreDemo({ t }: { t: TFunction }) {
   const [scoreA, setScoreA] = useState(2);
   const [scoreB, setScoreB] = useState(1);
   const [realA] = useState(2);
@@ -102,13 +106,13 @@ function ScoreDemo() {
   const diff = scoreA - scoreB === realA - realB;
   const winner = Math.sign(scoreA - scoreB) === Math.sign(realA - realB);
   const pts = exact ? 5 : diff ? 3 : winner ? 1 : 0;
-  const label = exact ? "Placar exato! 🎯" : diff ? "Diferença certa ✓" : winner ? "Vencedor certo ~" : "Errou ✗";
+  const label = exact ? t("landing.demo.exact") : diff ? t("landing.demo.diff") : winner ? t("landing.demo.winner") : t("landing.demo.wrong");
   const color = exact ? "text-green-400" : diff ? "text-[#f5c842]" : winner ? "text-blue-400" : "text-red-400";
 
   return (
     <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-6 space-y-4">
-      <div className="text-xs font-bold text-white/30 uppercase tracking-widest">Demonstração interativa</div>
-      <div className="text-center text-white/40 text-xs mb-2">Resultado real: Brasil 2 × 1 Argentina</div>
+      <div className="text-xs font-bold text-white/30 uppercase tracking-widest">{t("landing.demo.title")}</div>
+      <div className="text-center text-white/40 text-xs mb-2">{t("landing.demo.realResult")}</div>
 
       {/* Real score */}
       <div className="flex items-center justify-center gap-4 py-2 bg-green-500/5 border border-green-500/15 rounded-xl">
@@ -119,7 +123,7 @@ function ScoreDemo() {
 
       {/* Your guess inputs */}
       <div>
-        <div className="text-xs text-white/30 mb-2 text-center">Seu palpite — arraste para mudar</div>
+        <div className="text-xs text-white/30 mb-2 text-center">{t("landing.demo.yourGuess")}</div>
         <div className="flex items-center justify-center gap-3">
           <input type="number" min={0} max={9} value={scoreA}
             onChange={(e) => setScoreA(Math.max(0, Math.min(9, Number(e.target.value))))}
@@ -135,7 +139,7 @@ function ScoreDemo() {
       <motion.div key={pts} initial={{ scale: 0.9 }} animate={{ scale: 1 }}
         className="flex items-center justify-between px-4 py-3 bg-white/4 border border-white/8 rounded-xl">
         <span className={`text-sm font-bold ${color}`}>{label}</span>
-        <span className="text-2xl font-black text-white">+{pts} <span className="text-sm text-white/30">pts</span></span>
+        <span className="text-2xl font-black text-white">+{pts} <span className="text-sm text-white/30">{t("landing.pointsAbbr")}</span></span>
       </motion.div>
     </div>
   );
@@ -182,6 +186,7 @@ function Step({ num, title, desc, delay }: { num: string; title: string; desc: s
 
 // ── Main ───────────────────────────────────────────────────
 export default function Landing() {
+  const { t } = useTranslation();
   const { days, hours, minutes, seconds } = useCountdown();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
@@ -199,6 +204,34 @@ export default function Landing() {
     { x: 95, y: 45, size: 32, delay: 2.5, duration: 13 },
   ];
 
+  const features = [
+    { delay: 0, icon: "⚽", title: t("landing.features.matchPredictions.title"), desc: t("landing.features.matchPredictions.desc") },
+    { delay: 0.1, icon: "🎯", title: t("landing.features.preCup.title"), desc: t("landing.features.preCup.desc") },
+    { delay: 0.2, icon: "🏆", title: t("landing.features.liveLeaderboard.title"), desc: t("landing.features.liveLeaderboard.desc") },
+    { delay: 0.3, icon: "👁", title: t("landing.features.everyonePredictions.title"), desc: t("landing.features.everyonePredictions.desc") },
+    { delay: 0.4, icon: "📊", title: t("landing.features.phaseMultipliers.title"), desc: t("landing.features.phaseMultipliers.desc") },
+    { delay: 0.5, icon: "📥", title: t("landing.features.export.title"), desc: t("landing.features.export.desc") },
+  ];
+
+  const steps = [
+    { num: "1", delay: 0.1, title: t("landing.steps.createAccount.title"), desc: t("landing.steps.createAccount.desc") },
+    { num: "2", delay: 0.2, title: t("landing.steps.makePredictions.title"), desc: t("landing.steps.makePredictions.desc") },
+    { num: "3", delay: 0.3, title: t("landing.steps.followLeaderboard.title"), desc: t("landing.steps.followLeaderboard.desc") },
+  ];
+
+  const matchPoints = [
+    { id: "exact", label: t("landing.scoring.match.exact.label"), pts: t("landing.scoring.match.exact.pts"), color: "text-green-400", sub: t("landing.scoring.match.exact.sub") },
+    { id: "diff", label: t("landing.scoring.match.diff.label"), pts: t("landing.scoring.match.diff.pts"), color: "text-[#f5c842]", sub: t("landing.scoring.match.diff.sub") },
+    { id: "winner", label: t("landing.scoring.match.winner.label"), pts: t("landing.scoring.match.winner.pts"), color: "text-blue-400", sub: t("landing.scoring.match.winner.sub") },
+    { id: "wrong", label: t("landing.scoring.match.wrong.label"), pts: t("landing.scoring.match.wrong.pts"), color: "text-white/20", sub: t("landing.scoring.match.wrong.sub") },
+  ];
+
+  const preCupPoints = [
+    { id: "champion", icon: "🏆", label: t("landing.scoring.preCup.champion.label"), pts: t("landing.scoring.preCup.champion.pts"), color: "text-[#f5c842]", sub: t("landing.scoring.preCup.champion.sub") },
+    { id: "shame", icon: "😳", label: t("landing.scoring.preCup.shame.label"), pts: t("landing.scoring.preCup.shame.pts"), color: "text-red-400", sub: t("landing.scoring.preCup.shame.sub") },
+    { id: "surprise", icon: "⭐", label: t("landing.scoring.preCup.surprise.label"), pts: t("landing.scoring.preCup.surprise.pts"), color: "text-blue-400", sub: t("landing.scoring.preCup.surprise.sub") },
+  ];
+
   return (
     <div className="min-h-screen bg-[#08080e] text-white overflow-x-hidden">
 
@@ -209,13 +242,14 @@ export default function Landing() {
           <span className="font-black text-sm tracking-tight">Bolão Copa 2026</span>
         </div>
         <div className="flex items-center gap-3">
+          <LanguageSwitcher className="hidden sm:inline-flex px-3 py-2 text-xs" />
           <Link to="/login"
             className="text-sm font-semibold text-white/50 hover:text-white transition px-4 py-2">
-            Entrar
+            {t("auth.login")}
           </Link>
           <Link to="/register"
             className="text-sm font-bold bg-[#f5c842] text-black px-5 py-2 rounded-xl hover:bg-yellow-400 transition shadow-lg shadow-yellow-500/20">
-            Criar conta
+            {t("landing.nav.createAccount")}
           </Link>
         </div>
       </nav>
@@ -248,25 +282,25 @@ export default function Landing() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <span className="inline-flex items-center gap-2 text-xs font-bold text-[#f5c842]/70 border border-[#f5c842]/20 bg-[#f5c842]/5 px-4 py-2 rounded-full tracking-widest uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-[#f5c842] animate-pulse" />
-              11 Jun – 19 Jul 2026 · USA · Canada · Mexico
+              {t("landing.hero.badge")}
             </span>
           </motion.div>
 
           {/* Headline */}
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-none tracking-tighter">
-              <span className="block text-white">Bolão da</span>
+              <span className="block text-white">{t("landing.hero.titleTop")}</span>
               <span className="block bg-gradient-to-r from-[#f5c842] via-[#fcd34d] to-[#f59e0b] bg-clip-text text-transparent">
-                Copa 2026
+                {t("landing.hero.subTitleTop")}
               </span>
-              <span className="block text-white/20 text-3xl md:text-4xl mt-2 font-bold tracking-tight">do seu escritório</span>
+              <span className="block text-white/20 text-3xl md:text-4xl mt-2 font-bold tracking-tight">{t("landing.hero.titleBottom")}</span>
             </h1>
           </motion.div>
 
           {/* Sub */}
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
             className="text-lg text-white/35 max-w-xl mx-auto leading-relaxed">
-            Palpites diários, picks pré-torneio, placar ao vivo — tudo que o escritório precisa para a Copa.
+            {t("landing.hero.subtitle")}
           </motion.p>
 
           {/* CTAs */}
@@ -275,13 +309,13 @@ export default function Landing() {
             <Link to="/register">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 className="px-8 py-4 bg-gradient-to-r from-[#f5c842] to-[#e8a020] text-black font-black text-base rounded-2xl shadow-2xl shadow-yellow-500/25 cursor-pointer">
-                Criar conta grátis →
+                {t("landing.cta.createFree")}
               </motion.div>
             </Link>
             <Link to="/login">
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                 className="px-8 py-4 bg-white/5 border border-white/15 text-white/70 font-bold text-base rounded-2xl hover:bg-white/8 hover:text-white transition cursor-pointer">
-                Já tenho conta
+                {t("landing.cta.haveAccount")}
               </motion.div>
             </Link>
           </motion.div>
@@ -289,15 +323,15 @@ export default function Landing() {
           {/* Countdown */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }}
             className="pt-4">
-            <div className="text-xs text-white/20 uppercase tracking-widest mb-6 font-semibold">Copa começa em</div>
+            <div className="text-xs text-white/20 uppercase tracking-widest mb-6 font-semibold">{t("landing.countdown.title")}</div>
             <div className="flex items-end justify-center gap-3 md:gap-5">
-              <Digit value={days} label="dias" />
+              <Digit value={days} label={t("landing.countdown.days")} />
               <div className="text-white/15 text-3xl font-black pb-8">:</div>
-              <Digit value={hours} label="horas" />
+              <Digit value={hours} label={t("landing.countdown.hours")} />
               <div className="text-white/15 text-3xl font-black pb-8">:</div>
-              <Digit value={minutes} label="min" />
+              <Digit value={minutes} label={t("landing.countdown.minutes")} />
               <div className="text-white/15 text-3xl font-black pb-8">:</div>
-              <Digit value={seconds} label="seg" />
+              <Digit value={seconds} label={t("landing.countdown.seconds")} />
             </div>
           </motion.div>
         </div>
@@ -305,7 +339,7 @@ export default function Landing() {
         {/* Scroll indicator */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <span className="text-white/15 text-xs uppercase tracking-widest">scroll</span>
+          <span className="text-white/15 text-xs uppercase tracking-widest">{t("landing.scroll")}</span>
           <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}
             className="w-px h-8 bg-gradient-to-b from-white/20 to-transparent" />
         </motion.div>
@@ -318,32 +352,17 @@ export default function Landing() {
       <section className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-16">
-          <div className="text-xs font-bold text-[#f5c842]/50 uppercase tracking-widest mb-4">Funcionalidades</div>
+          <div className="text-xs font-bold text-[#f5c842]/50 uppercase tracking-widest mb-4">{t("landing.features.eyebrow")}</div>
           <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-            Tudo que o bolão<br />
-            <span className="text-white/30">precisa ter</span>
+            {t("landing.features.title")}<br />
+            <span className="text-white/30">{t("landing.features.titleMuted")}</span>
           </h2>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-5">
-          <FeatureCard delay={0} icon="⚽"
-            title="Palpites por Jogo"
-            desc="Aposte o placar exato de cada jogo. Palpites bloqueados automaticamente no kickoff. Quanto mais certo, mais pontos." />
-          <FeatureCard delay={0.1} icon="🎯"
-            title="Picks Pré-Copa"
-            desc="Escolha o campeão, a vergonha (top-14 que cair mais cedo) e a surpresa (zebra que for mais longe) antes da Copa começar." />
-          <FeatureCard delay={0.2} icon="🏆"
-            title="Placar ao Vivo"
-            desc="Ranking em tempo real com pontuação automática. Atualizações a cada 30 segundos. Podium para os 3 primeiros." />
-          <FeatureCard delay={0.3} icon="👁"
-            title="Ver Palpites de Todos"
-            desc="Após o kickoff, veja o que cada pessoa do escritório apostou. Quem acertou o placar? Quem foi mais ousado?" />
-          <FeatureCard delay={0.4} icon="📊"
-            title="Multiplicadores de Fase"
-            desc="Pontos valem mais nas fases decisivas. Fase de grupos ×1, oitavas ×1.25, quartas ×1.5, semi ×1.75, final ×3." />
-          <FeatureCard delay={0.5} icon="📥"
-            title="Exportar para Power BI"
-            desc="CSV exportável direto do placar para montar dashboards personalizados. Dados limpos prontos para análise." />
+          {features.map((feature, index) => (
+            <FeatureCard key={index} {...feature} />
+          ))}
         </div>
       </section>
 
@@ -352,28 +371,22 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <div className="text-xs font-bold text-[#f5c842]/50 uppercase tracking-widest mb-4">Como funciona</div>
+              <div className="text-xs font-bold text-[#f5c842]/50 uppercase tracking-widest mb-4">{t("landing.howItWorks.eyebrow")}</div>
               <h2 className="text-4xl font-black text-white tracking-tight">
-                Três passos<br />
-                <span className="text-white/30">para começar</span>
+                {t("landing.howItWorks.title")}<br />
+                <span className="text-white/30">{t("landing.howItWorks.titleMuted")}</span>
               </h2>
             </motion.div>
 
             <div className="space-y-6">
-              <Step num="1" delay={0.1}
-                title="Crie sua conta"
-                desc="Cadastre-se em segundos. Nenhum dado de pagamento necessário — o bolão é gratuito." />
-              <Step num="2" delay={0.2}
-                title="Faça seus palpites"
-                desc="Aposte o placar de cada jogo antes do kickoff. E escolha seus picks pré-copa antes de 11 de junho." />
-              <Step num="3" delay={0.3}
-                title="Acompanhe o placar"
-                desc="Pontos calculados automaticamente após cada jogo. Quem somar mais pontos no final vence." />
+              {steps.map((step) => (
+                <Step key={step.num} {...step} />
+              ))}
             </div>
           </div>
 
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <ScoreDemo />
+            <ScoreDemo t={t} />
           </motion.div>
         </div>
       </section>
@@ -382,22 +395,17 @@ export default function Landing() {
       <section className="py-24 px-6 md:px-12 max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-12">
-          <div className="text-xs font-bold text-[#f5c842]/50 uppercase tracking-widest mb-4">Pontuação</div>
-          <h2 className="text-4xl font-black text-white tracking-tight">Como os pontos<br /><span className="text-white/30">são calculados</span></h2>
+          <div className="text-xs font-bold text-[#f5c842]/50 uppercase tracking-widest mb-4">{t("landing.scoring.eyebrow")}</div>
+          <h2 className="text-4xl font-black text-white tracking-tight">{t("landing.scoring.title")}<br /><span className="text-white/30">{t("landing.scoring.titleMuted")}</span></h2>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Match points */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="bg-white/[0.03] border border-white/8 rounded-2xl p-6 space-y-4">
-            <div className="text-sm font-black text-white/60 uppercase tracking-wider">Por Jogo</div>
-            {[
-              { label: "Placar exato", pts: "5 pts", color: "text-green-400", sub: "ex: apostar 2×1, sair 2×1" },
-              { label: "Vencedor + saldo", pts: "3 pts", color: "text-[#f5c842]", sub: "ex: apostar 2×0, sair 3×1" },
-              { label: "Só o vencedor", pts: "1 pt", color: "text-blue-400", sub: "ex: apostar 1×0, sair 2×0" },
-              { label: "Errou tudo", pts: "0 pts", color: "text-white/20", sub: "que pena" },
-            ].map((r) => (
-              <div key={r.label} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+            <div className="text-sm font-black text-white/60 uppercase tracking-wider">{t("landing.scoring.matchTitle")}</div>
+            {matchPoints.map((r) => (
+              <div key={r.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <div>
                   <div className="text-sm font-semibold text-white/70">{r.label}</div>
                   <div className="text-xs text-white/25">{r.sub}</div>
@@ -406,20 +414,16 @@ export default function Landing() {
               </div>
             ))}
             <div className="bg-white/3 border border-white/6 rounded-xl p-3 text-xs text-white/25">
-              Multiplicado pela fase: Grupos ×1 · Oitavas ×1.25 · Quartas ×1.5 · Semi ×1.75 · Final ×3
+              {t("landing.scoring.phaseMultiplier")}
             </div>
           </motion.div>
 
           {/* Pre-cup points */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
             className="bg-white/[0.03] border border-white/8 rounded-2xl p-6 space-y-4">
-            <div className="text-sm font-black text-white/60 uppercase tracking-wider">Pré-Copa</div>
-            {[
-              { icon: "🏆", label: "Campeão certo", pts: "200 pts", color: "text-[#f5c842]", sub: "acertar quem levanta a taça" },
-              { icon: "😳", label: "Vergonha certa", pts: "100 pts", color: "text-red-400", sub: "top-14 que cair mais cedo" },
-              { icon: "⭐", label: "Surpresa certa", pts: "100 pts", color: "text-blue-400", sub: "zebra que for mais longe" },
-            ].map((r) => (
-              <div key={r.label} className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0">
+            <div className="text-sm font-black text-white/60 uppercase tracking-wider">{t("landing.scoring.preCupTitle")}</div>
+            {preCupPoints.map((r) => (
+              <div key={r.id} className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0">
                 <span className="text-2xl">{r.icon}</span>
                 <div className="flex-1">
                   <div className="text-sm font-semibold text-white/70">{r.label}</div>
@@ -429,7 +433,7 @@ export default function Landing() {
               </div>
             ))}
             <div className="bg-[#f5c842]/5 border border-[#f5c842]/15 rounded-xl p-3 text-xs text-[#f5c842]/50">
-              💡 Vergonha e Surpresa usam o índice FIFA × fator de fase para desempate
+              💡 {t("landing.scoring.preCupNote")}
             </div>
           </motion.div>
         </div>
@@ -447,15 +451,15 @@ export default function Landing() {
           <div className="relative space-y-6">
             <div className="text-5xl">🏆</div>
             <h2 className="text-4xl font-black text-white tracking-tight">
-              Pronto para<br />
-              <span className="bg-gradient-to-r from-[#f5c842] to-[#f59e0b] bg-clip-text text-transparent">ganhar o bolão?</span>
+              {t("landing.finalCta.title")}<br />
+              <span className="bg-gradient-to-r from-[#f5c842] to-[#f59e0b] bg-clip-text text-transparent">{t("landing.finalCta.titleHighlight")}</span>
             </h2>
-            <p className="text-white/35 max-w-sm mx-auto">Convide o time, façam seus palpites, e acompanhem quem é o maior craque de previsões do escritório.</p>
+            <p className="text-white/35 max-w-sm mx-auto">{t("landing.finalCta.subtitle")}</p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <Link to="/register">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                   className="px-8 py-4 bg-gradient-to-r from-[#f5c842] to-[#e8a020] text-black font-black text-sm rounded-2xl shadow-xl shadow-yellow-500/20 cursor-pointer">
-                  Criar conta grátis →
+                  {t("landing.cta.createFree")}
                 </motion.div>
               </Link>
             </div>

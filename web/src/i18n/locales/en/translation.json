@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "dashboard": "Home",
+    "jogos": "Matches",
+    "preCopa": "Pre-Cup",
+    "leaderboard": "Leaderboard",
+    "palpites": "Predictions",
+    "liga": "My League",
+    "admin": "Admin",
+    "logout": "Logout"
+  },
+  "layout": {
+    "selectLeague": "Select league",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "manageLeagues": "Manage leagues",
+    "activeLeague": "Active league"
+  },
+  "landing": {
+    "pointsAbbr": "pts",
+    "scroll": "scroll",
+    "nav": {
+      "createAccount": "Create account"
+    },
+    "hero": {
+      "badge": "Jun 11 - Jul 19, 2026 · USA · Canada · Mexico",
+      "titleTop": "2026 World Cup",
+      "titleBottom": "For Your Office",
+      "subTitleTop": "Pool",
+      "subtitle": "Daily predictions, pre-tournament picks, live leaderboard — everything your office needs for the World Cup."
+    },
+    "cta": {
+      "createFree": "Create free account →",
+      "haveAccount": "I already have an account"
+    },
+    "countdown": {
+      "title": "World Cup starts in",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec"
+    },
+    "features": {
+      "eyebrow": "Features",
+      "title": "Everything a pool",
+      "titleMuted": "needs to have",
+      "matchPredictions": {
+        "title": "Match Predictions",
+        "desc": "Pick the exact score for every match. Predictions lock automatically at kickoff. The closer you are, the more points you earn."
+      },
+      "preCup": {
+        "title": "Pre-Cup Picks",
+        "desc": "Choose the champion, the shame pick (top-14 team eliminated earliest), and the surprise pick before the World Cup starts."
+      },
+      "liveLeaderboard": {
+        "title": "Live Leaderboard",
+        "desc": "Real-time ranking with automatic scoring. Updates every 30 seconds. Podium for the top 3."
+      },
+      "everyonePredictions": {
+        "title": "See Everyone's Picks",
+        "desc": "After kickoff, see what everyone in the office predicted. Who nailed the score? Who made the boldest call?"
+      },
+      "phaseMultipliers": {
+        "title": "Phase Multipliers",
+        "desc": "Points are worth more in knockout rounds. Group stage ×1, round of 16 ×1.25, quarterfinals ×1.5, semifinals ×1.75, final ×3."
+      },
+      "export": {
+        "title": "Export to Power BI",
+        "desc": "Export leaderboard CSVs to build custom dashboards. Clean data ready for analysis."
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "title": "Three steps",
+      "titleMuted": "to get started"
+    },
+    "steps": {
+      "createAccount": {
+        "title": "Create your account",
+        "desc": "Sign up in seconds. No payment details needed — the pool is free."
+      },
+      "makePredictions": {
+        "title": "Make your predictions",
+        "desc": "Pick each match score before kickoff. Choose your pre-cup picks before June 11."
+      },
+      "followLeaderboard": {
+        "title": "Follow the leaderboard",
+        "desc": "Points are calculated automatically after every match. Whoever has the most points at the end wins."
+      }
+    },
+    "demo": {
+      "title": "Interactive demo",
+      "realResult": "Real result: Brazil 2 × 1 Argentina",
+      "yourGuess": "Your prediction — drag to change",
+      "exact": "Exact score! 🎯",
+      "diff": "Correct difference ✓",
+      "winner": "Correct winner ~",
+      "wrong": "Missed ✕"
+    },
+    "scoring": {
+      "eyebrow": "Scoring",
+      "title": "How points",
+      "titleMuted": "are calculated",
+      "matchTitle": "Per Match",
+      "preCupTitle": "Pre-Cup",
+      "phaseMultiplier": "Multiplied by phase: Groups ×1 · Round of 16 ×1.25 · Quarterfinals ×1.5 · Semifinals ×1.75 · Final ×3",
+      "preCupNote": "Shame and Surprise use the FIFA index × phase factor for tiebreakers",
+      "match": {
+        "exact": { "label": "Exact score", "pts": "5 pts", "sub": "ex: pick 2×1, result 2×1" },
+        "diff": { "label": "Winner + goal difference", "pts": "3 pts", "sub": "ex: pick 2×0, result 3×1" },
+        "winner": { "label": "Winner only", "pts": "1 pt", "sub": "ex: pick 1×0, result 2×0" },
+        "wrong": { "label": "All wrong", "pts": "0 pts", "sub": "too bad" }
+      },
+      "preCup": {
+        "champion": { "label": "Correct champion", "pts": "200 pts", "sub": "pick who lifts the trophy" },
+        "shame": { "label": "Correct shame pick", "pts": "100 pts", "sub": "top-14 team eliminated earliest" },
+        "surprise": { "label": "Correct surprise pick", "pts": "100 pts", "sub": "underdog that goes furthest" }
+      }
+    },
+    "finalCta": {
+      "title": "Ready to",
+      "titleHighlight": "win the pool?",
+      "subtitle": "Invite the team, make your predictions, and track who is the office's best prediction expert."
+    }
+  },
+  "dashboard": {
+    "title": "Welcome to Bolão Copa 2026",
+    "countdown": "Cup starts in",
+    "yourRank": "Your rank",
+    "totalPoints": "Total points",
+    "predictions": "Predictions made"
+  },
+  "jogos": {
+    "title": "Matches",
+    "predictScore": "Your prediction",
+    "saveAll": "Save all",
+    "locked": "Match started",
+    "noMatches": "No matches found"
+  },
+  "preCopa": {
+    "title": "Pre-Cup",
+    "champion": "Champion",
+    "shame": "Shame pick",
+    "surprise": "Surprise pick",
+    "save": "Save picks",
+    "locked": "Picks are locked"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "rank": "Rank",
+    "player": "Player",
+    "points": "Pts",
+    "export": "Export CSV"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "logout": "Logout"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "league": "League",
+    "switchLanguage": "Switch language"
+  }
+}

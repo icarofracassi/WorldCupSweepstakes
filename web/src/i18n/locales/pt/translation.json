@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "dashboard": "Início",
+    "jogos": "Jogos",
+    "preCopa": "Pré-Copa",
+    "leaderboard": "Classificação",
+    "palpites": "Palpites",
+    "liga": "Minha Liga",
+    "admin": "Admin",
+    "logout": "Sair"
+  },
+  "layout": {
+    "selectLeague": "Selecionar liga",
+    "memberCount_one": "{{count}} membro",
+    "memberCount_other": "{{count}} membros",
+    "manageLeagues": "Gerenciar ligas",
+    "activeLeague": "Liga ativa"
+  },
+  "landing": {
+    "pointsAbbr": "pts",
+    "scroll": "rolar",
+    "nav": {
+      "createAccount": "Criar conta"
+    },
+    "hero": {
+      "badge": "11 de jun - 19 de jul, 2026 · EUA · Canadá · México",
+      "titleTop": "Bolão da",
+      "titleBottom": "do seu escritório",
+      "subTitleTop": "Copa 2026",
+      "subtitle": "Palpites diários, picks pré-torneio, placar ao vivo — tudo que o escritório precisa para a Copa."
+    },
+    "cta": {
+      "createFree": "Criar conta gratuita →",
+      "haveAccount": "Já tenho uma conta"
+    },
+    "countdown": {
+      "title": "A Copa do Mundo começa em",
+      "days": "dias",
+      "hours": "horas",
+      "minutes": "min",
+      "seconds": "seg"
+    },
+    "features": {
+      "eyebrow": "Recursos",
+      "title": "Tudo o que um bolão",
+      "titleMuted": "precisa ter",
+      "matchPredictions": {
+        "title": "Palpites dos Jogos",
+        "desc": "Aposte o placar exato de cada jogo. Palpites bloqueados automaticamente no kickoff. Quanto mais certo, mais pontos."
+      },
+      "preCup": {
+        "title": "Escolhas Pré-Copa",
+        "desc": "Escolha o campeão, a vergonha (time do top-14 eliminado mais cedo) e a surpresa antes da Copa começar."
+      },
+      "liveLeaderboard": {
+        "title": "Ranking ao Vivo",
+        "desc": "Classificação em tempo real com pontuação automática. Atualiza a cada 30 segundos. Pódio para os 3 melhores."
+      },
+      "everyonePredictions": {
+        "title": "Veja os Palpites de Todos",
+        "desc": "Após o início do jogo, veja o que cada pessoa do escritório apostou. Quem acertou o placar? Quem foi mais ousado?"
+      },
+      "phaseMultipliers": {
+        "title": "Multiplicadores de Fase",
+        "desc": "Os pontos valem mais no mata-mata. Fase de grupos ×1, oitavas ×1.25, quartas ×1.5, semifinal ×1.75 e final ×3."
+      },
+      "export": {
+        "title": "Exportar para Power BI",
+        "desc": "Exporte o ranking em CSV para criar dashboards personalizados. Dados limpos e prontos para análise."
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "Como funciona",
+      "title": "Três passos",
+      "titleMuted": "para começar"
+    },
+    "steps": {
+      "createAccount": {
+        "title": "Crie sua conta",
+        "desc": "Cadastre-se em segundos. Não precisa de dados de pagamento — o bolão é gratuito."
+      },
+      "makePredictions": {
+        "title": "Faça seus palpites",
+        "desc": "Escolha o placar de cada jogo antes do início. Defina suas apostas pré-copa até 11 de junho."
+      },
+      "followLeaderboard": {
+        "title": "Acompanhe o ranking",
+        "desc": "Os pontos são calculados automaticamente após cada partida. Quem tiver mais pontos no final, vence."
+      }
+    },
+    "demo": {
+      "title": "Demo interativa",
+      "realResult": "Resultado real: Brasil 2 × 1 Argentina",
+      "yourGuess": "Seu palpite — arraste para alterar",
+      "exact": "Placar exato! 🎯",
+      "diff": "Saldo de gols correto ✓",
+      "winner": "Acertou o vencedor ~",
+      "wrong": "Errou ✕"
+    },
+    "scoring": {
+      "eyebrow": "Pontuação",
+      "title": "Como os pontos",
+      "titleMuted": "são calculados",
+      "matchTitle": "Por Jogo",
+      "preCupTitle": "Pré-Copa",
+      "phaseMultiplier": "Multiplicado por fase: Grupos ×1 · Oitavas ×1.25 · Quartas ×1.5 · Semifinal ×1.75 · Final ×3",
+      "preCupNote": "Vergonha e Surpresa usam o índice FIFA × fator de fase para critérios de desempate",
+      "match": {
+        "exact": { "label": "Placar exato", "pts": "5 pts", "sub": "ex: palpite 2×1, result. 2×1" },
+        "diff": { "label": "Vencedor + saldo de gols", "pts": "3 pts", "sub": "ex: palpite 2×0, result. 3×1" },
+        "winner": { "label": "Apenas vencedor", "pts": "1 pt", "sub": "ex: palpite 1×0, result. 2×0" },
+        "wrong": { "label": "Erro total", "pts": "0 pts", "sub": "que pena" }
+      },
+      "preCup": {
+        "champion": { "label": "Acertar o campeão", "pts": "200 pts", "sub": "escolha quem levanta a taça" },
+        "shame": { "label": "Acertar a vergonha", "pts": "100 pts", "sub": "time do top-14 eliminado mais cedo" },
+        "surprise": { "label": "Acertar a surpresa", "pts": "100 pts", "sub": "zebra que chegar mais longe" }
+      }
+    },
+    "finalCta": {
+      "title": "Pronto para",
+      "titleHighlight": "vencer o bolão?",
+      "subtitle": "Convide seus colegas e amigos, dê seus palpites e descubra quem é o maior especialista em futebol do escritório."
+    }
+  },
+  "dashboard": {
+    "title": "Bem-vindo ao Bolão Copa 2026",
+    "countdown": "A Copa começa em",
+    "yourRank": "Sua posição",
+    "totalPoints": "Total de pontos",
+    "predictions": "Palpites feitos"
+  },
+  "jogos": {
+    "title": "Jogos",
+    "predictScore": "Seu palpite",
+    "saveAll": "Salvar todos",
+    "locked": "Jogo começou",
+    "noMatches": "Nenhum jogo encontrado"
+  },
+  "preCopa": {
+    "title": "Pré-Copa",
+    "champion": "Campeão",
+    "shame": "Vergonha",
+    "surprise": "Surpresa",
+    "save": "Salvar palpites",
+    "locked": "Palpites encerrados"
+  },
+  "leaderboard": {
+    "title": "Classificação",
+    "rank": "Pos.",
+    "player": "Jogador",
+    "points": "Pts",
+    "export": "Exportar CSV"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "email": "E-mail",
+    "password": "Senha",
+    "name": "Nome",
+    "logout": "Sair"
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "loading": "Carregando...",
+    "error": "Algo deu errado",
+    "league": "Liga",
+    "switchLanguage": "Trocar idioma"
+  }
+}
