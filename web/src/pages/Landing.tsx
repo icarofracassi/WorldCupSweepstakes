@@ -220,10 +220,10 @@ export default function Landing() {
   ];
 
   const matchPoints = [
-    { label: t("landing.scoring.match.exact.label"), pts: t("landing.scoring.match.exact.pts"), color: "text-green-400", sub: t("landing.scoring.match.exact.sub") },
-    { label: t("landing.scoring.match.diff.label"), pts: t("landing.scoring.match.diff.pts"), color: "text-[#f5c842]", sub: t("landing.scoring.match.diff.sub") },
-    { label: t("landing.scoring.match.winner.label"), pts: t("landing.scoring.match.winner.pts"), color: "text-blue-400", sub: t("landing.scoring.match.winner.sub") },
-    { label: t("landing.scoring.match.wrong.label"), pts: t("landing.scoring.match.wrong.pts"), color: "text-white/20", sub: t("landing.scoring.match.wrong.sub") },
+    { id: "exact", label: t("landing.scoring.match.exact.label"), pts: t("landing.scoring.match.exact.pts"), color: "text-green-400", sub: t("landing.scoring.match.exact.sub") },
+    { id: "diff", label: t("landing.scoring.match.diff.label"), pts: t("landing.scoring.match.diff.pts"), color: "text-[#f5c842]", sub: t("landing.scoring.match.diff.sub") },
+    { id: "winner", label: t("landing.scoring.match.winner.label"), pts: t("landing.scoring.match.winner.pts"), color: "text-blue-400", sub: t("landing.scoring.match.winner.sub") },
+    { id: "wrong", label: t("landing.scoring.match.wrong.label"), pts: t("landing.scoring.match.wrong.pts"), color: "text-white/20", sub: t("landing.scoring.match.wrong.sub") },
   ];
 
   const preCupPoints = [
@@ -405,7 +405,7 @@ export default function Landing() {
             className="bg-white/[0.03] border border-white/8 rounded-2xl p-6 space-y-4">
             <div className="text-sm font-black text-white/60 uppercase tracking-wider">{t("landing.scoring.matchTitle")}</div>
             {matchPoints.map((r) => (
-              <div key={r.label} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+              <div key={r.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <div>
                   <div className="text-sm font-semibold text-white/70">{r.label}</div>
                   <div className="text-xs text-white/25">{r.sub}</div>
