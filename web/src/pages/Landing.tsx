@@ -360,8 +360,8 @@ export default function Landing() {
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {features.map((feature) => (
-            <FeatureCard key={feature.title} {...feature} />
+          {features.map((feature, index) => (
+            <FeatureCard key={index} {...feature} />
           ))}
         </div>
       </section>
