@@ -227,9 +227,9 @@ export default function Landing() {
   ];
 
   const preCupPoints = [
-    { icon: "🏆", label: t("landing.scoring.preCup.champion.label"), pts: t("landing.scoring.preCup.champion.pts"), color: "text-[#f5c842]", sub: t("landing.scoring.preCup.champion.sub") },
-    { icon: "😳", label: t("landing.scoring.preCup.shame.label"), pts: t("landing.scoring.preCup.shame.pts"), color: "text-red-400", sub: t("landing.scoring.preCup.shame.sub") },
-    { icon: "⭐", label: t("landing.scoring.preCup.surprise.label"), pts: t("landing.scoring.preCup.surprise.pts"), color: "text-blue-400", sub: t("landing.scoring.preCup.surprise.sub") },
+    { id: "champion", icon: "🏆", label: t("landing.scoring.preCup.champion.label"), pts: t("landing.scoring.preCup.champion.pts"), color: "text-[#f5c842]", sub: t("landing.scoring.preCup.champion.sub") },
+    { id: "shame", icon: "😳", label: t("landing.scoring.preCup.shame.label"), pts: t("landing.scoring.preCup.shame.pts"), color: "text-red-400", sub: t("landing.scoring.preCup.shame.sub") },
+    { id: "surprise", icon: "⭐", label: t("landing.scoring.preCup.surprise.label"), pts: t("landing.scoring.preCup.surprise.pts"), color: "text-blue-400", sub: t("landing.scoring.preCup.surprise.sub") },
   ];
 
   return (
@@ -423,7 +423,7 @@ export default function Landing() {
             className="bg-white/[0.03] border border-white/8 rounded-2xl p-6 space-y-4">
             <div className="text-sm font-black text-white/60 uppercase tracking-wider">{t("landing.scoring.preCupTitle")}</div>
             {preCupPoints.map((r) => (
-              <div key={r.label} className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0">
+              <div key={r.id} className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0">
                 <span className="text-2xl">{r.icon}</span>
                 <div className="flex-1">
                   <div className="text-sm font-semibold text-white/70">{r.label}</div>
