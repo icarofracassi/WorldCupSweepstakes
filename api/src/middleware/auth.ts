@@ -18,7 +18,7 @@ export interface AuthRequest extends Request {
   isAdmin?: boolean;
 }
 
-export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+export async function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
     return res.status(401).json({ error: "No token provided" });
@@ -31,23 +31,21 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
       tokenVersion?: number;
     };
 
-    prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: payload.userId },
       select: { tokenVersion: true, isAdmin: true },
-    }).then((user) => {
-      if (!user) return res.status(401).json({ error: "Invalid token" });
-
-      const payloadTokenVersion = payload.tokenVersion ?? 0;
-      if (payloadTokenVersion !== user.tokenVersion) {
-        return res.status(401).json({ error: "Session expired" });
-      }
-
-      req.userId = payload.userId;
-      req.isAdmin = user.isAdmin;
-      next();
-    }).catch(() => {
-      res.status(401).json({ error: "Invalid token" });
     });
+
+    if (!user) return res.status(401).json({ error: "Invalid token" });
+
+    const payloadTokenVersion = payload.tokenVersion ?? 0;
+    if (payloadTokenVersion !== user.tokenVersion) {
+      return res.status(401).json({ error: "Session expired" });
+    }
+
+    req.userId = payload.userId;
+    req.isAdmin = user.isAdmin;
+    next();
   } catch {
     res.status(401).json({ error: "Invalid token" });
   }

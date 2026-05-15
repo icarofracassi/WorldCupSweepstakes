@@ -36,7 +36,7 @@ export default function ForgotPassword() {
               Digite seu email e enviaremos um link para redefinir sua senha.
             </p>
             <label htmlFor="forgot-email" className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">
-              Email
+              Endereço de email
             </label>
             <input
               id="forgot-email"

@@ -32,7 +32,7 @@ export default function ResetPassword() {
           Nova senha
         </h1>
         <label htmlFor="new-password" className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">
-          Nova senha
+          Digite sua nova senha
         </label>
         <input
           id="new-password"
