@@ -1,4 +1,5 @@
 import axios from "axios";
+import { history } from '../utils/history';
 
 export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || "/api" });
 
@@ -12,9 +13,8 @@ api.interceptors.response.use(
   (r) => r,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      localStorage.clear();
+      history.push("/login");
     }
     return Promise.reject(err);
   }
@@ -23,10 +23,17 @@ api.interceptors.response.use(
 // Auth
 export const login = (email: string, password: string) =>
   api.post("/auth/login", { email, password }).then((r) => r.data);
+
 export const register = (name: string, email: string, password: string) =>
   api.post("/auth/register", { name, email, password }).then((r) => r.data);
+
 export const getMe = () => api.get("/auth/me").then((r) => r.data);
 
+export const forgotPassword = (email: string) =>
+  api.post('/auth/forgot-password', { email });
+
+export const resetPassword = (token: string, newPassword: string) =>
+  api.post('/auth/reset-password', { token, newPassword });
 // Teams
 export const getTeams = () => api.get("/teams").then((r) => r.data);
 

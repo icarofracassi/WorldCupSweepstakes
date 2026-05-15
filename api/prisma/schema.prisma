@@ -28,6 +28,7 @@ model User {
   preCupPick   PreCupPick?
   leagues      League[]     @relation("LeagueMember")
   createdLeagues League[]   @relation("LeagueCreator")
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Team {
@@ -94,4 +95,14 @@ model PreCupPick {
   surpriseTeamId Int
   pointsEarned   Float     @default(0)
   lockedAt       DateTime?
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }

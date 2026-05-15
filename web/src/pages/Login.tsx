@@ -108,6 +108,11 @@ export default function Login() {
               Cadastre-se
             </Link>
           </p>
+          <p className="text-center text-sm text-white/20 mt-6">
+            <Link to="/forgot-password" className="text-[#f5c842] font-semibold hover:text-yellow-300 transition">
+                Esqueci minha senha
+            </Link>
+          </p>
         </div>
 
         <p className="text-center text-white/10 text-xs mt-8">
