@@ -8,6 +8,8 @@ import preCupRoutes from "./routes/preCup";
 import leaderboardRoutes from "./routes/leaderboard";
 import syncRoutes from "./routes/sync";
 import leaguesRoutes from "./routes/leagues";
+import passwordResetRouter from './routes/passwordReset';
+
 
 const app = express();
 
@@ -24,6 +26,7 @@ app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
+app.use('/api/auth', passwordResetRouter);
 app.use("/api/auth", authRoutes);
 app.use("/api/teams", teamsRoutes);
 app.use("/api/matches", matchesRoutes);

@@ -2,6 +2,8 @@ import { lazy, Suspense, type ReactNode } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LeagueProvider } from "./context/LeagueContext";
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const Layout = lazy(() => import("./components/Layout"));
 const Landing = lazy(() => import("./pages/Landing"));
@@ -55,6 +57,8 @@ export default function App() {
             <Route path="/placar" element={<PrivateRoute><Leaderboard /></PrivateRoute>} />
             <Route path="/palpites" element={<PrivateRoute><Palpites /></PrivateRoute>} />
             <Route path="/liga" element={<PrivateRoute><Liga /></PrivateRoute>} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin" element={<PrivateRoute><AdminRoute><Admin /></AdminRoute></PrivateRoute>} />
           </Routes>
         </Suspense>
