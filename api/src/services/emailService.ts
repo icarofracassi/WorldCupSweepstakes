@@ -1,12 +1,13 @@
 import nodemailer from 'nodemailer';
 
 function escapeHtml(value: string) {
-  return value
+  const escaped = value
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+  return escaped;
 }
 
 const transporter = nodemailer.createTransport({

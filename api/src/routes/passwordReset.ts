@@ -47,26 +47,31 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     return res.status(400).json({ error: 'Dados inválidos.' });
   }
 
-  const passwordHash = await bcrypt.hash(newPassword, 10);
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
   const now = new Date();
 
+  const tokenRecord = await prisma.passwordResetToken.findFirst({
+    where: {
+      token: tokenHash,
+      used: false,
+      expiresAt: { gt: now },
+    },
+    select: { id: true, userId: true },
+  });
+
+  if (!tokenRecord) {
+    return res.status(400).json({ error: 'Link inválido ou expirado.' });
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
   const resetApplied = await prisma.$transaction(async (tx) => {
-    const record = await tx.passwordResetToken.findFirst({
+    const consumed = await tx.passwordResetToken.updateMany({
       where: {
+        id: tokenRecord.id,
         token: tokenHash,
         used: false,
         expiresAt: { gt: now },
-      },
-      select: { id: true, userId: true },
-    });
-
-    if (!record) return false;
-
-    const consumed = await tx.passwordResetToken.updateMany({
-      where: {
-        id: record.id,
-        used: false,
       },
       data: { used: true },
     });
@@ -74,7 +79,7 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     if (consumed.count !== 1) return false;
 
     await tx.user.update({
-      where: { id: record.userId },
+      where: { id: tokenRecord.userId },
       data: {
         passwordHash,
         tokenVersion: { increment: 1 },
