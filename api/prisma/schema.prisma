@@ -18,16 +18,17 @@ model League {
 }
 
 model User {
-  id           Int          @id @default(autoincrement())
-  name         String
-  email        String       @unique
-  passwordHash String
-  isAdmin      Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  predictions  Prediction[]
-  preCupPick   PreCupPick?
-  leagues      League[]     @relation("LeagueMember")
-  createdLeagues League[]   @relation("LeagueCreator")
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  email               String               @unique
+  passwordHash        String
+  tokenVersion        Int                  @default(0)
+  isAdmin             Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  predictions         Prediction[]
+  preCupPick          PreCupPick?
+  leagues             League[]             @relation("LeagueMember")
+  createdLeagues      League[]             @relation("LeagueCreator")
   passwordResetTokens PasswordResetToken[]
 }
 

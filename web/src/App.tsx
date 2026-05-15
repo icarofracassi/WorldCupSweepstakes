@@ -2,8 +2,6 @@ import { lazy, Suspense, type ReactNode } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { LeagueProvider } from "./context/LeagueContext";
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
 
 const Layout = lazy(() => import("./components/Layout"));
 const Landing = lazy(() => import("./pages/Landing"));
@@ -17,6 +15,8 @@ const Admin = lazy(() => import("./pages/Admin"));
 const Palpites = lazy(() => import("./pages/Palpites"));
 const Liga = lazy(() => import("./pages/League"));
 const Invite = lazy(() => import("./pages/Invite"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 function LoadingFallback() {
   return (

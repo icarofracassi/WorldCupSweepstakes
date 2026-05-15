@@ -5,12 +5,19 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
     setLoading(true);
-    await forgotPassword(email);
-    setSent(true);
-    setLoading(false);
+    setError('');
+    try {
+      await forgotPassword(email);
+      setSent(true);
+    } catch {
+      setError('Não foi possível enviar agora. Tente novamente em instantes.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,13 +35,18 @@ export default function ForgotPassword() {
             <p className="text-white/60 mb-6">
               Digite seu email e enviaremos um link para redefinir sua senha.
             </p>
+            <label htmlFor="forgot-email" className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">
+              Email
+            </label>
             <input
+              id="forgot-email"
               type="email"
               placeholder="seu@email.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 mb-4 focus:outline-none focus:border-[#f5c842]"
             />
+            {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
             <button
               onClick={handleSubmit}
               disabled={loading || !email}

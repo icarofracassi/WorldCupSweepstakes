@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import rateLimit from 'express-rate-limit';
+import { prisma } from "../prisma";
 
 export const passwordResetLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -27,10 +28,26 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
       userId: number;
       isAdmin: boolean;
+      tokenVersion?: number;
     };
-    req.userId = payload.userId;
-    req.isAdmin = payload.isAdmin;
-    next();
+
+    prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { tokenVersion: true, isAdmin: true },
+    }).then((user) => {
+      if (!user) return res.status(401).json({ error: "Invalid token" });
+
+      const payloadTokenVersion = payload.tokenVersion ?? 0;
+      if (payloadTokenVersion !== user.tokenVersion) {
+        return res.status(401).json({ error: "Session expired" });
+      }
+
+      req.userId = payload.userId;
+      req.isAdmin = user.isAdmin;
+      next();
+    }).catch(() => {
+      res.status(401).json({ error: "Invalid token" });
+    });
   } catch {
     res.status(401).json({ error: "Invalid token" });
   }
