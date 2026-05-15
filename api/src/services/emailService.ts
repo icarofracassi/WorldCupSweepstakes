@@ -26,6 +26,7 @@ export async function sendPasswordResetEmail(
 ) {
   const appUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173';
   const resetUrl = `${appUrl}/reset-password?token=${resetToken}`;
+  const safeResetUrl = escapeHtml(resetUrl);
   const safeUserName = escapeHtml(userName);
 
   await transporter.sendMail({
@@ -37,7 +38,7 @@ export async function sendPasswordResetEmail(
         <h2 style="color: #f5c842;">Bolão Copa 2026 ⚽</h2>
         <p>Olá, <strong>${safeUserName}</strong>!</p>
         <p>Recebemos uma solicitação para redefinir sua senha. Clique no botão abaixo:</p>
-        <a href="${resetUrl}"
+        <a href="${safeResetUrl}"
            style="display:inline-block; background:#f5c842; color:#0a0a0f; padding:12px 24px;
                   border-radius:8px; font-weight:700; text-decoration:none; margin: 16px 0;">
           Redefinir senha
