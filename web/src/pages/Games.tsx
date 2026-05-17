@@ -37,8 +37,6 @@ const FIFA_TO_ISO: Record<string, string> = {
 
 function getFlagCode(code: string): string { return FIFA_TO_ISO[code] ?? code; }
 
-function groupLabel(g: string): string { return "Grupo " + g.replace("GROUP_", ""); }
-
 function dayLabel(
   dateStr: string,
   labels: { today: string; tomorrow: string; yesterday: string },
@@ -87,6 +85,10 @@ export default function Jogos() {
   const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
   const [savingAll, setSavingAll] = useState(false);
   const [allSaved, setAllSaved] = useState(false);
+
+  const groupLabel = (g: string): string => {
+    return t("common.group", "Grupo {{letter}}", { letter: g.replace("GROUP_", "") });
+  };
 
   const { data: matches = [], isLoading } = useQuery<Match[]>({
     queryKey: ["matches", selectedPhase],
@@ -284,7 +286,7 @@ export default function Jogos() {
                         )}
                         {!match.groupName && (
                           <span className="text-[10px] font-black text-[#f5c842]/60 uppercase tracking-widest">
-                            {PHASE_LABELS[match.phase]}
+                            {t(PHASE_LABELS[match.phase])}
                           </span>
                         )}
                       </div>

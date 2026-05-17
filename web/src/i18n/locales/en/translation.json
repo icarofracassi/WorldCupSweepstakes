@@ -221,7 +221,8 @@
     "league": "League",
     "switchLanguage": "Switch language",
     "all": "All",
-    "backToLanding":"Back to the landing page"
+    "backToLanding":"Back to the landing page",
+    "group":"Group {{letter}}"
   },
   "login": {
     "title": "World Cup Pool 2026",

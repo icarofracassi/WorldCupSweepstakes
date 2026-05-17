@@ -221,7 +221,8 @@
     "league": "Liga",
     "switchLanguage": "Trocar idioma",
     "all": "Todos",
-    "backToLanding":"Voltar ao início"
+    "backToLanding":"Voltar ao início",
+    "group":"Grupo {{letter}}"
   },
   "login": {
     "title": "Bolão Copa 2026",
