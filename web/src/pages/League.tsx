@@ -6,6 +6,7 @@ import Flag from "react-world-flags";
 import { getLeague, getLeagueByCode, createLeague, joinLeague, leaveLeague, deleteLeague } from "../api/client";
 import { useLeague } from "../context/LeagueContext";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",DEN:"DK",POR:"PT",ESP:"ES",FRA:"FR",
@@ -36,7 +37,7 @@ interface LeagueDetail extends LeagueSummary {
   leaderboard: LeaderboardEntry[];
 }
 
-function CodeBadge({ code }: { code: string }) {
+function CodeBadge({ code, t }: { code: string; t: (key: string) => string }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   const copy = async () => {
     try {
@@ -52,19 +53,19 @@ function CodeBadge({ code }: { code: string }) {
       className="flex items-center gap-2 bg-white/5 border border-white/10 hover:border-white/25 rounded-xl px-4 py-2.5 transition group">
       <span className="font-mono font-black text-[#f5c842] tracking-widest text-lg">{code}</span>
       <span className="text-xs text-white/30 group-hover:text-white/60 transition ml-1">
-        {status === "copied" ? "✓ copiado!" : status === "error" ? "erro" : "copiar"}
+        {status === "copied" ? t("leaguePage.copied") : status === "error" ? t("leaguePage.error") : t("leaguePage.copy")}
       </span>
     </button>
   );
 }
 
-function ShareButton({ league }: { league: LeagueSummary }) {
+function ShareButton({ league, t }: { league: LeagueSummary; t: (key: string, options?: any) => string }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   const inviteUrl = `${window.location.origin}/convite/${league.code}`;
 
   const share = async () => {
     try {
-      const text = `Entre na liga ${league.name} no Bolão Copa 2026: ${inviteUrl}`;
+      const text = t("leaguePage.shareText", { league: league.name, url: inviteUrl });
       if (navigator.share) {
         await navigator.share({ title: league.name, text, url: inviteUrl });
         return;
@@ -81,7 +82,7 @@ function ShareButton({ league }: { league: LeagueSummary }) {
   return (
     <button onClick={share}
       className="px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-300 hover:bg-blue-500/15 text-xs font-bold transition">
-      {status === "copied" ? "Link copiado!" : status === "error" ? "Falha ao compartilhar" : "Compartilhar link"}
+      {status === "copied" ? t("leaguePage.linkCopied") : status === "error" ? t("leaguePage.shareFailed") : t("leaguePage.shareLink")}
     </button>
   );
 }
@@ -111,6 +112,7 @@ function LeagueCard({ league, isActive, onClick }: {
 }
 
 export default function Liga() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { leagues, activeLeague, setActiveLeague, refetch } = useLeague();
   const qc = useQueryClient();
@@ -150,7 +152,7 @@ export default function Liga() {
       setTab("overview");
       qc.invalidateQueries({ queryKey: ["league"] });
     },
-    onError: (err: any) => setJoinError(err.response?.data?.error ?? "Erro ao entrar"),
+    onError: (err: any) => setJoinError(err.response?.data?.error ?? t("leaguePage.joinError")),
   });
 
   const leaveMutation = useMutation({
@@ -171,7 +173,7 @@ export default function Liga() {
       qc.invalidateQueries({ queryKey: ["league"] });
       qc.invalidateQueries({ queryKey: ["leaderboard"] });
     },
-    onError: (err: any) => setJoinError(err.response?.data?.error ?? "Erro ao excluir liga"),
+    onError: (err: any) => setJoinError(err.response?.data?.error ?? t("leaguePage.deleteError")),
   });
 
   const previewCode = async () => {
@@ -181,7 +183,7 @@ export default function Liga() {
       const data = await getLeagueByCode(joinCode.toUpperCase().trim());
       setJoinPreview(data);
     } catch {
-      setJoinError("Liga não encontrada");
+      setJoinError(t("leaguePage.notFound"));
       setJoinPreview(null);
     }
   };
@@ -204,21 +206,21 @@ export default function Liga() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-black text-white">🏟️ Ligas</h1>
-        <p className="text-white/30 text-sm mt-0.5">Crie ou entre em uma liga com seus amigos do escritório</p>
+        <h1 className="text-2xl font-black text-white">{t("leaguePage.title")}</h1>
+        <p className="text-white/30 text-sm mt-0.5">{t("leaguePage.subtitle")}</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
         {/* Left: my leagues */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold text-white/30 uppercase tracking-widest">Minhas Ligas</h2>
+            <h2 className="text-xs font-bold text-white/30 uppercase tracking-widest">{t("leaguePage.myLeagues")}</h2>
             <span className="text-xs text-white/20">{leagues.length}/5</span>
           </div>
 
           {leagues.length === 0 ? (
             <div className="bg-white/[0.02] border border-white/6 border-dashed rounded-2xl p-6 text-center text-white/20 text-sm">
-              Nenhuma liga ainda.<br />Crie ou entre em uma!
+              {t("leaguePage.noLeagues")}
             </div>
           ) : (
             leagues.map((l) => (
@@ -232,13 +234,13 @@ export default function Liga() {
               className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${
                 tab === "create" ? "bg-[#f5c842]/10 border-[#f5c842]/30 text-[#f5c842]" : "bg-white/[0.03] border-white/8 text-white/40 hover:text-white"
               }`}>
-              + Criar
+               {t("leaguePage.create")}
             </button>
             <button onClick={() => setTab("join")}
               className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${
                 tab === "join" ? "bg-blue-500/10 border-blue-500/30 text-blue-400" : "bg-white/[0.03] border-white/8 text-white/40 hover:text-white"
               }`}>
-              → Entrar
+               {t("leaguePage.join")}
             </button>
           </div>
         </div>
@@ -252,24 +254,24 @@ export default function Liga() {
               <motion.div key="create" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
                 className="bg-white/[0.03] border border-white/8 rounded-2xl p-6 space-y-5">
                 <div>
-                  <h2 className="font-black text-white">Criar Nova Liga</h2>
-                  <p className="text-white/30 text-xs mt-0.5">Um código de convite será gerado automaticamente</p>
+                   <h2 className="font-black text-white">{t("leaguePage.createNewLeague")}</h2>
+                   <p className="text-white/30 text-xs mt-0.5">{t("leaguePage.createHint")}</p>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest block mb-2">Nome da Liga</label>
+                   <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest block mb-2">{t("leaguePage.leagueName")}</label>
                   <input value={newName} onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Ex: Bolão do RH, Turma da TI..."
+                    placeholder={t("leaguePage.leagueNamePlaceholder")}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-white/30 transition" />
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => createMutation.mutate()}
                     disabled={!newName.trim() || createMutation.isPending}
                     className="flex-1 py-3 bg-gradient-to-r from-[#f5c842] to-[#e8a020] text-black font-black text-sm rounded-xl disabled:opacity-40 transition">
-                    {createMutation.isPending ? "Criando..." : "Criar Liga"}
+                    {createMutation.isPending ? t("leaguePage.creating") : t("leaguePage.createLeague")}
                   </button>
                   <button onClick={() => setTab("overview")}
                     className="px-4 py-3 bg-white/5 border border-white/10 text-white/40 hover:text-white rounded-xl text-sm font-semibold transition">
-                    Cancelar
+                     {t("common.cancel")}
                   </button>
                 </div>
               </motion.div>
@@ -280,18 +282,18 @@ export default function Liga() {
               <motion.div key="join" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
                 className="bg-white/[0.03] border border-white/8 rounded-2xl p-6 space-y-5">
                 <div>
-                  <h2 className="font-black text-white">Entrar em uma Liga</h2>
-                  <p className="text-white/30 text-xs mt-0.5">Digite o código de 6 letras compartilhado pelo criador da liga</p>
+                   <h2 className="font-black text-white">{t("leaguePage.joinLeagueTitle")}</h2>
+                   <p className="text-white/30 text-xs mt-0.5">{t("leaguePage.joinLeagueHint")}</p>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest block mb-2">Código de Convite</label>
+                   <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest block mb-2">{t("leaguePage.inviteCode")}</label>
                   <div className="flex gap-2">
                     <input value={joinCode} onChange={(e) => { setJoinCode(e.target.value.toUpperCase()); setJoinPreview(null); setJoinError(""); }}
                       maxLength={6} placeholder="ABCD12"
                       className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono font-bold text-lg placeholder-white/15 tracking-widest focus:outline-none focus:border-white/30 transition uppercase" />
                     <button onClick={previewCode} disabled={joinCode.length < 6}
                       className="px-4 py-3 bg-white/5 border border-white/10 text-white/50 hover:text-white rounded-xl text-sm font-semibold transition disabled:opacity-30">
-                      Buscar
+                       {t("leaguePage.search")}
                     </button>
                   </div>
                   {joinError && <p className="text-red-400 text-xs mt-2">{joinError}</p>}
@@ -301,7 +303,7 @@ export default function Liga() {
                   <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                     className="bg-blue-500/8 border border-blue-500/20 rounded-xl p-4">
                     <div className="font-black text-white">{joinPreview.name}</div>
-                    <div className="text-xs text-white/40 mt-0.5">{joinPreview._count.members} participante{joinPreview._count.members !== 1 ? "s" : ""} · criada por {joinPreview.createdBy?.name}</div>
+                     <div className="text-xs text-white/40 mt-0.5">{t("leaguePage.joinPreview", { count: joinPreview._count.members, owner: joinPreview.createdBy?.name })}</div>
                   </motion.div>
                 )}
 
@@ -309,11 +311,11 @@ export default function Liga() {
                   <button onClick={() => joinMutation.mutate()}
                     disabled={joinCode.length < 6 || joinMutation.isPending}
                     className="flex-1 py-3 bg-blue-500/15 border border-blue-500/30 text-blue-300 hover:bg-blue-500/25 font-black text-sm rounded-xl disabled:opacity-40 transition">
-                    {joinMutation.isPending ? "Entrando..." : "Entrar na Liga"}
+                    {joinMutation.isPending ? t("leaguePage.joining") : t("leaguePage.joinLeague")}
                   </button>
                   <button onClick={() => setTab("overview")}
                     className="px-4 py-3 bg-white/5 border border-white/10 text-white/40 hover:text-white rounded-xl text-sm font-semibold transition">
-                    Cancelar
+                     {t("common.cancel")}
                   </button>
                 </div>
               </motion.div>
@@ -325,8 +327,8 @@ export default function Liga() {
                 {!activeLeague ? (
                   <div className="bg-white/[0.02] border border-white/6 border-dashed rounded-2xl p-12 text-center space-y-3">
                     <div className="text-4xl">🏟️</div>
-                    <div className="text-white/40 font-semibold">Selecione uma liga ou crie uma nova</div>
-                    <div className="text-white/20 text-xs">As ligas isolam o placar e os palpites entre grupos de amigos</div>
+                     <div className="text-white/40 font-semibold">{t("leaguePage.selectLeague")}</div>
+                     <div className="text-white/20 text-xs">{t("leaguePage.selectLeagueHint")}</div>
                   </div>
                 ) : (
                   <div className="space-y-5">
@@ -338,18 +340,18 @@ export default function Liga() {
                           <div className="text-white/30 text-xs mt-1">{activeLeague._count.members} participantes</div>
                         </div>
                         <div className="space-y-2">
-                          <div className="text-[10px] text-white/30 uppercase tracking-widest">Código de convite</div>
-                          <CodeBadge code={activeLeague.code} />
+                           <div className="text-[10px] text-white/30 uppercase tracking-widest">{t("leaguePage.inviteCode")}</div>
+                           <CodeBadge code={activeLeague.code} t={t} />
                         </div>
                       </div>
 
                       <div className="mt-4 flex items-center gap-3 flex-wrap">
-                        <ShareButton league={activeLeague} />
+                         <ShareButton league={activeLeague} t={t} />
                         {activeLeague.createdById !== user?.id && (
                           <button onClick={() => leaveMutation.mutate(activeLeague.id)}
                             disabled={leaveMutation.isPending}
                             className="text-xs text-red-400/50 hover:text-red-400 transition font-semibold">
-                            {leaveMutation.isPending ? "Saindo..." : "Sair desta liga"}
+                            {leaveMutation.isPending ? t("leaguePage.leaving") : t("leaguePage.leaveLeague")}
                           </button>
                         )}
                         {activeLeague.createdById === user?.id && (
@@ -358,17 +360,17 @@ export default function Liga() {
                               <button onClick={() => deleteMutation.mutate(activeLeague.id)}
                                 disabled={deleteMutation.isPending}
                                 className="px-3 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500/25 text-xs font-bold transition disabled:opacity-40">
-                                {deleteMutation.isPending ? "Excluindo..." : "Confirmar exclusão"}
+                                {deleteMutation.isPending ? t("leaguePage.deleting") : t("leaguePage.confirmDelete")}
                               </button>
                               <button onClick={() => setDeleteConfirm(false)}
                                 className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white text-xs font-bold transition">
-                                Cancelar
+                                 {t("common.cancel")}
                               </button>
                             </div>
                           ) : (
                             <button onClick={() => setDeleteConfirm(true)}
                               className="text-xs text-red-400/50 hover:text-red-400 transition font-semibold">
-                              Excluir liga
+                               {t("leaguePage.deleteLeague")}
                             </button>
                           )
                         )}
@@ -377,11 +379,11 @@ export default function Liga() {
 
                     {/* Leaderboard */}
                     <div>
-                      <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">Placar da Liga</h3>
+                       <h3 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">{t("leaguePage.leagueLeaderboard")}</h3>
                       {!leagueDetail ? (
-                        <div className="text-white/20 text-sm text-center py-8 animate-pulse">Carregando...</div>
+                         <div className="text-white/20 text-sm text-center py-8 animate-pulse">{t("common.loading")}</div>
                       ) : leagueDetail.leaderboard.length === 0 ? (
-                        <div className="text-white/15 text-sm text-center py-8">Nenhum participante com pontos ainda</div>
+                         <div className="text-white/15 text-sm text-center py-8">{t("leaguePage.noScoredParticipants")}</div>
                       ) : (
                         <div className="bg-white/[0.02] border border-white/6 rounded-2xl overflow-hidden">
                           {leagueDetail.leaderboard.map((entry) => {
@@ -397,7 +399,7 @@ export default function Liga() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className={`text-sm font-bold truncate ${isMe ? "text-[#f5c842]" : "text-white/70"}`}>
-                                    {entry.name} {isMe && <span className="text-[10px] opacity-50">você</span>}
+                                     {entry.name} {isMe && <span className="text-[10px] opacity-50">{t("leaderboardPage.you")}</span>}
                                   </div>
                                   {entry.preCupPick ? (
                                     <div className="flex items-center gap-1 mt-0.5">
@@ -408,7 +410,7 @@ export default function Liga() {
                                       <span className="text-[10px] text-white/20">{entry.preCupPick.champion.name}</span>
                                     </div>
                                   ) : (
-                                    <span className="text-[10px] text-orange-400/50">sem pré-copa</span>
+                                     <span className="text-[10px] text-orange-400/50">{t("leaderboardPage.noPreCup")}</span>
                                   )}
                                 </div>
                                 <div className="text-right">

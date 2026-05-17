@@ -6,6 +6,7 @@ import { exportLeaderboardCsv, getLeaderboard } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { useLeague } from "../context/LeagueContext";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",DEN:"DK",POR:"PT",ESP:"ES",FRA:"FR",
@@ -31,6 +32,7 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } 
 const row = { hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0 } };
 
 export default function Leaderboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { activeLeague, leagues } = useLeague();
   const [scope, setScope] = useState<number | "all">(activeLeague?.id ?? "all");
@@ -73,14 +75,14 @@ export default function Leaderboard() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       const details = error instanceof Error ? error.message : String(error);
-      console.error("Falha ao baixar o CSV do placar:", details);
+      console.error(t("leaderboardPage.csvError"), details);
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/20 animate-pulse">Carregando placar...</div>
+         <div className="text-white/20 animate-pulse">{t("leaderboardPage.loading")}</div>
       </div>
     );
   }
@@ -90,28 +92,28 @@ export default function Leaderboard() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-black text-white">🏆 Placar Geral</h1>
+           <h1 className="text-2xl font-black text-white">{t("leaderboardPage.title")}</h1>
           <div className="flex items-center gap-2 mt-1">
             {selectedLeague ? (
               <span className="text-xs bg-[#f5c842]/10 border border-[#f5c842]/20 text-[#f5c842] px-2.5 py-1 rounded-full font-bold">
                 🏟️ {selectedLeague.name}
               </span>
             ) : (
-              <span className="text-xs text-white/20">Todos os participantes</span>
+               <span className="text-xs text-white/20">{t("leaderboardPage.allParticipants")}</span>
             )}
-            <span className="text-white/15 text-xs">· {data.length} participantes · atualiza a cada 30s</span>
+             <span className="text-white/15 text-xs">{t("leaderboardPage.summary", { count: data.length })}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {leagues.length === 0 && (
             <Link to="/liga"
               className="text-xs bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 px-3 py-2 rounded-xl font-semibold transition">
-              + Criar liga
+               {t("leaderboardPage.createLeague")}
             </Link>
           )}
           <button onClick={downloadCsv}
             className="text-xs bg-white/5 border border-white/10 text-white/40 hover:text-white hover:border-white/30 px-4 py-2 rounded-xl font-semibold transition">
-            📥 CSV
+             {t("leaderboardPage.exportCsv")}
           </button>
         </div>
       </div>
@@ -124,7 +126,7 @@ export default function Leaderboard() {
               ? "bg-white text-black border-white"
               : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
           }`}>
-          Todos
+           {t("common.all")}
         </button>
         {leagues.map((league) => (
           <button key={league.id} onClick={() => chooseScope(league.id)}
@@ -143,11 +145,11 @@ export default function Leaderboard() {
         <div className="bg-orange-500/5 border border-orange-500/15 rounded-2xl p-4 flex items-center gap-4">
           <span className="text-2xl">🏟️</span>
           <div className="flex-1">
-            <div className="text-sm font-bold text-orange-300">Vendo todos os participantes</div>
-            <div className="text-xs text-orange-300/50">Crie uma liga para competir apenas com seu grupo</div>
+             <div className="text-sm font-bold text-orange-300">{t("leaderboardPage.viewingAllTitle")}</div>
+             <div className="text-xs text-orange-300/50">{t("leaderboardPage.viewingAllSubtitle")}</div>
           </div>
           <Link to="/liga" className="text-xs bg-orange-500/20 border border-orange-500/30 text-orange-300 px-3 py-2 rounded-xl font-bold hover:bg-orange-500/30 transition flex-shrink-0">
-            Criar liga →
+             {t("leaderboardPage.createLeagueLink")}
           </Link>
         </div>
       )}
@@ -184,7 +186,7 @@ export default function Leaderboard() {
       {/* Table */}
       {data.length === 0 ? (
         <div className="text-center py-16 text-white/15">
-          {selectedLeague ? "Nenhum participante nesta liga ainda." : "Nenhum participante ainda."}
+           {selectedLeague ? t("leaderboardPage.noParticipantsLeague") : t("leaderboardPage.noParticipants")}
         </div>
       ) : (
         <motion.div variants={container} initial="hidden" animate="show"
@@ -210,7 +212,7 @@ export default function Leaderboard() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className={`text-sm font-bold truncate ${isMe ? "text-[#f5c842]" : "text-white/80"}`}>{entry.name}</span>
-                    {isMe && <span className="text-[10px] text-[#f5c842]/50 font-bold">você</span>}
+                     {isMe && <span className="text-[10px] text-[#f5c842]/50 font-bold">{t("leaderboardPage.you")}</span>}
                   </div>
                   {entry.preCupPick ? (
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -221,7 +223,7 @@ export default function Leaderboard() {
                       <span className="text-[10px] text-white/25">{entry.preCupPick.champion.name}</span>
                     </div>
                   ) : (
-                    <span className="text-[10px] text-orange-400/50">sem pré-copa</span>
+                     <span className="text-[10px] text-orange-400/50">{t("leaderboardPage.noPreCup")}</span>
                   )}
                 </div>
                 <div className="text-right hidden sm:block">

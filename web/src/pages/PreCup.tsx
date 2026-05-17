@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { getTeams, getMyPreCup, submitPreCup } from "../api/client";
 import { TeamPicker } from "../components/TeamPicker";
+import { useTranslation } from "react-i18next";
 
 interface Team { id: number; name: string; code: string; fifaRanking: number; isTop14: boolean; }
 
 export default function PreCopa() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { data: teams = [] } = useQuery<Team[]>({ queryKey: ["teams"], queryFn: getTeams });
   const { data: existing } = useQuery({ queryKey: ["my-precup"], queryFn: getMyPreCup });
@@ -45,16 +47,16 @@ export default function PreCopa() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white">🎯 Palpites Pré-Copa</h1>
-        <p className="text-white/30 text-sm mt-1">Faça suas escolhas antes da Copa começar — valem pontos extras!</p>
+        <h1 className="text-2xl font-black text-white">{t("preCupPage.title")}</h1>
+        <p className="text-white/30 text-sm mt-1">{t("preCupPage.subtitle")}</p>
       </div>
 
       {/* Points cards */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { pts: "200", label: "Campeão", sub: "acertar o vencedor", color: "from-yellow-500/20 to-yellow-600/5 border-yellow-500/30 text-yellow-400" },
-          { pts: "100", label: "Vergonha", sub: "menor índice top-14", color: "from-red-500/20 to-red-600/5 border-red-500/30 text-red-400" },
-          { pts: "100", label: "Surpresa", sub: "maior índice fora-14", color: "from-blue-500/20 to-blue-600/5 border-blue-500/30 text-blue-400" },
+          { pts: "200", label: t("preCupPage.cards.champion"), sub: t("preCupPage.cards.championSub"), color: "from-yellow-500/20 to-yellow-600/5 border-yellow-500/30 text-yellow-400" },
+          { pts: "100", label: t("preCupPage.cards.shame"), sub: t("preCupPage.cards.shameSub"), color: "from-red-500/20 to-red-600/5 border-red-500/30 text-red-400" },
+          { pts: "100", label: t("preCupPage.cards.surprise"), sub: t("preCupPage.cards.surpriseSub"), color: "from-blue-500/20 to-blue-600/5 border-blue-500/30 text-blue-400" },
         ].map((c) => (
           <div key={c.label} className={`bg-gradient-to-b ${c.color} border rounded-2xl p-4 text-center`}>
             <div className="text-2xl font-black">{c.pts} pts</div>
@@ -67,27 +69,27 @@ export default function PreCopa() {
       {/* Pickers */}
       <div className="space-y-4">
         <TeamPicker
-          label="Campeão da Copa"
+          label={t("preCupPage.pickers.championLabel")}
           emoji="🏆"
-          description="Quem vai levantar a taça? Vale 200 pontos!"
+          description={t("preCupPage.pickers.championDesc")}
           value={championId}
           onChange={setChampionId}
           options={teams}
           accent="border-yellow-500/20"
         />
         <TeamPicker
-          label="Vergonha da Copa"
+          label={t("preCupPage.pickers.shameLabel")}
           emoji="😳"
-          description="Qual top-14 vai cair mais cedo? Menor índice = maior vergonha"
+          description={t("preCupPage.pickers.shameDesc")}
           value={shameTeamId}
           onChange={setShameTeamId}
           options={top14}
           accent="border-red-500/20"
         />
         <TeamPicker
-          label="Surpresa da Copa"
+          label={t("preCupPage.pickers.surpriseLabel")}
           emoji="⭐"
-          description="Qual zebra vai ir mais longe? Maior índice = maior surpresa"
+          description={t("preCupPage.pickers.surpriseDesc")}
           value={surpriseTeamId}
           onChange={setSurpriseTeamId}
           options={others}
@@ -97,9 +99,9 @@ export default function PreCopa() {
 
       {/* Index explanation */}
       <div className="bg-white/[0.02] border border-white/6 rounded-xl p-4 text-xs text-white/25 space-y-1.5">
-        <p className="font-bold text-white/35 text-sm">📐 Como funciona o índice?</p>
-        <p><span className="text-white/45">Vergonha:</span> ranking FIFA × fator da fase. Menor = mais vergonha. Ex: #1 cai nos grupos = 1×1 = 1.0</p>
-        <p><span className="text-white/45">Surpresa:</span> mesmo cálculo, mas ganha quem tiver o maior índice. Ex: #90 nas quartas = 90×3 = 270</p>
+         <p className="font-bold text-white/35 text-sm">{t("preCupPage.index.title")}</p>
+         <p><span className="text-white/45">{t("preCupPage.index.shameLabel")}</span> {t("preCupPage.index.shameText")}</p>
+         <p><span className="text-white/45">{t("preCupPage.index.surpriseLabel")}</span> {t("preCupPage.index.surpriseText")}</p>
         <div className="flex gap-3 flex-wrap pt-1">
           {[["Grupos","×1"],["16-avos","×2"],["Quartas","×3"],["Semi","×4"],["Campeão","×7"]].map(([l,v]) => (
             <span key={l} className="bg-white/5 px-2 py-0.5 rounded text-[10px]">{l} <span className="text-[#f5c842]/60">{v}</span></span>
@@ -121,16 +123,16 @@ export default function PreCopa() {
             : "bg-white/5 border border-white/8 text-white/20 cursor-not-allowed"
         }`}
       >
-        {mutation.isPending ? "Salvando..." : saved ? "✅ Palpites salvos!" : "Salvar Palpites Pré-Copa"}
+         {mutation.isPending ? t("preCupPage.saving") : saved ? t("preCupPage.saved") : t("preCupPage.save")}
       </motion.button>
 
       {mutation.isError && (
         <p className="text-red-400 text-center text-sm">
-          {(mutation.error as any)?.response?.data?.error ?? "Erro ao salvar"}
+           {(mutation.error as any)?.response?.data?.error ?? t("preCupPage.saveError")}
         </p>
       )}
       {existing && !saved && (
-        <p className="text-center text-white/15 text-xs">Você pode alterar seus palpites até a Copa começar.</p>
+         <p className="text-center text-white/15 text-xs">{t("preCupPage.editUntilStart")}</p>
       )}
     </div>
   );

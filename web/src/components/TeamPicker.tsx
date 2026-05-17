@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Flag from "react-world-flags";
+import { useTranslation } from "react-i18next";
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",
@@ -27,6 +28,7 @@ interface TeamPickerProps {
 }
 
 export function TeamPicker({ label, emoji, description, value, onChange, options, accent }: TeamPickerProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -77,7 +79,7 @@ export function TeamPicker({ label, emoji, description, value, onChange, options
             <span className="text-white/25 text-xs">#{selected.fifaRanking} FIFA</span>
           </>
         ) : (
-          <span className="text-white/25 text-sm flex-1">Selecione uma seleção...</span>
+            <span className="text-white/25 text-sm flex-1">{t("teamPicker.selectTeam")}</span>
         )}
         <span className="text-white/20 text-xs ml-auto">{open ? "▲" : "▼"}</span>
       </button>
@@ -92,14 +94,14 @@ export function TeamPicker({ label, emoji, description, value, onChange, options
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar seleção..."
+               placeholder={t("teamPicker.searchPlaceholder")}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm placeholder-white/25 focus:outline-none focus:border-white/30 transition"
             />
           </div>
           {/* Options */}
           <div className="max-h-56 overflow-y-auto">
             {filtered.length === 0 ? (
-              <div className="text-center py-4 text-white/20 text-sm">Nenhuma seleção encontrada</div>
+               <div className="text-center py-4 text-white/20 text-sm">{t("teamPicker.noResults")}</div>
             ) : (
               filtered.map((t) => (
                 <button key={t.id} type="button"

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PhaseOption {
   key: string;
@@ -13,6 +14,7 @@ interface PhasePickerProps {
 }
 
 export function PhasePicker({ value, onChange, options, placeholder = "Fase..." }: PhasePickerProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -69,7 +71,7 @@ export function PhasePicker({ value, onChange, options, placeholder = "Fase..." 
                onClick={() => { onChange(""); setOpen(false); }}
                className="w-full text-left px-4 py-2 text-xs text-white/30 hover:text-white/60 border-t border-white/5"
              >
-               Limpar seleção
+               {t("phasePicker.clearSelection")}
              </button>
             )}
           </div>

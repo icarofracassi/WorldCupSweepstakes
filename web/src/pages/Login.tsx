@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -21,7 +23,7 @@ export default function Login() {
       await login(email, password);
       navigate("/");
     } catch {
-      setError("Email ou senha inválidos");
+      setError(t("login.invalidCredentials"));
     } finally {
       setLoading(false);
     }
@@ -55,8 +57,8 @@ export default function Login() {
           >
             🏆
           </motion.div>
-          <h1 className="text-3xl font-black text-white tracking-tight">Bolão Copa 2026</h1>
-          <p className="text-white/30 mt-1 text-sm">Entre para fazer seus palpites</p>
+          <h1 className="text-3xl font-black text-white tracking-tight">{t("login.title")}</h1>
+          <p className="text-white/30 mt-1 text-sm">{t("login.subtitle")}</p>
         </div>
 
         {/* Card */}
@@ -77,11 +79,11 @@ export default function Login() {
                 animate={{ opacity: 1, x: 0 }}
                 className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl px-4 py-3 text-sm"
               >
-                Senha redefinida com sucesso. Faça login com sua nova senha.
+                {t("login.passwordResetSuccess")}
               </motion.div>
             )}
             <div>
-              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">Email</label>
+              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">{t("auth.email")}</label>
               <input
                 type="email"
                 value={email}
@@ -92,7 +94,7 @@ export default function Login() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">Senha</label>
+              <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">{t("auth.password")}</label>
               <input
                 type="password"
                 value={password}
@@ -109,19 +111,19 @@ export default function Login() {
               whileTap={{ scale: 0.99 }}
               className="w-full bg-gradient-to-r from-[#f5c842] to-[#e8a020] text-black font-black py-3.5 rounded-xl transition disabled:opacity-50 shadow-lg shadow-yellow-500/20 text-sm tracking-wide"
             >
-              {loading ? "Entrando..." : "Entrar"}
+              {loading ? t("login.loading") : t("auth.login")}
             </motion.button>
           </form>
 
           <p className="text-center text-sm text-white/20 mt-6">
-            Não tem conta?{" "}
+            {t("login.noAccount")}{" "}
             <Link to="/register" className="text-[#f5c842] font-semibold hover:text-yellow-300 transition">
-              Cadastre-se
+              {t("auth.register")}
             </Link>
           </p>
           <p className="text-center text-sm text-white/20 mt-6">
             <Link to="/forgot-password" className="text-[#f5c842] font-semibold hover:text-yellow-300 transition">
-                Esqueci minha senha
+                {t("login.forgotPassword")}
             </Link>
           </p>
         </div>

@@ -6,6 +6,7 @@ import { getMatches, getTeams, api } from "../api/client";
 import { TeamPicker } from '../components/TeamPicker';
 import { PhasePicker } from '../components/PhasePicker';
 import { DatePicker } from '../components/DatePicker';
+import { useTranslation } from "react-i18next";
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",DEN:"DK",POR:"PT",ESP:"ES",FRA:"FR",
@@ -119,6 +120,7 @@ function SyncCard({ icon, title, description, onRun, isPending, result, color }:
 }
 
 export default function Admin() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [tab, setTab] = useState<TabType>("matches");
   const [newMatch, setNewMatch] = useState({ teamAId: 0, teamBId: 0, phase: "group", matchDate: "" });
@@ -166,8 +168,8 @@ export default function Admin() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white">⚙️ Painel Admin</h1>
-        <p className="text-white/30 text-sm mt-0.5">Gerenciar jogos, resultados, times e sincronização</p>
+        <h1 className="text-2xl font-black text-white">{t("adminPage.title")}</h1>
+        <p className="text-white/30 text-sm mt-0.5">{t("adminPage.subtitle")}</p>
       </div>
 
       {/* Tabs */}
@@ -189,7 +191,7 @@ export default function Admin() {
 
           {/* CREATE MATCH TAB */}
           {tab === "matches" && (
-            <Section title="Novo Jogo">
+             <Section title={t("adminPage.newMatch")}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 
                 {/* Team A Picker */}
@@ -221,7 +223,7 @@ export default function Admin() {
                     options={PHASES} // Uses the PHASES array with multipliers
                     value={newMatch.phase}
                     onChange={(val) => setNewMatch((p) => ({ ...p, phase: val }))}
-                    placeholder="Selecione a fase..."
+                     placeholder={t("adminPage.selectPhase")}
                   />
                   <div className="text-white/20 text-[10px] mt-2">
                     O multiplicador de pontos será aplicado automaticamente.
@@ -245,12 +247,12 @@ export default function Admin() {
                   disabled={!newMatch.teamAId || !newMatch.teamBId || !newMatch.matchDate || createMatch.isPending}
                   className="px-8 py-3 rounded-xl font-bold"
                 >
-                  {createMatch.isPending ? "Criando..." : "Criar Jogo"}
+                   {createMatch.isPending ? t("adminPage.creatingMatch") : t("adminPage.createMatch")}
                 </Btn>
                 
                 {createMatch.isSuccess && (
                   <span className="text-green-400 text-sm font-bold animate-pulse">
-                    ✅ Jogo criado com sucesso!
+                     {t("adminPage.matchCreated")}
                   </span>
                 )}
               </div>
@@ -261,9 +263,9 @@ export default function Admin() {
           {tab === "results" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <h2 className="text-white font-black">Lançar Resultados</h2>
+                 <h2 className="text-white font-black">{t("adminPage.publishResults")}</h2>
                 <Btn variant="purple" onClick={() => finalizePreCup.mutate()} disabled={finalizePreCup.isPending}>
-                  🎯 {finalizePreCup.isPending ? "Finalizando..." : "Finalizar Pré-Copa"}
+                   🎯 {finalizePreCup.isPending ? t("adminPage.finalizing") : t("adminPage.finalizePreCup")}
                 </Btn>
               </div>
               {finalizePreCup.isSuccess && finalizePreCup.data && (
@@ -298,7 +300,7 @@ export default function Admin() {
                     </div>
                   </div>
                 ))}
-                {pendingMatches.length === 0 && <div className="text-center py-10 text-white/20 text-sm">Nenhum jogo pendente.</div>}
+                 {pendingMatches.length === 0 && <div className="text-center py-10 text-white/20 text-sm">{t("adminPage.noPendingMatches")}</div>}
               </div>
             </div>
           )}

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { getLeaderboard, getMyPredictions, getMyPreCup } from "../api/client";
+import { useTranslation } from "react-i18next";
 
 const CUP_START = new Date("2026-06-11T19:00:00Z");
 
@@ -55,6 +56,7 @@ const item = {
 };
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const countdown = useCountdown(CUP_START);
 
@@ -87,27 +89,27 @@ export default function Dashboard() {
         <div className="relative text-center">
           {countdown.started ? (
             <div>
-              <div className="text-[#f5c842] text-sm font-bold uppercase tracking-widest mb-2">🔴 Ao Vivo</div>
-              <div className="text-2xl font-black text-white">Copa do Mundo 2026 em andamento!</div>
+               <div className="text-[#f5c842] text-sm font-bold uppercase tracking-widest mb-2">{t("dashboard.liveBadge")}</div>
+               <div className="text-2xl font-black text-white">{t("dashboard.liveTitle")}</div>
             </div>
           ) : (
             <>
               <div className="text-white/30 text-xs uppercase tracking-widest mb-4 font-semibold">
-                México 🇲🇽 vs África do Sul 🇿🇦 · Abertura da Copa
+                 {t("dashboard.openingMatch")}
               </div>
               <div className="flex items-center justify-center gap-3 md:gap-6">
-                <CountdownUnit value={countdown.days} label="dias" />
+                 <CountdownUnit value={countdown.days} label={t("landing.countdown.days")} />
                 <div className="text-white/20 text-3xl font-black mb-4">:</div>
-                <CountdownUnit value={countdown.hours} label="horas" />
+                 <CountdownUnit value={countdown.hours} label={t("landing.countdown.hours")} />
                 <div className="text-white/20 text-3xl font-black mb-4">:</div>
-                <CountdownUnit value={countdown.minutes} label="min" />
+                 <CountdownUnit value={countdown.minutes} label={t("landing.countdown.minutes")} />
                 <div className="text-white/20 text-3xl font-black mb-4">:</div>
-                <CountdownUnit value={countdown.seconds} label="seg" />
+                 <CountdownUnit value={countdown.seconds} label={t("landing.countdown.seconds")} />
               </div>
               <div className="mt-4 text-[#f5c842] font-black text-lg tracking-tight">
                 FIFA World Cup 2026
               </div>
-              <div className="text-white/20 text-xs mt-1">11 Jun – 19 Jul · USA, Canada & Mexico</div>
+               <div className="text-white/20 text-xs mt-1">{t("dashboard.cupPeriod")}</div>
             </>
           )}
         </div>
@@ -116,10 +118,10 @@ export default function Dashboard() {
       {/* Stats grid */}
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: "Posição", value: myRank ? `#${myRank}` : "–", sub: `de ${leaderboard.length} participantes`, accent: "#f5c842" },
-          { label: "Pontos", value: me?.total ?? 0, sub: `${me?.matchPoints ?? 0} jogos + ${me?.preCupPoints ?? 0} pré`, accent: "#22c55e" },
-          { label: "Palpites", value: myPreds.length, sub: "jogos apostados", accent: "#3b82f6" },
-          { label: "Pré-Copa", value: preCup ? "✓" : "⚠️", sub: preCup ? "Picks feitos" : "Faltando!", accent: preCup ? "#22c55e" : "#f97316" },
+           { label: t("dashboard.stats.position"), value: myRank ? `#${myRank}` : "–", sub: t("dashboard.stats.ofParticipants", { count: leaderboard.length }), accent: "#f5c842" },
+           { label: t("dashboard.stats.points"), value: me?.total ?? 0, sub: t("dashboard.stats.pointsBreakdown", { match: me?.matchPoints ?? 0, preCup: me?.preCupPoints ?? 0 }), accent: "#22c55e" },
+           { label: t("dashboard.stats.predictions"), value: myPreds.length, sub: t("dashboard.stats.predictedMatches"), accent: "#3b82f6" },
+           { label: t("dashboard.stats.preCup"), value: preCup ? "✓" : "⚠️", sub: preCup ? t("dashboard.stats.preCupDone") : t("dashboard.stats.preCupMissing"), accent: preCup ? "#22c55e" : "#f97316" },
         ].map((stat) => (
           <motion.div key={stat.label} variants={item}
             className="bg-white/[0.03] border border-white/8 rounded-2xl p-4 hover:border-white/15 transition">
@@ -133,14 +135,14 @@ export default function Dashboard() {
       <div className="grid md:grid-cols-2 gap-6">
         {/* Alerts */}
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-3">
-          <h2 className="text-xs font-bold text-white/30 uppercase tracking-widest">Ações rápidas</h2>
+           <h2 className="text-xs font-bold text-white/30 uppercase tracking-widest">{t("dashboard.quickActions")}</h2>
           {!preCup && (
             <motion.div variants={item}>
               <Link to="/pre-copa" className="flex items-center gap-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl p-4 hover:bg-orange-500/15 transition group">
                 <div className="text-2xl">⚠️</div>
                 <div>
-                  <div className="font-bold text-orange-300 text-sm">Palpites pré-copa faltando!</div>
-                  <div className="text-xs text-orange-300/50">Escolha campeão, vergonha e surpresa</div>
+                   <div className="font-bold text-orange-300 text-sm">{t("dashboard.preCupAlertTitle")}</div>
+                   <div className="text-xs text-orange-300/50">{t("dashboard.preCupAlertSubtitle")}</div>
                 </div>
                 <div className="ml-auto text-orange-300/30 group-hover:text-orange-300 transition">→</div>
               </Link>
@@ -150,8 +152,8 @@ export default function Dashboard() {
             <Link to="/jogos" className="flex items-center gap-4 bg-white/[0.03] border border-white/8 rounded-2xl p-4 hover:border-white/20 transition group">
               <div className="text-2xl">⚽</div>
               <div>
-                <div className="font-bold text-white text-sm">Ver jogos</div>
-                <div className="text-xs text-white/30">Fazer e atualizar palpites</div>
+                 <div className="font-bold text-white text-sm">{t("dashboard.viewMatches")}</div>
+                 <div className="text-xs text-white/30">{t("dashboard.viewMatchesSubtitle")}</div>
               </div>
               <div className="ml-auto text-white/20 group-hover:text-white transition">→</div>
             </Link>
@@ -160,8 +162,8 @@ export default function Dashboard() {
             <Link to="/placar" className="flex items-center gap-4 bg-white/[0.03] border border-white/8 rounded-2xl p-4 hover:border-white/20 transition group">
               <div className="text-2xl">🏆</div>
               <div>
-                <div className="font-bold text-white text-sm">Ver placar completo</div>
-                <div className="text-xs text-white/30">Ranking de todos os participantes</div>
+                 <div className="font-bold text-white text-sm">{t("dashboard.viewLeaderboard")}</div>
+                 <div className="text-xs text-white/30">{t("dashboard.viewLeaderboardSubtitle")}</div>
               </div>
               <div className="ml-auto text-white/20 group-hover:text-white transition">→</div>
             </Link>
@@ -170,7 +172,7 @@ export default function Dashboard() {
 
         {/* Mini leaderboard */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <h2 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">Top 5</h2>
+           <h2 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3">{t("dashboard.top5")}</h2>
           <div className="bg-white/[0.03] border border-white/8 rounded-2xl overflow-hidden">
             {leaderboard.slice(0, 5).map((entry, i) => (
               <div key={entry.id}
@@ -182,10 +184,10 @@ export default function Dashboard() {
               </div>
             ))}
             {leaderboard.length === 0 && (
-              <div className="text-center py-8 text-white/20 text-sm">Nenhum participante ainda</div>
+               <div className="text-center py-8 text-white/20 text-sm">{t("dashboard.noParticipants")}</div>
             )}
           </div>
-          <Link to="/placar" className="block text-center text-xs text-white/20 hover:text-[#f5c842] transition mt-3">Ver placar completo →</Link>
+           <Link to="/placar" className="block text-center text-xs text-white/20 hover:text-[#f5c842] transition mt-3">{t("dashboard.viewLeaderboardLink")}</Link>
         </motion.div>
       </div>
     </div>

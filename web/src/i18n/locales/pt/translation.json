@@ -106,15 +106,43 @@
       "phaseMultiplier": "Multiplicado por fase: Grupos ×1 · Oitavas ×1.25 · Quartas ×1.5 · Semifinal ×1.75 · Final ×3",
       "preCupNote": "Vergonha e Surpresa usam o índice FIFA × fator de fase para critérios de desempate",
       "match": {
-        "exact": { "label": "Placar exato", "pts": "5 pts", "sub": "ex: palpite 2×1, result. 2×1" },
-        "diff": { "label": "Vencedor + saldo de gols", "pts": "3 pts", "sub": "ex: palpite 2×0, result. 3×1" },
-        "winner": { "label": "Apenas vencedor", "pts": "1 pt", "sub": "ex: palpite 1×0, result. 2×0" },
-        "wrong": { "label": "Erro total", "pts": "0 pts", "sub": "que pena" }
+        "exact": {
+          "label": "Placar exato",
+          "pts": "5 pts",
+          "sub": "ex: palpite 2×1, result. 2×1"
+        },
+        "diff": {
+          "label": "Vencedor + saldo de gols",
+          "pts": "3 pts",
+          "sub": "ex: palpite 2×0, result. 3×1"
+        },
+        "winner": {
+          "label": "Apenas vencedor",
+          "pts": "1 pt",
+          "sub": "ex: palpite 1×0, result. 2×0"
+        },
+        "wrong": {
+          "label": "Erro total",
+          "pts": "0 pts",
+          "sub": "que pena"
+        }
       },
       "preCup": {
-        "champion": { "label": "Acertar o campeão", "pts": "200 pts", "sub": "escolha quem levanta a taça" },
-        "shame": { "label": "Acertar a vergonha", "pts": "100 pts", "sub": "time do top-14 eliminado mais cedo" },
-        "surprise": { "label": "Acertar a surpresa", "pts": "100 pts", "sub": "zebra que chegar mais longe" }
+        "champion": {
+          "label": "Acertar o campeão",
+          "pts": "200 pts",
+          "sub": "escolha quem levanta a taça"
+        },
+        "shame": {
+          "label": "Acertar a vergonha",
+          "pts": "100 pts",
+          "sub": "time do top-14 eliminado mais cedo"
+        },
+        "surprise": {
+          "label": "Acertar a surpresa",
+          "pts": "100 pts",
+          "sub": "zebra que chegar mais longe"
+        }
       }
     },
     "finalCta": {
@@ -128,7 +156,32 @@
     "countdown": "A Copa começa em",
     "yourRank": "Sua posição",
     "totalPoints": "Total de pontos",
-    "predictions": "Palpites feitos"
+    "predictions": "Palpites feitos",
+    "liveBadge": "🔴 Ao Vivo",
+    "liveTitle": "Copa do Mundo 2026 em andamento!",
+    "openingMatch": "México 🇲🇽 vs África do Sul 🇿🇦 · Abertura da Copa",
+    "cupPeriod": "11 Jun – 19 Jul · USA, Canada & Mexico",
+    "quickActions": "Ações rápidas",
+    "preCupAlertTitle": "Palpites pré-copa faltando!",
+    "preCupAlertSubtitle": "Escolha campeão, vergonha e surpresa",
+    "viewMatches": "Ver jogos",
+    "viewMatchesSubtitle": "Fazer e atualizar palpites",
+    "viewLeaderboard": "Ver placar completo",
+    "viewLeaderboardSubtitle": "Ranking de todos os participantes",
+    "top5": "Top 5",
+    "noParticipants": "Nenhum participante ainda",
+    "viewLeaderboardLink": "Ver placar completo →",
+    "stats": {
+      "position": "Posição",
+      "ofParticipants": "de {{count}} participantes",
+      "points": "Pontos",
+      "pointsBreakdown": "{{match}} jogos + {{preCup}} pré",
+      "predictions": "Palpites",
+      "predictedMatches": "jogos apostados",
+      "preCup": "Pré-Copa",
+      "preCupDone": "Picks feitos",
+      "preCupMissing": "Faltando!"
+    }
   },
   "jogos": {
     "title": "Jogos",
@@ -166,6 +219,232 @@
     "loading": "Carregando...",
     "error": "Algo deu errado",
     "league": "Liga",
-    "switchLanguage": "Trocar idioma"
+    "switchLanguage": "Trocar idioma",
+    "all": "Todos"
+  },
+  "login": {
+    "title": "Bolão Copa 2026",
+    "subtitle": "Entre para fazer seus palpites",
+    "invalidCredentials": "Email ou senha inválidos",
+    "passwordResetSuccess": "Senha redefinida com sucesso. Faça login com sua nova senha.",
+    "loading": "Entrando...",
+    "noAccount": "Não tem conta?",
+    "forgotPassword": "Esqueci minha senha"
+  },
+  "forgotPassword": {
+    "title": "Recuperar senha",
+    "sentMessage": "Se este email estiver cadastrado, você receberá as instruções em breve. Verifique sua caixa de entrada.",
+    "description": "Digite seu email e enviaremos um link para redefinir sua senha.",
+    "emailLabel": "Endereço de email",
+    "sendError": "Não foi possível enviar agora. Tente novamente em instantes.",
+    "sending": "Enviando...",
+    "sendLink": "Enviar link"
+  },
+  "resetPassword": {
+    "title": "Nova senha",
+    "newPasswordLabel": "Digite sua nova senha",
+    "confirmLabel": "Confirmar senha",
+    "mismatch": "As senhas não coincidem.",
+    "minLength": "Mínimo 6 caracteres.",
+    "invalidLink": "Link inválido ou expirado. Solicite um novo.",
+    "saving": "Salvando...",
+    "submit": "Redefinir senha"
+  },
+  "register": {
+    "createAccountError": "Erro ao criar conta. Email já em uso?",
+    "leagueCodeNotFound": "Liga não encontrada com esse código",
+    "enterLeagueName": "Digite o nome da liga",
+    "enterLeagueCode": "Digite o código de 6 letras",
+    "joinLeagueError": "Erro ao entrar na liga",
+    "accountStep": "Conta",
+    "leagueStep": "Liga",
+    "title": "Criar Conta",
+    "brand": "Bolão Copa 2026",
+    "namePlaceholder": "Seu nome",
+    "passwordPlaceholder": "Mínimo 6 caracteres",
+    "creatingAccount": "Criando conta...",
+    "continue": "Continuar →",
+    "haveAccount": "Já tem conta?",
+    "yourLeagueTitle": "Sua Liga",
+    "yourLeagueSubtitle": "Compete com seu grupo do escritório",
+    "createLeagueTab": "Criar liga",
+    "joinWithCodeTab": "Entrar com código",
+    "leagueNameLabel": "Nome da Liga",
+    "leagueNamePlaceholder": "Ex: Bolão do RH, Turma da TI...",
+    "inviteCodeHint": "Um código de convite será gerado — compartilhe com o pessoal!",
+    "inviteCodeLabel": "Código de Convite",
+    "search": "Buscar",
+    "participantsCount_one": "{{count}} participante",
+    "participantsCount_other": "{{count}} participantes",
+    "pleaseWait": "Aguarde...",
+    "createLeagueAndJoin": "Criar Liga e Entrar →",
+    "joinLeague": "Entrar na Liga →",
+    "skipLeague": "Pular por agora — entrar em uma liga depois"
+  },
+  "games": {
+    "title": "⚽ Jogos & Palpites",
+    "predictionsDone": "{{count}} palpites feitos",
+    "saving": "Salvando...",
+    "allSaved": "✅ Todos salvos!",
+    "saveAllWithCount": "💾 Salvar todos ({{count}})",
+    "loadingMatches": "Carregando jogos...",
+    "matchesCount_one": "{{count}} jogo",
+    "matchesCount_other": "{{count}} jogos",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "yesterday": "Ontem",
+    "noPrediction": "sem palpite",
+    "currentPrediction": "atual: {{a}}–{{b}}",
+    "saved": "✓ Salvo!",
+    "savePrediction": "Salvar palpite",
+    "noMatchesInPhase": "Nenhum jogo cadastrado nesta fase.",
+    "phases": {
+      "group": "Fase de Grupos",
+      "r16": "Oitavas (1/16)",
+      "qf": "Quartas",
+      "sf": "Semifinal",
+      "final": "Final"
+    }
+  },
+  "preCupPage": {
+    "title": "🎯 Palpites Pré-Copa",
+    "subtitle": "Faça suas escolhas antes da Copa começar — valem pontos extras!",
+    "cards": {
+      "champion": "Campeão",
+      "championSub": "acertar o vencedor",
+      "shame": "Vergonha",
+      "shameSub": "menor índice top-14",
+      "surprise": "Surpresa",
+      "surpriseSub": "maior índice fora-14"
+    },
+    "pickers": {
+      "championLabel": "Campeão da Copa",
+      "championDesc": "Quem vai levantar a taça? Vale 200 pontos!",
+      "shameLabel": "Vergonha da Copa",
+      "shameDesc": "Qual top-14 vai cair mais cedo? Menor índice = maior vergonha",
+      "surpriseLabel": "Surpresa da Copa",
+      "surpriseDesc": "Qual zebra vai ir mais longe? Maior índice = maior surpresa"
+    },
+    "index": {
+      "title": "📐 Como funciona o índice?",
+      "shameLabel": "Vergonha:",
+      "shameText": "ranking FIFA × fator da fase. Menor = mais vergonha. Ex: #1 cai nos grupos = 1×1 = 1.0",
+      "surpriseLabel": "Surpresa:",
+      "surpriseText": "mesmo cálculo, mas ganha quem tiver o maior índice. Ex: #90 nas quartas = 90×3 = 270"
+    },
+    "saving": "Salvando...",
+    "saved": "✅ Palpites salvos!",
+    "save": "Salvar Palpites Pré-Copa",
+    "saveError": "Erro ao salvar",
+    "editUntilStart": "Você pode alterar seus palpites até a Copa começar."
+  },
+  "leaderboardPage": {
+    "title": "🏆 Placar Geral",
+    "csvError": "Falha ao baixar o CSV do placar:",
+    "loading": "Carregando placar...",
+    "allParticipants": "Todos os participantes",
+    "summary": "· {{count}} participantes · atualiza a cada 30s",
+    "createLeague": "+ Criar liga",
+    "exportCsv": "📥 CSV",
+    "viewingAllTitle": "Vendo todos os participantes",
+    "viewingAllSubtitle": "Crie uma liga para competir apenas com seu grupo",
+    "createLeagueLink": "Criar liga →",
+    "noParticipantsLeague": "Nenhum participante nesta liga ainda.",
+    "noParticipants": "Nenhum participante ainda.",
+    "you": "você",
+    "noPreCup": "sem pré-copa"
+  },
+  "predictionsPage": {
+    "title": "👁 Palpites de Todos",
+    "participant": "Participante",
+    "showingLeagueMembers": "Mostrando apenas membros de {{league}}",
+    "loadingPredictions": "Carregando palpites...",
+    "visibleAfterKickoff": "🔒 Palpites visíveis após o kickoff",
+    "noPredictionsYet": "Nenhum palpite feito ainda.",
+    "you": "você",
+    "legendExact": "Placar exato",
+    "legendWinner": "Vencedor certo",
+    "yourPredictionSummary": "Seu palpite: {{a}}–{{b}} → {{points}} pontos",
+    "allParticipants": "Todos os participantes",
+    "noActiveLeague": "Sem liga ativa — vendo palpites de todos os participantes.",
+    "createLeague": "Criar liga →",
+    "finishedMatches": "Jogos Encerrados",
+    "upcomingMatches": "Próximos Jogos",
+    "noMatchesInPhase": "Nenhum jogo nesta fase ainda.",
+    "groupPrefix": "Gr.",
+    "collapse": "▲",
+    "expand": "▼",
+    "phases": {
+      "group": "Grupos",
+      "r16": "Oitavas",
+      "qf": "Quartas",
+      "sf": "Semi",
+      "final": "Final"
+    }
+  },
+  "leaguePage": {
+    "title": "🏟️ Ligas",
+    "subtitle": "Crie ou entre em uma liga com seus amigos do escritório",
+    "myLeagues": "Minhas Ligas",
+    "noLeagues": "Nenhuma liga ainda. Crie ou entre em uma!",
+    "create": "+ Criar",
+    "join": "→ Entrar",
+    "createNewLeague": "Criar Nova Liga",
+    "createHint": "Um código de convite será gerado automaticamente",
+    "leagueName": "Nome da Liga",
+    "leagueNamePlaceholder": "Ex: Bolão do RH, Turma da TI...",
+    "creating": "Criando...",
+    "createLeague": "Criar Liga",
+    "joinLeagueTitle": "Entrar em uma Liga",
+    "joinLeagueHint": "Digite o código de 6 letras compartilhado pelo criador da liga",
+    "inviteCode": "Código de Convite",
+    "search": "Buscar",
+    "joinPreview": "{{count}} participantes · criada por {{owner}}",
+    "joining": "Entrando...",
+    "joinLeague": "Entrar na Liga",
+    "selectLeague": "Selecione uma liga ou crie uma nova",
+    "selectLeagueHint": "As ligas isolam o placar e os palpites entre grupos de amigos",
+    "copied": "✓ copiado!",
+    "error": "erro",
+    "copy": "copiar",
+    "shareText": "Entre na liga {{league}} no Bolão Copa 2026: {{url}}",
+    "linkCopied": "Link copiado!",
+    "shareFailed": "Falha ao compartilhar",
+    "shareLink": "Compartilhar link",
+    "joinError": "Erro ao entrar",
+    "deleteError": "Erro ao excluir liga",
+    "notFound": "Liga não encontrada",
+    "leaving": "Saindo...",
+    "leaveLeague": "Sair desta liga",
+    "deleting": "Excluindo...",
+    "confirmDelete": "Confirmar exclusão",
+    "deleteLeague": "Excluir liga",
+    "leagueLeaderboard": "Placar da Liga",
+    "noScoredParticipants": "Nenhum participante com pontos ainda"
+  },
+  "adminPage": {
+    "title": "⚙️ Painel Admin",
+    "subtitle": "Gerenciar jogos, resultados, times e sincronização",
+    "newMatch": "Novo Jogo",
+    "selectPhase": "Selecione a fase...",
+    "creatingMatch": "Criando...",
+    "createMatch": "Criar Jogo",
+    "matchCreated": "✅ Jogo criado com sucesso!",
+    "publishResults": "Lançar Resultados",
+    "finalizing": "Finalizando...",
+    "finalizePreCup": "Finalizar Pré-Copa",
+    "noPendingMatches": "Nenhum jogo pendente."
+  },
+  "teamPicker": {
+    "selectTeam": "Selecione uma seleção...",
+    "searchPlaceholder": "Buscar seleção...",
+    "noResults": "Nenhuma seleção encontrada"
+  },
+  "datePicker": {
+    "label": "Data do Jogo",
+    "selectDate": "Selecione uma data"
+  },
+  "phasePicker": {
+    "clearSelection": "Limpar seleção"
   }
 }
