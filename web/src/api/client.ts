@@ -1,5 +1,4 @@
 import axios from "axios";
-import { history } from '../utils/history';
 
 export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || "/api" });
 
@@ -13,8 +12,9 @@ api.interceptors.response.use(
   (r) => r,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.clear();
-      history.push("/login");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.assign("/login");
     }
     return Promise.reject(err);
   }
