@@ -6,6 +6,7 @@ import { getMatches, getTeams, api } from "../api/client";
 import { TeamPicker } from '../components/TeamPicker';
 import { PhasePicker } from '../components/PhasePicker';
 import { DatePicker } from '../components/DatePicker';
+import { getAdminUsers, deleteUser, toggleUserAdmin } from '../api/client';
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",DEN:"DK",POR:"PT",ESP:"ES",FRA:"FR",
@@ -22,6 +23,17 @@ interface Match { id: number; teamA: Team; teamB: Team; phase: string; phaseMult
 interface BulkImportResult { created: number; skipped: number; errors: string[]; }
 interface PreCupFinalizeResult { shameWinner: string; shameIndex: number; surpriseWinner: string; surpriseIndex: number; }
 interface SyncResult { ok: boolean; created?: number; skipped?: number; matchesScored?: number; total?: number; errors?: string[]; }
+interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  createdAt: string;
+  predictionsCount: number;
+  totalPoints: number;
+  hasPrecupPick: boolean;
+  leagues: { id: number; name: string }[];
+}
 
 const PHASES = [
   { key: "group", label: "Fase de Grupos", multiplier: 1.0 },
@@ -40,13 +52,14 @@ const ELIM_PHASES = [
   { key: "champion", label: "Campeão 🏆" },
 ];
 
-type TabType = "matches" | "results" | "teams" | "import" | "sync";
+type TabType = "matches" | "results" | "teams" | "import" | "sync" | "users";
 const TABS: { key: TabType; label: string; icon: string }[] = [
   { key: "matches", label: "Criar Jogos", icon: "➕" },
   { key: "results", label: "Resultados", icon: "✅" },
   { key: "teams", label: "Times", icon: "🌍" },
   { key: "import", label: "Importar JSON", icon: "📥" },
   { key: "sync", label: "Sincronizar API", icon: "🔄" },
+  { key: "users", label: "Usuários", icon: "👥" },
 ];
 
 function Btn({ children, variant = "primary", className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "danger" | "purple" }) {
@@ -162,6 +175,24 @@ export default function Admin() {
   });
 
   const pendingMatches = matches.filter((m) => !m.isFinished);
+
+  const { data: users = [], refetch: refetchUsers } = useQuery<AdminUser[]>({
+    queryKey: ["admin-users"],
+    queryFn: getAdminUsers,
+    enabled: tab === "users",
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (id: number) => deleteUser(id),
+    onSuccess: () => refetchUsers(),
+  });
+
+  const toggleAdminMutation = useMutation({
+    mutationFn: (id: number) => toggleUserAdmin(id),
+    onSuccess: () => refetchUsers(),
+  });
+
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   return (
     <div className="space-y-6">
@@ -440,6 +471,116 @@ export default function Admin() {
           )}
 
         </motion.div>
+
+        {tab === "users" && (
+        <motion.div key="users" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }} className="space-y-4">
+
+          <div className="flex items-center justify-between">
+            <h2 className="text-white font-black">Usuários ({users.length})</h2>
+            <button onClick={() => refetchUsers()}
+              className="text-xs text-white/30 hover:text-white transition px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
+              ↻ Atualizar
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            {users.map((u) => (
+              <div key={u.id}
+                className={`bg-white/[0.03] border rounded-xl px-4 py-3 flex items-center gap-4 flex-wrap ${
+                  u.isAdmin ? "border-[#f5c842]/20" : "border-white/8"
+                }`}>
+
+                {/* Avatar + name */}
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${
+                    u.isAdmin ? "bg-[#f5c842] text-black" : "bg-white/10 text-white/50"
+                  }`}>
+                    {u.name[0].toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-white truncate">{u.name}</span>
+                      {u.isAdmin && (
+                        <span className="text-[10px] bg-[#f5c842]/15 text-[#f5c842] px-1.5 py-0.5 rounded font-bold">
+                          ADMIN
+                        </span>
+                      )}
+                      {!u.hasPrecupPick && (
+                        <span className="text-[10px] bg-orange-500/10 text-orange-400 px-1.5 py-0.5 rounded">
+                          sem pré-copa
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-white/25 truncate">{u.email}</div>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="flex items-center gap-4 text-xs text-white/30 flex-shrink-0">
+                  <div className="text-center hidden sm:block">
+                    <div className="font-black text-white">{u.totalPoints}</div>
+                    <div>pts</div>
+                  </div>
+                  <div className="text-center hidden sm:block">
+                    <div className="font-black text-white">{u.predictionsCount}</div>
+                    <div>palpites</div>
+                  </div>
+                  <div className="text-center hidden md:block">
+                    <div className="font-black text-white">{u.leagues.length}</div>
+                    <div>liga{u.leagues.length !== 1 ? "s" : ""}</div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => toggleAdminMutation.mutate(u.id)}
+                    disabled={toggleAdminMutation.isPending}
+                    title={u.isAdmin ? "Remover admin" : "Tornar admin"}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
+                      u.isAdmin
+                        ? "bg-[#f5c842]/10 border-[#f5c842]/25 text-[#f5c842] hover:bg-red-500/10 hover:border-red-500/25 hover:text-red-400"
+                        : "bg-white/5 border-white/10 text-white/40 hover:bg-[#f5c842]/10 hover:border-[#f5c842]/25 hover:text-[#f5c842]"
+                    }`}
+                  >
+                    {u.isAdmin ? "★ Admin" : "☆ Admin"}
+                  </button>
+
+                  {confirmDeleteId === u.id ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => { deleteUserMutation.mutate(u.id); setConfirmDeleteId(null); }}
+                        className="px-3 py-1.5 rounded-lg text-xs font-black bg-red-500 text-white hover:bg-red-600 transition"
+                      >
+                        Confirmar
+                      </button>
+                      <button
+                        onClick={() => setConfirmDeleteId(null)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 text-white/40 hover:text-white transition"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmDeleteId(u.id)}
+                      title="Deletar usuário"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition"
+                    >
+                      🗑 Deletar
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {users.length === 0 && (
+              <div className="text-center py-10 text-white/20 text-sm">Nenhum usuário encontrado.</div>
+            )}
+          </div>
+        </motion.div>
+      )}
       </AnimatePresence>
     </div>
   );

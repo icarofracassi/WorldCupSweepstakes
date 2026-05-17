@@ -9,7 +9,7 @@ import leaderboardRoutes from "./routes/leaderboard";
 import syncRoutes from "./routes/sync";
 import leaguesRoutes from "./routes/leagues";
 import passwordResetRouter from './routes/passwordReset';
-
+import adminRoutes from "./routes/admin";
 
 const app = express();
 
@@ -35,6 +35,7 @@ app.use("/api/precup", preCupRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/sync", syncRoutes);
 app.use("/api/leagues", leaguesRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((_req, res) => res.status(404).json({ error: "Route not found" }));
 

@@ -66,3 +66,7 @@ export const createLeague = (name: string) => api.post("/leagues", { name }).the
 export const joinLeague = (code: string) => api.post("/leagues/join", { code }).then((r) => r.data);
 export const leaveLeague = (id: number) => api.post(`/leagues/${id}/leave`).then((r) => r.data);
 export const deleteLeague = (id: number) => api.delete(`/leagues/${id}`).then((r) => r.data);
+
+export const getAdminUsers = () => api.get("/admin/users").then((r) => r.data);
+export const deleteUser = (id: number) => api.delete(`/admin/users/${id}`).then((r) => r.data);
+export const toggleUserAdmin = (id: number) => api.patch(`/admin/users/${id}/admin`).then((r) => r.data);
