@@ -87,14 +87,31 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background */}
+      {/* Background effects matching Login exactly */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#f5c842]/5 rounded-full blur-[120px]" />
-        <div className="absolute inset-0 opacity-[0.025]"
-          style={{ backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-green-900/10 rounded-full blur-[80px]" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-900/10 rounded-full blur-[80px]" />
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
       </div>
 
       <div className="w-full max-w-md relative">
+        {/* Return to Landing Button */}
+        <div className="mb-6">
+          <Link to="/">
+            <motion.button
+              whileHover={{ x: -4 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="inline-flex items-center gap-2 text-xs font-bold text-white/40 hover:text-[#f5c842] uppercase tracking-widest transition group"
+            >
+              <span className="text-sm transition-transform group-hover:translate-x-[-2px]">←</span>
+              {t("common.backToLanding", "Voltar ao início")}
+            </motion.button>
+          </Link>
+        </div>
+
         {/* Steps indicator */}
         <div className="flex items-center justify-center gap-3 mb-8">
           {(["account", "league"] as Step[]).map((s, i) => (
@@ -117,14 +134,21 @@ export default function Register() {
         <AnimatePresence mode="wait">
           {/* Step 1: Account */}
           {step === "account" && (
-            <motion.div key="account" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f5c842] to-[#e8a020] text-3xl mb-4 shadow-2xl shadow-yellow-500/30">⚽</div>
+            <motion.div key="account" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.4 }}>
+              <div className="text-center mb-10">
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+                  className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f5c842] to-[#e8a020] text-3xl mb-4 shadow-2xl shadow-yellow-500/30"
+                >
+                  ⚽
+                </motion.div>
                 <h1 className="text-3xl font-black text-white tracking-tight">{t("register.title")}</h1>
                 <p className="text-white/30 mt-1 text-sm">{t("register.brand")}</p>
               </div>
 
-              <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
+              <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 backdrop-blur-sm shadow-2xl">
                 <form onSubmit={handleAccount} className="space-y-5">
                   {error && (
                     <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
@@ -138,14 +162,14 @@ export default function Register() {
                     { label: t("auth.password"), value: password, onChange: setPassword, type: "password", placeholder: t("register.passwordPlaceholder") },
                   ].map((f) => (
                     <div key={f.label}>
-                      <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{f.label}</label>
+                      <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">{f.label}</label>
                       <input type={f.type} value={f.value} onChange={(e) => f.onChange(e.target.value)} required
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#f5c842]/50 transition text-sm"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#f5c842]/50 focus:bg-white/8 transition text-sm"
                         placeholder={f.placeholder} />
                     </div>
                   ))}
                   <motion.button type="submit" disabled={loading} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                    className="w-full bg-gradient-to-r from-[#f5c842] to-[#e8a020] text-black font-black py-3.5 rounded-xl disabled:opacity-50 shadow-lg shadow-yellow-500/20 text-sm">
+                    className="w-full bg-gradient-to-r from-[#f5c842] to-[#e8a020] text-black font-black py-3.5 rounded-xl transition disabled:opacity-50 shadow-lg shadow-yellow-500/20 text-sm tracking-wide">
                     {loading ? t("register.creatingAccount") : t("register.continue")}
                   </motion.button>
                 </form>
@@ -160,13 +184,13 @@ export default function Register() {
           {/* Step 2: League */}
           {step === "league" && (
             <motion.div key="league" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-              <div className="text-center mb-8">
+              <div className="text-center mb-10">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl mb-4 shadow-2xl shadow-blue-500/30">🏟️</div>
                 <h1 className="text-3xl font-black text-white tracking-tight">{t("register.yourLeagueTitle")}</h1>
                 <p className="text-white/30 mt-1 text-sm">{t("register.yourLeagueSubtitle")}</p>
               </div>
 
-              <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 space-y-6">
+              <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 backdrop-blur-sm shadow-2xl space-y-6">
                 {/* Tab switcher */}
                 <div className="flex bg-white/5 rounded-xl p-1 gap-1">
                   <button onClick={() => setLeagueTab("create")}
@@ -186,7 +210,7 @@ export default function Register() {
                 <AnimatePresence mode="wait">
                   {leagueTab === "create" ? (
                     <motion.div key="create" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-                       <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t("register.leagueNameLabel")}</label>
+                       <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">{t("register.leagueNameLabel")}</label>
                       <input value={leagueName} onChange={(e) => setLeagueName(e.target.value)}
                          placeholder={t("register.leagueNamePlaceholder")}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-white/30 transition text-sm" />
@@ -194,7 +218,7 @@ export default function Register() {
                     </motion.div>
                   ) : (
                     <motion.div key="join" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-                       <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t("register.inviteCodeLabel")}</label>
+                       <label className="block text-xs font-bold text-white/40 uppercase tracking-widest mb-2">{t("register.inviteCodeLabel")}</label>
                       <div className="flex gap-2">
                         <input value={joinCode} onChange={(e) => { setJoinCode(e.target.value.toUpperCase()); setJoinPreview(null); }}
                           maxLength={6} placeholder="ABCD12"
@@ -229,6 +253,10 @@ export default function Register() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <p className="text-center text-white/10 text-xs mt-8">
+          FIFA World Cup 2026 · USA · Canada · Mexico
+        </p>
       </div>
     </div>
   );

@@ -220,7 +220,8 @@
     "error": "Algo deu errado",
     "league": "Liga",
     "switchLanguage": "Trocar idioma",
-    "all": "Todos"
+    "all": "Todos",
+    "backToLanding":"Voltar ao início"
   },
   "login": {
     "title": "Bolão Copa 2026",
@@ -571,5 +572,6 @@
     "IRQ": "Iraque",
     "HAI": "Haiti",
     "CUR": "Curaçao"
-  }
+  },
+  "backtolandingpage": "Go back to the landing page"
 }

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
+import Flag from "react-world-flags";
 
 // ── Countdown ──────────────────────────────────────────────
 const CUP_START = new Date("2026-06-11T19:00:00Z");
@@ -43,20 +44,72 @@ function FloatingBall({ delay, x, y, size, duration }: { delay: number; x: numbe
 }
 
 // ── Ticker tape ────────────────────────────────────────────
-const TICKER_ITEMS = ["🇧🇷 Brasil", "🇦🇷 Argentina", "🇫🇷 França", "🇩🇪 Alemanha", "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", "🇪🇸 Espanha", "🇵🇹 Portugal", "🇺🇸 USA", "🇲🇽 México", "🇨🇦 Canadá", "🇯🇵 Japão", "🇲🇦 Marrocos", "🇺🇾 Uruguai", "🇭🇷 Croácia"];
+const TICKER_CODES = ["BRA", "ARG", "FRA", "GER", "ENG", "ESP", "POR", "USA", "MEX", "CAN", "JPN", "MAR", "URU", "CRO"];
+
+const FIFA_TO_ISO: Record<string, string> = {
+  GER:"DE", SWE:"SE", HAI:"HT", URU:"UY", MEX:"MX", SUI:"CH", NED:"NL",
+  DEN:"DK", POR:"PT", ESP:"ES", FRA:"FR", ENG:"GB-ENG", SCO:"GB-SCT",
+  BRA:"BR", ARG:"AR", COL:"CO", ECU:"EC", CHI:"CL", PAR:"PY", BOL:"BO",
+  VEN:"VE", PER:"PE", USA:"US", CAN:"CA", CRC:"CR", PAN:"PA", SEN:"SN",
+  MAR:"MA", TUN:"TN", NGA:"NG", CMR:"CM", GHA:"GH", CIV:"CI", ALG:"DZ",
+  EGY:"EG", RSA:"ZA", COD:"CD", CPV:"CV", QAT:"QA", KSA:"SA", IRN:"IR",
+  IRQ:"IQ", JOR:"JO", KOR:"KR", JPN:"JP", AUS:"AU", NZL:"NZ", UZB:"UZ",
+  CRO:"HR", POL:"PL", SRB:"RS", SVK:"SK", CZE:"CZ", HUN:"HU", AUT:"AT",
+  BIH:"BA", UKR:"UA", TUR:"TR", BEL:"BE", ITA:"IT", NOR:"NO", CUR:"CW"
+};
+function getFlagCode(code: string) { return FIFA_TO_ISO[code] ?? code; }
 
 function Ticker() {
-  const items = [...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS];
+  const { t } = useTranslation();
+  
+  // Duplicate the array to keep the endless loop scrolling smoothly
+  const items = [...TICKER_CODES, ...TICKER_CODES, ...TICKER_CODES];
+
   return (
     <div className="overflow-hidden border-y border-white/5 py-3 bg-white/[0.01]">
       <motion.div
-        className="flex gap-10 whitespace-nowrap"
+        className="flex gap-10 whitespace-nowrap items-center" // added items-center to align flags perfectly
         animate={{ x: [0, -1400] }}
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
       >
-        {items.map((item, i) => (
-          <span key={i} className="text-sm font-bold text-white/20 tracking-widest uppercase flex-shrink-0">{item}</span>
-        ))}
+        {items.map((code, i) => {
+          const fallbackName = code === "USA" ? "USA" : code === "MEX" ? "México" : code;
+          const localizedName = t(`teams.${code}`, { defaultValue: fallbackName });
+
+          return (
+            <div 
+              key={i} 
+              className="flex items-center gap-2 text-sm font-bold text-white/20 tracking-widest uppercase flex-shrink-0"
+            >
+              <motion.div 
+                className="w-6 h-4 overflow-hidden shadow-md opacity-40 flex-shrink-0"
+                style={{
+                  // This clip-path instantly breaks the flat box look and makes it look like a real draped fabric flag
+                  clipPath: "polygon(0% 6%, 100% 0%, 96% 94%, 4% 100%)"
+                }}
+                animate={{
+                  // Smoothly rotates and skews up and down to simulate a wind ripple
+                  rotate: [0, 3, -2, 0],
+                  skewY: [0, 2, -2, 0],
+                  y: [0, -1, 1, 0]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  // This line offsets the animation slightly for each flag so they don't all wave in perfect unison
+                  delay: i * 0.1 
+                }}
+              >
+                <Flag 
+                  code={getFlagCode(code)} 
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                />
+              </motion.div>
+              <span>{localizedName}</span>
+            </div>
+          );
+        })}
       </motion.div>
     </div>
   );

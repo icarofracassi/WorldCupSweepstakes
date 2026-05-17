@@ -220,7 +220,8 @@
     "error": "Something went wrong",
     "league": "League",
     "switchLanguage": "Switch language",
-    "all": "All"
+    "all": "All",
+    "backToLanding":"Back to the landing page"
   },
   "login": {
     "title": "World Cup Pool 2026",
