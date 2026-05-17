@@ -34,11 +34,17 @@ export function TeamPicker({ label, emoji, description, value, onChange, options
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const selected = options.find((t) => t.id === value);
-  const filtered = options.filter((t) =>
-    t.name.toLowerCase().includes(search.toLowerCase()) ||
-    t.code.toLowerCase().includes(search.toLowerCase())
-  );
+  const selected = options.find((team) => team.id === value);
+
+  const filtered = options.filter((team) => {
+    const localizedName = t(`teams.${team.code}`, { defaultValue: team.name }).toLowerCase();
+    
+    return (
+      localizedName.includes(search.toLowerCase()) ||
+      team.code.toLowerCase().includes(search.toLowerCase())
+    );
+  });
+  // ------------------------------------------------
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -75,7 +81,10 @@ export function TeamPicker({ label, emoji, description, value, onChange, options
             <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-white/10 flex-shrink-0">
               <Flag code={getFlagCode(selected.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
             </div>
-            <span className="text-white font-semibold text-sm flex-1">{selected.name}</span>
+            {/* CHANGED HERE: Localized Selected Label */}
+            <span className="text-white font-semibold text-sm flex-1">
+              {t(`teams.${selected.code}`, { defaultValue: selected.name })}
+            </span>
             <span className="text-white/25 text-xs">#{selected.fifaRanking} FIFA</span>
           </>
         ) : (
@@ -94,7 +103,7 @@ export function TeamPicker({ label, emoji, description, value, onChange, options
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-               placeholder={t("teamPicker.searchPlaceholder")}
+              placeholder={t("teamPicker.searchPlaceholder")}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm placeholder-white/25 focus:outline-none focus:border-white/30 transition"
             />
           </div>
@@ -103,19 +112,22 @@ export function TeamPicker({ label, emoji, description, value, onChange, options
             {filtered.length === 0 ? (
                <div className="text-center py-4 text-white/20 text-sm">{t("teamPicker.noResults")}</div>
             ) : (
-              filtered.map((t) => (
-                <button key={t.id} type="button"
-                  onClick={() => { onChange(t.id); setOpen(false); }}
+              filtered.map((team) => (
+                <button key={team.id} type="button"
+                  onClick={() => { onChange(team.id); setOpen(false); }}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition text-left ${
-                    t.id === value ? "bg-[#f5c842]/5" : ""
+                    team.id === value ? "bg-[#f5c842]/5" : ""
                   }`}
                 >
                   <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-white/10 flex-shrink-0">
-                    <Flag code={getFlagCode(t.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <Flag code={getFlagCode(team.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                   </div>
-                  <span className={`text-sm font-semibold flex-1 ${t.id === value ? "text-[#f5c842]" : "text-white/80"}`}>{t.name}</span>
-                  <span className="text-white/20 text-xs">#{t.fifaRanking}</span>
-                  {t.id === value && <span className="text-[#f5c842] text-xs">✓</span>}
+                  {/* CHANGED HERE: Localized Dropdown Row Labels */}
+                  <span className={`text-sm font-semibold flex-1 ${team.id === value ? "text-[#f5c842]" : "text-white/80"}`}>
+                    {t(`teams.${team.code}`, { defaultValue: team.name })}
+                  </span>
+                  <span className="text-white/20 text-xs">#{team.fifaRanking}</span>
+                  {team.id === value && <span className="text-[#f5c842] text-xs">✓</span>}
                 </button>
               ))
             )}
