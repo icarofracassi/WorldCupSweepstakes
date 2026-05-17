@@ -63,16 +63,19 @@ function groupByDay(matches: Match[]): Record<string, Match[]> {
 }
 
 function TeamFlag({ code, name }: { code: string; name: string }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/10 shadow-lg bg-white/5 flex-shrink-0">
         <Flag code={getFlagCode(code)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
-      <span className="text-xs font-bold text-white/70 text-center leading-tight max-w-[70px] truncate">{name}</span>
+      <span className="text-xs font-bold text-white/70 text-center leading-tight max-w-[70px] truncate">
+        {t(`teams.${code}`, { defaultValue: name })}
+      </span>
     </div>
   );
 }
-
 export default function Jogos() {
   const { t, i18n } = useTranslation();
   const isPortuguese = i18n.language.startsWith("pt");
