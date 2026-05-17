@@ -87,8 +87,8 @@ function ShareButton({ league, t }: { league: LeagueSummary; t: (key: string, op
   );
 }
 
-function LeagueCard({ league, isActive, onClick }: {
-  league: LeagueSummary; isActive: boolean; onClick: () => void;
+function LeagueCard({ league, isActive, onClick, t }: {
+  league: LeagueSummary; isActive: boolean; onClick: () => void; t: (key: string, options?: any) => string;
 }) {
   return (
     <motion.button whileHover={{ y: -2 }} onClick={onClick}
@@ -100,11 +100,11 @@ function LeagueCard({ league, isActive, onClick }: {
       <div className="flex items-center justify-between">
         <div>
           <div className={`font-black text-sm ${isActive ? "text-[#f5c842]" : "text-white"}`}>{league.name}</div>
-          <div className="text-xs text-white/30 mt-0.5">{league._count.members} participante{league._count.members !== 1 ? "s" : ""}</div>
+          <div className="text-xs text-white/30 mt-0.5">{t("leaguePage.participantsCount", { count: league._count.members })}</div>
         </div>
         <div className="text-right">
           <div className="font-mono text-xs text-white/25">{league.code}</div>
-          {isActive && <div className="text-[10px] text-[#f5c842]/60 mt-0.5">ativa</div>}
+          {isActive && <div className="text-[10px] text-[#f5c842]/60 mt-0.5">{t("leaguePage.active")}</div>}
         </div>
       </div>
     </motion.button>
@@ -224,7 +224,7 @@ export default function Liga() {
             </div>
           ) : (
             leagues.map((l) => (
-              <LeagueCard key={l.id} league={l} isActive={activeLeague?.id === l.id}
+              <LeagueCard key={l.id} league={l} isActive={activeLeague?.id === l.id} t={t}
                 onClick={() => setActiveLeague(l)} />
             ))
           )}

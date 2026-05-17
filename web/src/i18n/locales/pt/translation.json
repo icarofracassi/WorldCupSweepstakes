@@ -330,7 +330,12 @@
       "shameLabel": "Vergonha:",
       "shameText": "ranking FIFA × fator da fase. Menor = mais vergonha. Ex: #1 cai nos grupos = 1×1 = 1.0",
       "surpriseLabel": "Surpresa:",
-      "surpriseText": "mesmo cálculo, mas ganha quem tiver o maior índice. Ex: #90 nas quartas = 90×3 = 270"
+      "surpriseText": "mesmo cálculo, mas ganha quem tiver o maior índice. Ex: #90 nas quartas = 90×3 = 270",
+      "phaseGroups": "Grupos",
+      "phaseR16": "16-avos",
+      "phaseQf": "Quartas",
+      "phaseSf": "Semi",
+      "phaseChampion": "Campeão"
     },
     "saving": "Salvando...",
     "saved": "✅ Palpites salvos!",
@@ -420,7 +425,10 @@
     "confirmDelete": "Confirmar exclusão",
     "deleteLeague": "Excluir liga",
     "leagueLeaderboard": "Placar da Liga",
-    "noScoredParticipants": "Nenhum participante com pontos ainda"
+    "noScoredParticipants": "Nenhum participante com pontos ainda",
+    "participantsCount_one": "{{count}} participante",
+    "participantsCount_other": "{{count}} participantes",
+    "active": "ativa"
   },
   "adminPage": {
     "title": "⚙️ Painel Admin",
@@ -433,7 +441,69 @@
     "publishResults": "Lançar Resultados",
     "finalizing": "Finalizando...",
     "finalizePreCup": "Finalizar Pré-Copa",
-    "noPendingMatches": "Nenhum jogo pendente."
+    "noPendingMatches": "Nenhum jogo pendente.",
+    "tabs": {
+      "matches": "Criar Jogos",
+      "results": "Resultados",
+      "teams": "Times",
+      "import": "Importar JSON",
+      "sync": "Sincronizar API"
+    },
+    "phases": {
+      "group": "Fase de Grupos",
+      "r16": "Oitavas (1/16)",
+      "qf": "Quartas (1/4)",
+      "sf": "Semifinal (1/2)",
+      "final": "Final"
+    },
+    "elim": {
+      "group": "Fase de Grupos",
+      "r16": "Oitavas",
+      "qf": "Quartas",
+      "sf": "Semifinal",
+      "third": "3º/4º lugar",
+      "champion": "Campeão 🏆"
+    },
+    "teamA": "Time A (Casa)",
+    "teamADesc": "Seleção mandante da partida",
+    "teamB": "Time B (Fora)",
+    "teamBDesc": "Seleção visitante da partida",
+    "tournamentPhase": "Fase do Torneio",
+    "multiplierHint": "O multiplicador de pontos será aplicado automaticamente.",
+    "preCupDone": "🎯 Pré-Copa finalizada!",
+    "shameResult": "Vergonha: {{team}} (índice: {{index}})",
+    "surpriseResult": "Surpresa: {{team}} (índice: {{index}})",
+    "markEliminations": "Marcar Eliminações",
+    "elimPlaceholder": "Fase eliminada...",
+    "mark": "Marcar",
+    "importTitle": "Importar Jogos via JSON",
+    "importHint": "Use códigos FIFA (BRA, ARG...) e fases: group, r16, qf, sf, final.",
+    "pasteJson": "Cole o JSON aqui...",
+    "importing": "Importando...",
+    "importMatches": "�� Importar Jogos",
+    "importResult": "✅ {{created}} criados · {{skipped}} ignorados",
+    "syncTitle": "Sincronização com football-data.org",
+    "syncSubtitle": "Conecta com a API externa para importar jogos e resultados automaticamente.",
+    "syncFixturesTitle": "Importar Fixtures",
+    "syncFixturesDesc": "Importa todos os jogos da Copa 2026 da API. Seguro para re-executar — usa upsert por externalId.",
+    "syncResultsTitle": "Sincronizar Resultados",
+    "syncResultsDesc": "Busca jogos finalizados hoje e calcula automaticamente os pontos de cada palpite.",
+    "apiStatus": "Status da API",
+    "apiStatusDesc": "Informações sobre o uso da API externa",
+    "stats": {
+      "totalMatches": "Total de jogos",
+      "pending": "Pendentes",
+      "finished": "Finalizados",
+      "teams": "Times"
+    },
+    "freeTierHint": "💡 Free tier: 100 req/dia. Execute sync/results 1x por dia após os jogos.",
+    "syncing": "Sincronizando...",
+    "run": "Executar",
+    "done": "✅ Concluído",
+    "createdIgnored": "Criados: {{created}} · Ignorados: {{skipped}}",
+    "matchesScored": "Jogos pontuados: {{value}}",
+    "totalApi": "Total da API: {{value}}",
+    "otherErrors": "+{{value}} outros erros..."
   },
   "teamPicker": {
     "selectTeam": "Selecione uma seleção...",
@@ -445,6 +515,7 @@
     "selectDate": "Selecione uma data"
   },
   "phasePicker": {
-    "clearSelection": "Limpar seleção"
+    "clearSelection": "Limpar seleção",
+    "placeholder": "Fase..."
   }
 }

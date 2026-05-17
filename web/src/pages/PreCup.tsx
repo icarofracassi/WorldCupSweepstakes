@@ -103,7 +103,13 @@ export default function PreCopa() {
          <p><span className="text-white/45">{t("preCupPage.index.shameLabel")}</span> {t("preCupPage.index.shameText")}</p>
          <p><span className="text-white/45">{t("preCupPage.index.surpriseLabel")}</span> {t("preCupPage.index.surpriseText")}</p>
         <div className="flex gap-3 flex-wrap pt-1">
-          {[["Grupos","×1"],["16-avos","×2"],["Quartas","×3"],["Semi","×4"],["Campeão","×7"]].map(([l,v]) => (
+          {[
+            [t("preCupPage.index.phaseGroups"), "×1"],
+            [t("preCupPage.index.phaseR16"), "×2"],
+            [t("preCupPage.index.phaseQf"), "×3"],
+            [t("preCupPage.index.phaseSf"), "×4"],
+            [t("preCupPage.index.phaseChampion"), "×7"],
+          ].map(([l,v]) => (
             <span key={l} className="bg-white/5 px-2 py-0.5 rounded text-[10px]">{l} <span className="text-[#f5c842]/60">{v}</span></span>
           ))}
         </div>

@@ -13,7 +13,7 @@ interface PhasePickerProps {
   placeholder?: string;
 }
 
-export function PhasePicker({ value, onChange, options, placeholder = "Fase..." }: PhasePickerProps) {
+export function PhasePicker({ value, onChange, options, placeholder }: PhasePickerProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -40,7 +40,7 @@ export function PhasePicker({ value, onChange, options, placeholder = "Fase..." 
         }`}
       >
         <span className={selected ? "text-white" : "text-white/25"}>
-          {selected ? selected.label : placeholder}
+          {selected ? selected.label : (placeholder ?? t("phasePicker.placeholder"))}
         </span>
         <span className="text-white/20 text-[10px]">{open ? "▲" : "▼"}</span>
       </button>

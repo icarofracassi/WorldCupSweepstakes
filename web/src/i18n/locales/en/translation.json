@@ -330,7 +330,12 @@
       "shameLabel": "Shame:",
       "shameText": "FIFA rank × phase factor. Lower is worse. Ex: #1 out in groups = 1×1 = 1.0",
       "surpriseLabel": "Surprise:",
-      "surpriseText": "same formula, but highest index wins. Ex: #90 in quarters = 90×3 = 270"
+      "surpriseText": "same formula, but highest index wins. Ex: #90 in quarters = 90×3 = 270",
+      "phaseGroups": "Groups",
+      "phaseR16": "Round of 16",
+      "phaseQf": "Quarterfinals",
+      "phaseSf": "Semifinal",
+      "phaseChampion": "Champion"
     },
     "saving": "Saving...",
     "saved": "✅ Picks saved!",
@@ -420,7 +425,10 @@
     "confirmDelete": "Confirm delete",
     "deleteLeague": "Delete league",
     "leagueLeaderboard": "League leaderboard",
-    "noScoredParticipants": "No participants with points yet"
+    "noScoredParticipants": "No participants with points yet",
+    "participantsCount_one": "{{count}} participant",
+    "participantsCount_other": "{{count}} participants",
+    "active": "active"
   },
   "adminPage": {
     "title": "⚙️ Admin Panel",
@@ -433,7 +441,69 @@
     "publishResults": "Publish Results",
     "finalizing": "Finalizing...",
     "finalizePreCup": "Finalize Pre-Cup",
-    "noPendingMatches": "No pending matches."
+    "noPendingMatches": "No pending matches.",
+    "tabs": {
+      "matches": "Create Matches",
+      "results": "Results",
+      "teams": "Teams",
+      "import": "Import JSON",
+      "sync": "Sync API"
+    },
+    "phases": {
+      "group": "Group Stage",
+      "r16": "Round of 16",
+      "qf": "Quarterfinals",
+      "sf": "Semifinal",
+      "final": "Final"
+    },
+    "elim": {
+      "group": "Group Stage",
+      "r16": "Round of 16",
+      "qf": "Quarterfinals",
+      "sf": "Semifinal",
+      "third": "3rd/4th place",
+      "champion": "Champion 🏆"
+    },
+    "teamA": "Team A (Home)",
+    "teamADesc": "Home side in the match",
+    "teamB": "Team B (Away)",
+    "teamBDesc": "Away side in the match",
+    "tournamentPhase": "Tournament phase",
+    "multiplierHint": "Points multiplier is applied automatically.",
+    "preCupDone": "🎯 Pre-Cup finalized!",
+    "shameResult": "Shame: {{team}} (index: {{index}})",
+    "surpriseResult": "Surprise: {{team}} (index: {{index}})",
+    "markEliminations": "Mark Eliminations",
+    "elimPlaceholder": "Eliminated phase...",
+    "mark": "Mark",
+    "importTitle": "Import Matches via JSON",
+    "importHint": "Use FIFA codes (BRA, ARG...) and phases: group, r16, qf, sf, final.",
+    "pasteJson": "Paste JSON here...",
+    "importing": "Importing...",
+    "importMatches": "📥 Import Matches",
+    "importResult": "✅ {{created}} created · {{skipped}} skipped",
+    "syncTitle": "Sync with football-data.org",
+    "syncSubtitle": "Connects to the external API to import matches and results automatically.",
+    "syncFixturesTitle": "Import Fixtures",
+    "syncFixturesDesc": "Imports all World Cup 2026 matches from the API. Safe to re-run — uses upsert by externalId.",
+    "syncResultsTitle": "Sync Results",
+    "syncResultsDesc": "Fetches finished matches and calculates prediction points automatically.",
+    "apiStatus": "API Status",
+    "apiStatusDesc": "Information about external API usage",
+    "stats": {
+      "totalMatches": "Total matches",
+      "pending": "Pending",
+      "finished": "Finished",
+      "teams": "Teams"
+    },
+    "freeTierHint": "💡 Free tier: 100 req/day. Run sync/results once per day after matches.",
+    "syncing": "Syncing...",
+    "run": "Run",
+    "done": "✅ Done",
+    "createdIgnored": "Created: {{created}} · Skipped: {{skipped}}",
+    "matchesScored": "Scored matches: {{value}}",
+    "totalApi": "API total: {{value}}",
+    "otherErrors": "+{{value}} more errors..."
   },
   "teamPicker": {
     "selectTeam": "Select a team...",
@@ -445,6 +515,7 @@
     "selectDate": "Select a date"
   },
   "phasePicker": {
-    "clearSelection": "Clear selection"
+    "clearSelection": "Clear selection",
+    "placeholder": "Phase..."
   }
 }

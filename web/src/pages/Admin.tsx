@@ -25,29 +25,29 @@ interface PreCupFinalizeResult { shameWinner: string; shameIndex: number; surpri
 interface SyncResult { ok: boolean; created?: number; skipped?: number; matchesScored?: number; total?: number; errors?: string[]; }
 
 const PHASES = [
-  { key: "group", label: "Fase de Grupos", multiplier: 1.0 },
-  { key: "r16", label: "Oitavas (1/16)", multiplier: 1.25 },
-  { key: "qf", label: "Quartas (1/4)", multiplier: 1.5 },
-  { key: "sf", label: "Semifinal (1/2)", multiplier: 1.75 },
-  { key: "final", label: "Final", multiplier: 3.0 },
+  { key: "group", labelKey: "adminPage.phases.group", multiplier: 1.0 },
+  { key: "r16", labelKey: "adminPage.phases.r16", multiplier: 1.25 },
+  { key: "qf", labelKey: "adminPage.phases.qf", multiplier: 1.5 },
+  { key: "sf", labelKey: "adminPage.phases.sf", multiplier: 1.75 },
+  { key: "final", labelKey: "adminPage.phases.final", multiplier: 3.0 },
 ];
 
 const ELIM_PHASES = [
-  { key: "group", label: "Fase de Grupos" },
-  { key: "r16", label: "Oitavas" },
-  { key: "qf", label: "Quartas" },
-  { key: "sf", label: "Semifinal" },
-  { key: "3rd", label: "3º/4º lugar" },
-  { key: "champion", label: "Campeão 🏆" },
+  { key: "group", labelKey: "adminPage.elim.group" },
+  { key: "r16", labelKey: "adminPage.elim.r16" },
+  { key: "qf", labelKey: "adminPage.elim.qf" },
+  { key: "sf", labelKey: "adminPage.elim.sf" },
+  { key: "3rd", labelKey: "adminPage.elim.third" },
+  { key: "champion", labelKey: "adminPage.elim.champion" },
 ];
 
 type TabType = "matches" | "results" | "teams" | "import" | "sync";
 const TABS: { key: TabType; label: string; icon: string }[] = [
-  { key: "matches", label: "Criar Jogos", icon: "➕" },
-  { key: "results", label: "Resultados", icon: "✅" },
-  { key: "teams", label: "Times", icon: "🌍" },
-  { key: "import", label: "Importar JSON", icon: "📥" },
-  { key: "sync", label: "Sincronizar API", icon: "🔄" },
+  { key: "matches", label: "adminPage.tabs.matches", icon: "➕" },
+  { key: "results", label: "adminPage.tabs.results", icon: "✅" },
+  { key: "teams", label: "adminPage.tabs.teams", icon: "🌍" },
+  { key: "import", label: "adminPage.tabs.import", icon: "📥" },
+  { key: "sync", label: "adminPage.tabs.sync", icon: "🔄" },
 ];
 
 function Btn({ children, variant = "primary", className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "danger" | "purple" }) {
@@ -72,11 +72,18 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function SyncCard({ icon, title, description, onRun, isPending, result, color }: {
+function SyncCard({ icon, title, description, onRun, isPending, result, color, syncingLabel, runLabel, doneLabel, createdIgnoredLabel, matchesScoredLabel, totalApiLabel, otherErrorsLabel }: {
   icon: string; title: string; description: string;
   onRun: () => void; isPending: boolean;
   result: SyncResult | null | undefined;
   color: string;
+  syncingLabel: string;
+  runLabel: string;
+  doneLabel: string;
+  createdIgnoredLabel: (created?: number, skipped?: number) => string;
+  matchesScoredLabel: (value?: number) => string;
+  totalApiLabel: (value?: number) => string;
+  otherErrorsLabel: (value: number) => string;
 }) {
   return (
     <div className={`bg-white/[0.03] border rounded-2xl p-5 space-y-4 ${color}`}>
@@ -96,21 +103,21 @@ function SyncCard({ icon, title, description, onRun, isPending, result, color }:
         {isPending ? (
           <span className="flex items-center justify-center gap-2">
             <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            Sincronizando...
+            {syncingLabel}
           </span>
-        ) : "Executar"}
+        ) : runLabel}
       </button>
       {result && (
         <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
           className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 text-xs text-green-400 space-y-1">
-          <p className="font-bold">✅ Concluído</p>
-          {result.created !== undefined && <p>Criados: {result.created} · Ignorados: {result.skipped}</p>}
-          {result.matchesScored !== undefined && <p>Jogos pontuados: {result.matchesScored}</p>}
-          {result.total !== undefined && <p>Total da API: {result.total}</p>}
+          <p className="font-bold">{doneLabel}</p>
+          {result.created !== undefined && <p>{createdIgnoredLabel(result.created, result.skipped)}</p>}
+          {result.matchesScored !== undefined && <p>{matchesScoredLabel(result.matchesScored)}</p>}
+          {result.total !== undefined && <p>{totalApiLabel(result.total)}</p>}
           {result.errors && result.errors.length > 0 && (
             <div className="text-orange-400 mt-1 space-y-0.5">
               {result.errors.slice(0, 5).map((e, i) => <p key={i}>⚠ {e}</p>)}
-              {result.errors.length > 5 && <p>+{result.errors.length - 5} outros erros...</p>}
+              {result.errors.length > 5 && <p>{otherErrorsLabel(result.errors.length - 5)}</p>}
             </div>
           )}
         </motion.div>
@@ -164,6 +171,8 @@ export default function Admin() {
   });
 
   const pendingMatches = matches.filter((m) => !m.isFinished);
+  const phases = PHASES.map((p) => ({ ...p, label: t(p.labelKey) }));
+  const elimPhases = ELIM_PHASES.map((p) => ({ ...p, label: t(p.labelKey) }));
 
   return (
     <div className="space-y-6">
@@ -174,14 +183,14 @@ export default function Admin() {
 
       {/* Tabs */}
       <div className="flex gap-2 flex-wrap">
-        {TABS.map((t) => (
-          <button key={t.key} onClick={() => setTab(t.key)}
+        {TABS.map((tabItem) => (
+          <button key={tabItem.key} onClick={() => setTab(tabItem.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition border ${
-              tab === t.key
+              tab === tabItem.key
                 ? "bg-[#f5c842]/10 border-[#f5c842]/30 text-[#f5c842]"
                 : "bg-white/[0.03] border-white/8 text-white/40 hover:text-white hover:border-white/20"
             }`}>
-            <span>{t.icon}</span>{t.label}
+            <span>{tabItem.icon}</span>{t(tabItem.label)}
           </button>
         ))}
       </div>
@@ -196,9 +205,9 @@ export default function Admin() {
                 
                 {/* Team A Picker */}
                 <TeamPicker
-                  label="Time A (Casa)"
+                  label={t("adminPage.teamA")}
                   emoji="🏠"
-                  description="Seleção mandante da partida"
+                  description={t("adminPage.teamADesc")}
                   accent="group-hover:border-blue-500/30"
                   options={teams}
                   value={newMatch.teamAId}
@@ -207,9 +216,9 @@ export default function Admin() {
 
                 {/* Team B Picker */}
                 <TeamPicker
-                  label="Time B (Fora)"
+                  label={t("adminPage.teamB")}
                   emoji="🚌"
-                  description="Seleção visitante da partida"
+                  description={t("adminPage.teamBDesc")}
                   accent="group-hover:border-red-500/30"
                   options={teams}
                   value={newMatch.teamBId}
@@ -218,15 +227,15 @@ export default function Admin() {
 
                 {/* Phase Picker */}
                 <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-5 transition hover:border-white/20">
-                  <div className="font-black text-white text-sm mb-3 uppercase tracking-wider opacity-50">Fase do Torneio</div>
+                  <div className="font-black text-white text-sm mb-3 uppercase tracking-wider opacity-50">{t("adminPage.tournamentPhase")}</div>
                   <PhasePicker 
-                    options={PHASES} // Uses the PHASES array with multipliers
+                    options={phases}
                     value={newMatch.phase}
                     onChange={(val) => setNewMatch((p) => ({ ...p, phase: val }))}
                      placeholder={t("adminPage.selectPhase")}
                   />
                   <div className="text-white/20 text-[10px] mt-2">
-                    O multiplicador de pontos será aplicado automaticamente.
+                    {t("adminPage.multiplierHint")}
                   </div>
                 </div>
 
@@ -271,9 +280,9 @@ export default function Admin() {
               {finalizePreCup.isSuccess && finalizePreCup.data && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 text-sm space-y-1">
-                  <p className="font-bold text-purple-300">🎯 Pré-Copa finalizada!</p>
-                  <p className="text-white/50">Vergonha: <span className="text-white">{finalizePreCup.data.shameWinner}</span> (índice: {finalizePreCup.data.shameIndex})</p>
-                  <p className="text-white/50">Surpresa: <span className="text-white">{finalizePreCup.data.surpriseWinner}</span> (índice: {finalizePreCup.data.surpriseIndex})</p>
+                  <p className="font-bold text-purple-300">{t("adminPage.preCupDone")}</p>
+                  <p className="text-white/50">{t("adminPage.shameResult", { team: finalizePreCup.data.shameWinner, index: finalizePreCup.data.shameIndex })}</p>
+                  <p className="text-white/50">{t("adminPage.surpriseResult", { team: finalizePreCup.data.surpriseWinner, index: finalizePreCup.data.surpriseIndex })}</p>
                 </motion.div>
               )}
               <div className="space-y-2">
@@ -295,7 +304,7 @@ export default function Admin() {
                         onChange={(e) => setScores((s) => ({ ...s, [match.id]: { ...s[match.id], b: e.target.value } }))}
                         className="w-12 h-9 text-center bg-white/5 border border-white/10 rounded-lg font-bold text-white text-sm focus:outline-none focus:border-white/30" />
                       <Btn onClick={() => { const s = scores[match.id]; if (s?.a !== undefined && s?.b !== undefined) finalizeMatch.mutate({ id: match.id, a: Number(s.a), b: Number(s.b) }); }}>
-                        Salvar
+                        {t("common.save")}
                       </Btn>
                     </div>
                   </div>
@@ -308,7 +317,7 @@ export default function Admin() {
           {/* TEAMS TAB */}
           {tab === "teams" && (
             <div className="space-y-3">
-              <h2 className="text-white font-black text-lg mb-4">Marcar Eliminações</h2>
+              <h2 className="text-white font-black text-lg mb-4">{t("adminPage.markEliminations")}</h2>
               
               {teams.map((team) => (
                 <div key={team.id} className="bg-white/[0.03] border border-white/8 rounded-xl px-4 py-3 flex items-center gap-3 flex-wrap">
@@ -336,10 +345,10 @@ export default function Admin() {
                   {/* New Phase Picker & Action Button */}
                   <div className="flex items-center gap-2">
                     <PhasePicker 
-                      options={ELIM_PHASES}
+                      options={elimPhases}
                       value={elimPhase[team.id] ?? ""}
                       onChange={(val) => setElimPhase((p) => ({ ...p, [team.id]: val }))}
-                      placeholder="Fase eliminada..."
+                      placeholder={t("adminPage.elimPlaceholder")}
                     />
                     
                     <Btn 
@@ -350,7 +359,7 @@ export default function Admin() {
                         if (phase) eliminateTeam.mutate({ id: team.id, phase }); 
                       }}
                     >
-                      Marcar
+                      {t("adminPage.mark")}
                     </Btn>
                   </div>
                 </div>
@@ -360,20 +369,20 @@ export default function Admin() {
 
           {/* IMPORT JSON */}
           {tab === "import" && (
-            <Section title="Importar Jogos via JSON">
-              <p className="text-white/30 text-xs">Use códigos FIFA (BRA, ARG...) e fases: group, r16, qf, sf, final.</p>
+            <Section title={t("adminPage.importTitle")}>
+              <p className="text-white/30 text-xs">{t("adminPage.importHint")}</p>
               <div className="bg-black/30 rounded-xl p-3 text-xs font-mono text-white/25 border border-white/5">
                 {'[\n  { "teamACode": "BRA", "teamBCode": "MEX", "phase": "group", "matchDate": "2026-06-15T18:00:00Z" }\n]'}
               </div>
-              <textarea rows={10} value={bulkJson} onChange={(e) => setBulkJson(e.target.value)} placeholder="Cole o JSON aqui..."
+              <textarea rows={10} value={bulkJson} onChange={(e) => setBulkJson(e.target.value)} placeholder={t("adminPage.pasteJson")}
                 className="w-full bg-white/5 border border-white/10 rounded-xl p-4 font-mono text-xs text-white placeholder-white/15 focus:outline-none focus:border-white/30 transition resize-none" />
               <div className="flex items-center gap-3">
                 <Btn onClick={() => bulkImport.mutate()} disabled={bulkImport.isPending || !bulkJson.trim()}>
-                  {bulkImport.isPending ? "Importando..." : "📥 Importar Jogos"}
+                  {bulkImport.isPending ? t("adminPage.importing") : t("adminPage.importMatches")}
                 </Btn>
                 {bulkImport.isSuccess && (
                   <span className="text-green-400 text-sm font-bold">
-                    ✅ {(bulkImport.data as BulkImportResult).created} criados · {(bulkImport.data as BulkImportResult).skipped} ignorados
+                    {t("adminPage.importResult", { created: (bulkImport.data as BulkImportResult).created, skipped: (bulkImport.data as BulkImportResult).skipped })}
                   </span>
                 )}
               </div>
@@ -389,43 +398,57 @@ export default function Admin() {
           {tab === "sync" && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-white font-black">Sincronização com football-data.org</h2>
-                <p className="text-white/30 text-xs mt-1">Conecta com a API externa para importar jogos e resultados automaticamente.</p>
+                 <h2 className="text-white font-black">{t("adminPage.syncTitle")}</h2>
+                 <p className="text-white/30 text-xs mt-1">{t("adminPage.syncSubtitle")}</p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
                 <SyncCard
                   icon="📅"
-                  title="Importar Fixtures"
-                  description="Importa todos os jogos da Copa 2026 da API. Safe de re-executar — usa upsert por externalId."
+                  title={t("adminPage.syncFixturesTitle")}
+                  description={t("adminPage.syncFixturesDesc")}
                   onRun={() => syncFixtures.mutate()}
                   isPending={syncFixtures.isPending}
                   result={syncFixtures.data}
                   color="border-blue-500/20"
+                  syncingLabel={t("adminPage.syncing")}
+                  runLabel={t("adminPage.run")}
+                  doneLabel={t("adminPage.done")}
+                  createdIgnoredLabel={(created, skipped) => t("adminPage.createdIgnored", { created, skipped })}
+                  matchesScoredLabel={(value) => t("adminPage.matchesScored", { value })}
+                  totalApiLabel={(value) => t("adminPage.totalApi", { value })}
+                  otherErrorsLabel={(value) => t("adminPage.otherErrors", { value })}
                 />
                 <SyncCard
                   icon="⚽"
-                  title="Sincronizar Resultados"
-                  description="Busca jogos finalizados hoje e calcula automaticamente os pontos de cada palpite."
+                  title={t("adminPage.syncResultsTitle")}
+                  description={t("adminPage.syncResultsDesc")}
                   onRun={() => syncResults.mutate()}
                   isPending={syncResults.isPending}
                   result={syncResults.data}
                   color="border-green-500/20"
+                  syncingLabel={t("adminPage.syncing")}
+                  runLabel={t("adminPage.run")}
+                  doneLabel={t("adminPage.done")}
+                  createdIgnoredLabel={(created, skipped) => t("adminPage.createdIgnored", { created, skipped })}
+                  matchesScoredLabel={(value) => t("adminPage.matchesScored", { value })}
+                  totalApiLabel={(value) => t("adminPage.totalApi", { value })}
+                  otherErrorsLabel={(value) => t("adminPage.otherErrors", { value })}
                 />
                 <div className="bg-white/[0.02] border border-white/6 rounded-2xl p-5 space-y-3">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl">📋</span>
                     <div>
-                      <div className="font-black text-white text-sm">Status da API</div>
-                      <div className="text-white/25 text-xs mt-0.5">Informações sobre o uso da API externa</div>
+                        <div className="font-black text-white text-sm">{t("adminPage.apiStatus")}</div>
+                        <div className="text-white/25 text-xs mt-0.5">{t("adminPage.apiStatusDesc")}</div>
                     </div>
                   </div>
                   <div className="space-y-2 text-xs">
                     {[
-                      { label: "Total de jogos", value: matches.length },
-                      { label: "Pendentes", value: matches.filter((m) => !m.isFinished).length },
-                      { label: "Finalizados", value: matches.filter((m) => m.isFinished).length },
-                      { label: "Times", value: teams.length },
+                      { label: t("adminPage.stats.totalMatches"), value: matches.length },
+                      { label: t("adminPage.stats.pending"), value: matches.filter((m) => !m.isFinished).length },
+                      { label: t("adminPage.stats.finished"), value: matches.filter((m) => m.isFinished).length },
+                      { label: t("adminPage.stats.teams"), value: teams.length },
                     ].map((s) => (
                       <div key={s.label} className="flex justify-between">
                         <span className="text-white/30">{s.label}</span>
@@ -434,7 +457,7 @@ export default function Admin() {
                     ))}
                   </div>
                   <div className="bg-yellow-500/8 border border-yellow-500/15 rounded-xl p-3 text-[10px] text-yellow-400/70">
-                    💡 Free tier: 100 req/dia. Execute sync/results 1x por dia após os jogos.
+                    {t("adminPage.freeTierHint")}
                   </div>
                 </div>
               </div>
