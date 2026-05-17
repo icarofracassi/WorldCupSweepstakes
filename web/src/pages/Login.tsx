@@ -47,6 +47,21 @@ export default function Login() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-md relative"
       >
+        {/* Return to Landing Button */}
+        <div className="mb-6">
+          <Link to="/">
+            <motion.button
+              whileHover={{ x: -4 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="inline-flex items-center gap-2 text-xs font-bold text-white/40 hover:text-[#f5c842] uppercase tracking-widest transition group"
+            >
+              <span className="text-sm transition-transform group-hover:translate-x-[-2px]">←</span>
+              {t("common.backToLanding", "Voltar ao início")}
+            </motion.button>
+          </Link>
+        </div>
+        
+        
         {/* Logo */}
         <div className="text-center mb-10">
           <motion.div
