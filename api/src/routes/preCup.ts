@@ -85,8 +85,10 @@ router.post("/finalize", authMiddleware, adminMiddleware, async (_req, res: Resp
     ok: true,
     champion: champion?.name,
     shameWinner: shameWinner?.name,
+    shameWinnerCode: shameWinner?.code,
     shameIndex: shameWinner?.shameIndex,
     surpriseWinner: surpriseWinner?.name,
+    surpriseWinnerCode: surpriseWinner?.code,
     surpriseIndex: surpriseWinner?.surpriseIndex,
     picksScored: scored,
   });

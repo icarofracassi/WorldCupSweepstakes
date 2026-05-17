@@ -17,6 +17,7 @@
     "activeLeague": "Active league"
   },
   "landing": {
+    "siteTitle": "World Cup 2026 Pool",
     "pointsAbbr": "pts",
     "scroll": "scroll",
     "nav": {
@@ -221,7 +222,8 @@
     "league": "League",
     "switchLanguage": "Switch language",
     "all": "All",
-    "backToLanding":"Back to the landing page"
+    "backToLanding":"Back to the landing page",
+    "group":"Group {{letter}}"
   },
   "login": {
     "title": "World Cup Pool 2026",
@@ -451,6 +453,14 @@
       "sync": "Sync API",
       "users": "Users"
     },
+    "common": {
+      "all": "All",
+      "group": "Group {{letter}}",
+      "adminRole": "ADMIN",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
     "phases": {
       "group": "Group Stage",
       "r16": "Round of 16",
@@ -466,6 +476,16 @@
       "third": "3rd/4th place",
       "champion": "Champion 🏆"
     },
+    "usersTitle": "Users ({{count}})",
+    "refresh": "Refresh",
+    "noPreCup": "no pre-cup",
+    "pointsAbbreviation": "pts",
+    "guessesPlural": "predictions",
+    "leaguesCount_one": "league",
+    "leaguesCount_other": "leagues",
+    "removeAdminTitle": "Remove admin privileges",
+    "makeAdminTitle": "Make administrator",
+    "deleteUserTitle": "Delete user account",
     "teamA": "Team A (Home)",
     "teamADesc": "Home side in the match",
     "teamB": "Team B (Away)",

@@ -21,7 +21,7 @@ function getFlagCode(code: string) { return FIFA_TO_ISO[code] ?? code; }
 interface Team { id: number; name: string; code: string; flagEmoji: string; fifaRanking: number; isTop14: boolean; eliminatedPhase: string | null; shameIndex: number | null; surpriseIndex: number | null; }
 interface Match { id: number; teamA: Team; teamB: Team; phase: string; phaseMultiplier: number; matchDate: string; scoreAReal: number | null; scoreBReal: number | null; isFinished: boolean; }
 interface BulkImportResult { created: number; skipped: number; errors: string[]; }
-interface PreCupFinalizeResult { shameWinner: string; shameIndex: number; surpriseWinner: string; surpriseIndex: number; }
+interface PreCupFinalizeResult { shameWinner: string; shameWinnerCode: string; shameIndex: number; surpriseWinner: string; surpriseWinnerCode: string; surpriseIndex: number; }
 interface SyncResult { ok: boolean; created?: number; skipped?: number; matchesScored?: number; total?: number; errors?: string[]; }
 interface AdminUser {
   id: number;
@@ -304,15 +304,25 @@ export default function Admin() {
               <div className="flex items-center justify-between flex-wrap gap-3">
                  <h2 className="text-white font-black">{t("adminPage.publishResults")}</h2>
                 <Btn variant="purple" onClick={() => finalizePreCup.mutate()} disabled={finalizePreCup.isPending}>
-                   🎯 {finalizePreCup.isPending ? t("adminPage.finalizing") : t("adminPage.finalizePreCup")}
+                    🎯 {finalizePreCup.isPending ? t("adminPage.finalizing") : t("adminPage.finalizePreCup")}
                 </Btn>
               </div>
               {finalizePreCup.isSuccess && finalizePreCup.data && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 text-sm space-y-1">
                   <p className="font-bold text-purple-300">{t("adminPage.preCupDone")}</p>
-                  <p className="text-white/50">{t("adminPage.shameResult", { team: finalizePreCup.data.shameWinner, index: finalizePreCup.data.shameIndex })}</p>
-                  <p className="text-white/50">{t("adminPage.surpriseResult", { team: finalizePreCup.data.surpriseWinner, index: finalizePreCup.data.surpriseIndex })}</p>
+                  <p className="text-white/50">
+                    {t("adminPage.shameResult", { 
+                      team: t(`teams.${finalizePreCup.data.shameWinnerCode}`, { defaultValue: finalizePreCup.data.shameWinner }), 
+                      index: finalizePreCup.data.shameIndex 
+                    })}
+                  </p>
+                  <p className="text-white/50">
+                    {t("adminPage.surpriseResult", { 
+                      team: t(`teams.${finalizePreCup.data.surpriseWinnerCode}`, { defaultValue: finalizePreCup.data.surpriseWinner }), 
+                      index: finalizePreCup.data.surpriseIndex 
+                    })}
+                  </p>
                 </motion.div>
               )}
               <div className="space-y-2">
@@ -320,10 +330,14 @@ export default function Admin() {
                   <div key={match.id} className="bg-white/[0.03] border border-white/8 rounded-xl px-4 py-3 flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div className="w-6 h-6 rounded-full overflow-hidden"><Flag code={getFlagCode(match.teamA.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} /></div>
-                      <span className="text-sm font-semibold text-white/80 truncate">{match.teamA.name}</span>
+                      <span className="text-sm font-semibold text-white/80 truncate">
+                        {t(`teams.${match.teamA.code}`, { defaultValue: match.teamA.name })}
+                      </span>
                       <span className="text-white/20">×</span>
                       <div className="w-6 h-6 rounded-full overflow-hidden"><Flag code={getFlagCode(match.teamB.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} /></div>
-                      <span className="text-sm font-semibold text-white/80 truncate">{match.teamB.name}</span>
+                      <span className="text-sm font-semibold text-white/80 truncate">
+                        {t(`teams.${match.teamB.code}`, { defaultValue: match.teamB.name })}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <input type="number" min={0} max={20} value={scores[match.id]?.a ?? ""}
@@ -359,7 +373,9 @@ export default function Admin() {
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white/80 text-sm truncate">{team.name}</span>
+                      <span className="font-semibold text-white/80 text-sm truncate">
+                        {t(`teams.${team.code}`, { defaultValue: team.name })}
+                      </span>
                       <span className="text-white/20 text-xs">#{team.fifaRanking}</span>
                       {team.isTop14 && (
                         <span className="text-[10px] bg-red-500/15 text-red-400 px-1.5 py-0.5 rounded font-bold">Top14</span>
@@ -497,10 +513,12 @@ export default function Admin() {
           {tab === "users" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-white font-black">Usuários ({users.length})</h2>
+                <h2 className="text-white font-black">
+                  {t("adminPage.usersTitle", { count: users.length, defaultValue: `Usuários (${users.length})` })}
+                </h2>
                 <button onClick={() => refetchUsers()}
                   className="text-xs text-white/30 hover:text-white transition px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
-                  ↻ Atualizar
+                  ↻ {t("adminPage.refresh", "Atualizar")}
                 </button>
               </div>
 
@@ -523,12 +541,12 @@ export default function Admin() {
                           <span className="text-sm font-bold text-white truncate">{u.name}</span>
                           {u.isAdmin && (
                             <span className="text-[10px] bg-[#f5c842]/15 text-[#f5c842] px-1.5 py-0.5 rounded font-bold">
-                              ADMIN
+                              {t("common.adminRole", "ADMIN")}
                             </span>
                           )}
                           {!u.hasPrecupPick && (
-                            <span className="text-[10px] bg-orange-500/10 text-orange-400 px-1.5 py-0.5 rounded">
-                              sem pré-copa
+                            <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">
+                              {t("adminPage.noPreCup", "sem pré-copa")}
                             </span>
                           )}
                         </div>
@@ -540,15 +558,20 @@ export default function Admin() {
                     <div className="flex items-center gap-4 text-xs text-white/30 flex-shrink-0">
                       <div className="text-center hidden sm:block">
                         <div className="font-black text-white">{u.totalPoints}</div>
-                        <div>pts</div>
+                        <div>{t("adminPage.pointsAbbreviation", "pts")}</div>
                       </div>
                       <div className="text-center hidden sm:block">
                         <div className="font-black text-white">{u.predictionsCount}</div>
-                        <div>palpites</div>
+                        <div>{t("adminPage.guessesPlural", "palpites")}</div>
                       </div>
                       <div className="text-center hidden md:block">
                         <div className="font-black text-white">{u.leagues.length}</div>
-                        <div>liga{u.leagues.length !== 1 ? "s" : ""}</div>
+                        <div>
+                          {t("adminPage.leaguesCount", { 
+                            count: u.leagues.length, 
+                            defaultValue: u.leagues.length !== 1 ? "ligas" : "liga" 
+                          })}
+                        </div>
                       </div>
                     </div>
 
@@ -557,14 +580,14 @@ export default function Admin() {
                       <button
                         onClick={() => toggleAdminMutation.mutate(u.id)}
                         disabled={toggleAdminMutation.isPending}
-                        title={u.isAdmin ? "Remover admin" : "Tornar admin"}
+                        title={u.isAdmin ? t("adminPage.removeAdminTitle", "Remover admin") : t("adminPage.makeAdminTitle", "Tornar admin")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
                           u.isAdmin
                             ? "bg-[#f5c842]/10 border-[#f5c842]/25 text-[#f5c842] hover:bg-red-500/10 hover:border-red-500/25 hover:text-red-400"
                             : "bg-white/5 border-white/10 text-white/40 hover:bg-[#f5c842]/10 hover:border-[#f5c842]/25 hover:text-[#f5c842]"
                         }`}
                       >
-                        {u.isAdmin ? "★ Admin" : "☆ Admin"}
+                        {u.isAdmin ? `★ ${t("common.adminRole", "Admin")}` : `☆ ${t("common.adminRole", "Admin")}`}
                       </button>
 
                       {confirmDeleteId === u.id ? (
@@ -573,31 +596,27 @@ export default function Admin() {
                             onClick={() => { deleteUserMutation.mutate(u.id); setConfirmDeleteId(null); }}
                             className="px-3 py-1.5 rounded-lg text-xs font-black bg-red-500 text-white hover:bg-red-600 transition"
                           >
-                            Confirmar
+                            {t("adminPage.common.confirm", "Confirmar")}
                           </button>
                           <button
                             onClick={() => setConfirmDeleteId(null)}
                             className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 text-white/40 hover:text-white transition"
                           >
-                            Cancelar
+                            {t("adminPage.common.cancel", "Cancelar")}
                           </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => setConfirmDeleteId(u.id)}
-                          title="Deletar usuário"
+                          title={t("adminPage.deleteUserTitle", "Deletar usuário")}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition"
                         >
-                          🗑 Deletar
+                          🗑 {t("adminPage.common.delete", "Deletar")}
                         </button>
                       )}
                     </div>
                   </div>
                 ))}
-
-                {users.length === 0 && (
-                  <div className="text-center py-10 text-white/20 text-sm">Nenhum usuário encontrado.</div>
-                )}
               </div>
             </div>
           )}

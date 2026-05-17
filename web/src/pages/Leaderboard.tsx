@@ -220,7 +220,9 @@ export default function Leaderboard() {
                         <Flag code={getFlagCode(entry.preCupPick.champion.code ?? "")}
                           style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                       </div>
-                      <span className="text-[10px] text-white/25">{entry.preCupPick.champion.name}</span>
+                      <span className="text-[10px] text-white/25 truncate max-w-[120px]">
+                        {t(`teams.${entry.preCupPick.champion.code}`, { defaultValue: entry.preCupPick.champion.name })}
+                      </span>
                     </div>
                   ) : (
                      <span className="text-[10px] text-orange-400/50">{t("leaderboardPage.noPreCup")}</span>

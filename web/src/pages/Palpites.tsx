@@ -86,7 +86,7 @@ export default function Palpites() {
       const res = await api.get(`/predictions/match/${matchId}`, params);
       const preds = res.data.map((p: any) => ({
         userId: p.userId,
-         userName: p.user?.name ?? userMap[p.userId] ?? t("predictionsPage.participant"),
+        userName: p.user?.name ?? userMap[p.userId] ?? t("predictionsPage.participant"),
         scoreA: p.scoreA,
         scoreB: p.scoreB,
         pointsEarned: p.pointsEarned,
@@ -99,6 +99,11 @@ export default function Palpites() {
 
   const finishedMatches = matches.filter((m) => m.isFinished);
   const upcomingMatches = matches.filter((m) => !m.isFinished && new Date() < new Date(m.matchDate));
+
+  // Closure-based helper like the Jogos page to handle localized group strings safely
+  const groupLabel = (g: string): string => {
+    return t("common.group", { defaultValue: "Grupo {{letter}}", letter: g.replace("GROUP_", "") });
+  };
 
   function MatchRow({ match }: { match: Match }) {
     const isOpen = selectedMatchId === match.id;
@@ -114,20 +119,24 @@ export default function Palpites() {
             <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-white/10 flex-shrink-0">
               <Flag code={getFlagCode(match.teamA.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
             </div>
-            <span className="text-sm font-bold text-white/80 hidden sm:block truncate">{match.teamA.name}</span>
+            <span className="text-sm font-bold text-white/80 hidden sm:block truncate">
+              {t(`teams.${match.teamA.code}`, { defaultValue: match.teamA.name })}
+            </span>
             {match.isFinished ? (
               <span className="text-sm font-black text-white mx-1 flex-shrink-0">{match.scoreAReal}–{match.scoreBReal}</span>
             ) : (
               <span className="text-xs text-white/25 mx-1 flex-shrink-0">{format(kickoff, "HH:mm")}</span>
             )}
-            <span className="text-sm font-bold text-white/80 hidden sm:block truncate">{match.teamB.name}</span>
+            <span className="text-sm font-bold text-white/80 hidden sm:block truncate">
+              {t(`teams.${match.teamB.code}`, { defaultValue: match.teamB.name })}
+            </span>
             <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-white/10 flex-shrink-0">
               <Flag code={getFlagCode(match.teamB.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
             </div>
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             {match.groupName && (
-               <span className="text-[10px] text-white/20 hidden sm:block">{match.groupName.replace("GROUP_", `${t("predictionsPage.groupPrefix")} `)}</span>
+               <span className="text-[10px] text-white/20 hidden sm:block">{groupLabel(match.groupName)}</span>
             )}
             <span className="text-[10px] text-white/20">{format(kickoff, "dd/MM", { locale: ptBR })}</span>
              <span className={`text-xs transition ${isOpen ? "text-white" : "text-white/20"}`}>{isOpen ? t("predictionsPage.collapse") : t("predictionsPage.expand")}</span>
@@ -183,7 +192,7 @@ export default function Palpites() {
                         </div>
                         <span className={`text-sm flex-1 truncate ${isMe ? "font-black text-[#f5c842]" : "font-semibold text-white/60"}`}>
                           {pred.userName}
-                           {isMe && <span className="ml-1 text-[10px] opacity-50">{t("predictionsPage.you")}</span>}
+                          {isMe && <span className="ml-1 text-[10px] opacity-50">{t("predictionsPage.you")}</span>}
                         </span>
                         <div className="flex items-center gap-1.5">
                           <span className={`font-black text-sm ${
@@ -312,9 +321,13 @@ export default function Palpites() {
               <div className="w-6 h-6 rounded-full overflow-hidden ring-1 ring-white/10">
                 <Flag code={getFlagCode(m.teamA.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
               </div>
-              <span className="text-sm text-white/50 flex-1">{m.teamA.name}</span>
+              <span className="text-sm text-white/50 flex-1 truncate">
+                {t(`teams.${m.teamA.code}`, { defaultValue: m.teamA.name })}
+              </span>
               <span className="text-white/20 text-xs">{format(new Date(m.matchDate), "dd/MM HH:mm")}</span>
-              <span className="text-sm text-white/50 flex-1 text-right">{m.teamB.name}</span>
+              <span className="text-sm text-white/50 flex-1 text-right truncate">
+                {t(`teams.${m.teamB.code}`, { defaultValue: m.teamB.name })}
+              </span>
               <div className="w-6 h-6 rounded-full overflow-hidden ring-1 ring-white/10">
                 <Flag code={getFlagCode(m.teamB.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
               </div>
