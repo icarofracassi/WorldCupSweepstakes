@@ -1,8 +1,16 @@
 import { Router, Response } from "express";
+import rateLimit from "express-rate-limit";
 import { prisma } from "../prisma";
 import { authMiddleware, adminMiddleware, AuthRequest } from "../middleware/auth";
 
 const router = Router();
+const adminWriteLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { error: "Muitas ações administrativas. Tente novamente em instantes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 const parseUserIdParam = (value: string) => {
   const id = Number(value);
   return Number.isInteger(id) && id > 0 ? id : null;
@@ -47,7 +55,7 @@ router.get("/users", authMiddleware, adminMiddleware, async (_req, res: Response
 });
 
 // Delete a user (cascades predictions + preCupPick + password reset tokens)
-router.delete("/users/:id", authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
+router.delete("/users/:id", adminWriteLimiter, authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
   const id = parseUserIdParam(req.params.id);
   if (!id) return res.status(400).json({ error: "ID de usuário inválido" });
 
@@ -81,7 +89,7 @@ router.delete("/users/:id", authMiddleware, adminMiddleware, async (req: AuthReq
 });
 
 // Toggle admin status
-router.patch("/users/:id/admin", authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
+router.patch("/users/:id/admin", adminWriteLimiter, authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
   const id = parseUserIdParam(req.params.id);
   if (!id) return res.status(400).json({ error: "ID de usuário inválido" });
 
@@ -101,8 +109,8 @@ router.patch("/users/:id/admin", authMiddleware, adminMiddleware, async (req: Au
   res.json(updated);
 });
 
-// Reset all predictions from a user (useful for data corrections)
-router.delete("/users/:id/predictions", authMiddleware, adminMiddleware, async (req, res: Response) => {
+// Delete all predictions from a user (useful for data corrections)
+router.delete("/users/:id/predictions", adminWriteLimiter, authMiddleware, adminMiddleware, async (req, res: Response) => {
   const id = parseUserIdParam(req.params.id);
   if (!id) return res.status(400).json({ error: "ID de usuário inválido" });
 
