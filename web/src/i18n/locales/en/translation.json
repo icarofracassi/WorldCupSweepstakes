@@ -447,7 +447,8 @@
       "results": "Results",
       "teams": "Teams",
       "import": "Import JSON",
-      "sync": "Sync API"
+      "sync": "Sync API",
+      "users": "Users"
     },
     "phases": {
       "group": "Group Stage",

@@ -447,7 +447,8 @@
       "results": "Resultados",
       "teams": "Times",
       "import": "Importar JSON",
-      "sync": "Sincronizar API"
+      "sync": "Sincronizar API",
+      "users": "Usuários"
     },
     "phases": {
       "group": "Fase de Grupos",
