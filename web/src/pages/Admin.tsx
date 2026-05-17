@@ -21,7 +21,7 @@ function getFlagCode(code: string) { return FIFA_TO_ISO[code] ?? code; }
 interface Team { id: number; name: string; code: string; flagEmoji: string; fifaRanking: number; isTop14: boolean; eliminatedPhase: string | null; shameIndex: number | null; surpriseIndex: number | null; }
 interface Match { id: number; teamA: Team; teamB: Team; phase: string; phaseMultiplier: number; matchDate: string; scoreAReal: number | null; scoreBReal: number | null; isFinished: boolean; }
 interface BulkImportResult { created: number; skipped: number; errors: string[]; }
-interface PreCupFinalizeResult { shameWinner: string; shameIndex: number; surpriseWinner: string; surpriseIndex: number; }
+interface PreCupFinalizeResult { shameWinner: string; shameWinnerCode: string; shameIndex: number; surpriseWinner: string; surpriseWinnerCode: string; surpriseIndex: number; }
 interface SyncResult { ok: boolean; created?: number; skipped?: number; matchesScored?: number; total?: number; errors?: string[]; }
 interface AdminUser {
   id: number;
@@ -304,15 +304,25 @@ export default function Admin() {
               <div className="flex items-center justify-between flex-wrap gap-3">
                  <h2 className="text-white font-black">{t("adminPage.publishResults")}</h2>
                 <Btn variant="purple" onClick={() => finalizePreCup.mutate()} disabled={finalizePreCup.isPending}>
-                   🎯 {finalizePreCup.isPending ? t("adminPage.finalizing") : t("adminPage.finalizePreCup")}
+                    🎯 {finalizePreCup.isPending ? t("adminPage.finalizing") : t("adminPage.finalizePreCup")}
                 </Btn>
               </div>
               {finalizePreCup.isSuccess && finalizePreCup.data && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 text-sm space-y-1">
                   <p className="font-bold text-purple-300">{t("adminPage.preCupDone")}</p>
-                  <p className="text-white/50">{t("adminPage.shameResult", { team: finalizePreCup.data.shameWinner, index: finalizePreCup.data.shameIndex })}</p>
-                  <p className="text-white/50">{t("adminPage.surpriseResult", { team: finalizePreCup.data.surpriseWinner, index: finalizePreCup.data.surpriseIndex })}</p>
+                  <p className="text-white/50">
+                    {t("adminPage.shameResult", { 
+                      team: t(`teams.${finalizePreCup.data.shameWinnerCode}`, { defaultValue: finalizePreCup.data.shameWinner }), 
+                      index: finalizePreCup.data.shameIndex 
+                    })}
+                  </p>
+                  <p className="text-white/50">
+                    {t("adminPage.surpriseResult", { 
+                      team: t(`teams.${finalizePreCup.data.surpriseWinnerCode}`, { defaultValue: finalizePreCup.data.surpriseWinner }), 
+                      index: finalizePreCup.data.surpriseIndex 
+                    })}
+                  </p>
                 </motion.div>
               )}
               <div className="space-y-2">
@@ -320,10 +330,14 @@ export default function Admin() {
                   <div key={match.id} className="bg-white/[0.03] border border-white/8 rounded-xl px-4 py-3 flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div className="w-6 h-6 rounded-full overflow-hidden"><Flag code={getFlagCode(match.teamA.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} /></div>
-                      <span className="text-sm font-semibold text-white/80 truncate">{match.teamA.name}</span>
+                      <span className="text-sm font-semibold text-white/80 truncate">
+                        {t(`teams.${match.teamA.code}`, { defaultValue: match.teamA.name })}
+                      </span>
                       <span className="text-white/20">×</span>
                       <div className="w-6 h-6 rounded-full overflow-hidden"><Flag code={getFlagCode(match.teamB.code)} style={{ width:"100%", height:"100%", objectFit:"cover" }} /></div>
-                      <span className="text-sm font-semibold text-white/80 truncate">{match.teamB.name}</span>
+                      <span className="text-sm font-semibold text-white/80 truncate">
+                        {t(`teams.${match.teamB.code}`, { defaultValue: match.teamB.name })}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <input type="number" min={0} max={20} value={scores[match.id]?.a ?? ""}
@@ -359,7 +373,9 @@ export default function Admin() {
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white/80 text-sm truncate">{team.name}</span>
+                      <span className="font-semibold text-white/80 text-sm truncate">
+                        {t(`teams.${team.code}`, { defaultValue: team.name })}
+                      </span>
                       <span className="text-white/20 text-xs">#{team.fifaRanking}</span>
                       {team.isTop14 && (
                         <span className="text-[10px] bg-red-500/15 text-red-400 px-1.5 py-0.5 rounded font-bold">Top14</span>
