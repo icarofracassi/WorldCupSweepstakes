@@ -3,18 +3,28 @@ import { prisma } from "../prisma";
 import { authMiddleware, adminMiddleware, AuthRequest } from "../middleware/auth";
 
 const router = Router();
+const parseUserIdParam = (value: string) => {
+  const id = Number(value);
+  return Number.isInteger(id) && id > 0 ? id : null;
+};
 
 // Get all users with stats
 router.get("/users", authMiddleware, adminMiddleware, async (_req, res: Response) => {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "asc" },
     include: {
-      predictions: { select: { id: true, pointsEarned: true } },
       preCupPick: { select: { pointsEarned: true } },
       leagues: { select: { id: true, name: true } },
       _count: { select: { predictions: true } },
     },
   });
+  const predictionTotals = await prisma.prediction.groupBy({
+    by: ["userId"],
+    _sum: { pointsEarned: true },
+  });
+  const predictionTotalByUser = new Map(
+    predictionTotals.map((item) => [item.userId, item._sum.pointsEarned ?? 0])
+  );
 
   const result = users.map((u) => ({
     id: u.id,
@@ -25,7 +35,7 @@ router.get("/users", authMiddleware, adminMiddleware, async (_req, res: Response
     predictionsCount: u._count.predictions,
     totalPoints: parseFloat(
       (
-        u.predictions.reduce((s, p) => s + p.pointsEarned, 0) +
+        (predictionTotalByUser.get(u.id) ?? 0) +
         (u.preCupPick?.pointsEarned ?? 0)
       ).toFixed(2)
     ),
@@ -36,9 +46,10 @@ router.get("/users", authMiddleware, adminMiddleware, async (_req, res: Response
   res.json(result);
 });
 
-// Delete a user (cascades predictions + preCupPick)
+// Delete a user (cascades predictions + preCupPick + password reset tokens)
 router.delete("/users/:id", authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
-  const id = Number(req.params.id);
+  const id = parseUserIdParam(req.params.id);
+  if (!id) return res.status(400).json({ error: "ID de usuário inválido" });
 
   if (id === req.userId) {
     return res.status(400).json({ error: "Você não pode deletar sua própria conta" });
@@ -50,6 +61,7 @@ router.delete("/users/:id", authMiddleware, adminMiddleware, async (req: AuthReq
   // Delete in correct order to respect FK constraints
   await prisma.prediction.deleteMany({ where: { userId: id } });
   await prisma.preCupPick.deleteMany({ where: { userId: id } });
+  await prisma.passwordResetToken.deleteMany({ where: { userId: id } });
 
   // Disconnect from leagues (don't delete the leagues themselves)
   await prisma.user.update({
@@ -70,7 +82,8 @@ router.delete("/users/:id", authMiddleware, adminMiddleware, async (req: AuthReq
 
 // Toggle admin status
 router.patch("/users/:id/admin", authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
-  const id = Number(req.params.id);
+  const id = parseUserIdParam(req.params.id);
+  if (!id) return res.status(400).json({ error: "ID de usuário inválido" });
 
   if (id === req.userId) {
     return res.status(400).json({ error: "Você não pode alterar seu próprio status de admin" });
@@ -88,9 +101,11 @@ router.patch("/users/:id/admin", authMiddleware, adminMiddleware, async (req: Au
   res.json(updated);
 });
 
-// Reset a user's predictions for a specific match (useful for data corrections)
-router.delete("/users/:id/predictions", authMiddleware, adminMiddleware, async (_req, res: Response) => {
-  const id = Number(_req.params.id);
+// Reset all predictions from a user (useful for data corrections)
+router.delete("/users/:id/predictions", authMiddleware, adminMiddleware, async (req, res: Response) => {
+  const id = parseUserIdParam(req.params.id);
+  if (!id) return res.status(400).json({ error: "ID de usuário inválido" });
+
   const deleted = await prisma.prediction.deleteMany({ where: { userId: id } });
   res.json({ ok: true, deleted: deleted.count });
 });
