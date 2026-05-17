@@ -8,6 +8,7 @@ import { getLeaderboard, getMatches, api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { useLeague } from "../context/LeagueContext";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const FIFA_TO_ISO: Record<string, string> = {
   GER:"DE",SWE:"SE",HAI:"HT",URU:"UY",MEX:"MX",SUI:"CH",NED:"NL",DEN:"DK",POR:"PT",ESP:"ES",FRA:"FR",
@@ -29,10 +30,11 @@ interface UserPred { userId: number; userName: string; scoreA: number; scoreB: n
 interface LeaderboardEntry { id: number; name: string; total: number; }
 
 const PHASE_LABELS: Record<string, string> = {
-  group: "Grupos", r16: "Oitavas", qf: "Quartas", sf: "Semi", final: "Final",
+  group: "predictionsPage.phases.group", r16: "predictionsPage.phases.r16", qf: "predictionsPage.phases.qf", sf: "predictionsPage.phases.sf", final: "predictionsPage.phases.final",
 };
 
 export default function Palpites() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { activeLeague, leagues } = useLeague();
   const [scope, setScope] = useState<number | "all">(activeLeague?.id ?? "all");
@@ -84,7 +86,7 @@ export default function Palpites() {
       const res = await api.get(`/predictions/match/${matchId}`, params);
       const preds = res.data.map((p: any) => ({
         userId: p.userId,
-        userName: p.user?.name ?? userMap[p.userId] ?? "Participante",
+         userName: p.user?.name ?? userMap[p.userId] ?? t("predictionsPage.participant"),
         scoreA: p.scoreA,
         scoreB: p.scoreB,
         pointsEarned: p.pointsEarned,
@@ -125,10 +127,10 @@ export default function Palpites() {
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             {match.groupName && (
-              <span className="text-[10px] text-white/20 hidden sm:block">{match.groupName.replace("GROUP_", "Gr. ")}</span>
+               <span className="text-[10px] text-white/20 hidden sm:block">{match.groupName.replace("GROUP_", `${t("predictionsPage.groupPrefix")} `)}</span>
             )}
             <span className="text-[10px] text-white/20">{format(kickoff, "dd/MM", { locale: ptBR })}</span>
-            <span className={`text-xs transition ${isOpen ? "text-white" : "text-white/20"}`}>{isOpen ? "▲" : "▼"}</span>
+             <span className={`text-xs transition ${isOpen ? "text-white" : "text-white/20"}`}>{isOpen ? t("predictionsPage.collapse") : t("predictionsPage.expand")}</span>
           </div>
         </button>
 
@@ -141,17 +143,17 @@ export default function Palpites() {
             {selectedLeague && (
               <div className="text-[10px] text-white/20 mb-3 flex items-center gap-1">
                 <span>🏟️</span>
-                <span>Mostrando apenas membros de <span className="text-white/40">{selectedLeague.name}</span></span>
+                 <span>{t("predictionsPage.showingLeagueMembers", { league: selectedLeague.name })}</span>
               </div>
             )}
 
             {loadingPreds ? (
-              <div className="text-center py-4 text-white/20 text-sm animate-pulse">Carregando palpites...</div>
+               <div className="text-center py-4 text-white/20 text-sm animate-pulse">{t("predictionsPage.loadingPredictions")}</div>
             ) : matchPreds.length === 0 ? (
               <div className="text-center py-4 text-white/15 text-sm">
                 {!match.isFinished && new Date() < new Date(match.matchDate)
-                  ? "🔒 Palpites visíveis após o kickoff"
-                  : "Nenhum palpite feito ainda."}
+                   ? t("predictionsPage.visibleAfterKickoff")
+                   : t("predictionsPage.noPredictionsYet")}
               </div>
             ) : (
               <div className="grid gap-2 sm:grid-cols-2">
@@ -181,7 +183,7 @@ export default function Palpites() {
                         </div>
                         <span className={`text-sm flex-1 truncate ${isMe ? "font-black text-[#f5c842]" : "font-semibold text-white/60"}`}>
                           {pred.userName}
-                          {isMe && <span className="ml-1 text-[10px] opacity-50">você</span>}
+                           {isMe && <span className="ml-1 text-[10px] opacity-50">{t("predictionsPage.you")}</span>}
                         </span>
                         <div className="flex items-center gap-1.5">
                           <span className={`font-black text-sm ${
@@ -207,8 +209,8 @@ export default function Palpites() {
 
             {match.isFinished && matchPreds.length > 0 && (
               <div className="flex gap-4 mt-3 text-[10px] text-white/15">
-                <span><span className="text-green-400">✓</span> Placar exato</span>
-                <span><span className="text-yellow-400">~</span> Vencedor certo</span>
+                 <span><span className="text-green-400">✓</span> {t("predictionsPage.legendExact")}</span>
+                 <span><span className="text-yellow-400">~</span> {t("predictionsPage.legendWinner")}</span>
               </div>
             )}
 
@@ -220,7 +222,7 @@ export default function Palpites() {
                 myPred.pointsEarned > 0 ? "bg-blue-500/10 text-blue-400" :
                 "bg-white/5 text-white/20"
               }`}>
-                Seu palpite: {myPred.scoreA}–{myPred.scoreB} → {myPred.pointsEarned} pontos
+                 {t("predictionsPage.yourPredictionSummary", { a: myPred.scoreA, b: myPred.scoreB, points: myPred.pointsEarned })}
               </div>
             )}
           </motion.div>
@@ -232,14 +234,14 @@ export default function Palpites() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-white">👁 Palpites de Todos</h1>
+         <h1 className="text-2xl font-black text-white">{t("predictionsPage.title")}</h1>
         <div className="flex items-center gap-2 mt-1">
           {selectedLeague ? (
             <span className="text-xs bg-[#f5c842]/10 border border-[#f5c842]/20 text-[#f5c842] px-2.5 py-1 rounded-full font-bold">
               🏟️ {selectedLeague.name}
             </span>
           ) : (
-            <span className="text-xs text-white/25">Todos os participantes</span>
+             <span className="text-xs text-white/25">{t("predictionsPage.allParticipants")}</span>
           )}
         </div>
       </div>
@@ -252,7 +254,7 @@ export default function Palpites() {
               ? "bg-white text-black border-white"
               : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
           }`}>
-          Todos
+           {t("common.all")}
         </button>
         {leagues.map((league) => (
           <button key={league.id} onClick={() => chooseScope(league.id)}
@@ -271,10 +273,10 @@ export default function Palpites() {
         <div className="bg-white/[0.02] border border-white/8 border-dashed rounded-2xl p-4 flex items-center gap-3">
           <span className="text-xl">🏟️</span>
           <div className="flex-1 text-xs text-white/30">
-            Sem liga ativa — vendo palpites de todos os participantes.
+             {t("predictionsPage.noActiveLeague")}
           </div>
           <Link to="/liga" className="text-xs text-[#f5c842]/60 hover:text-[#f5c842] font-bold transition flex-shrink-0">
-            Criar liga →
+             {t("predictionsPage.createLeague")}
           </Link>
         </div>
       )}
@@ -287,16 +289,16 @@ export default function Palpites() {
               selectedPhase === key
                 ? "bg-[#f5c842] text-black border-[#f5c842]"
                 : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
-            }`}>{label}</button>
+            }`}>{t(label)}</button>
         ))}
       </div>
 
-      {isLoading && <div className="text-center py-20 text-white/20 animate-pulse">Carregando jogos...</div>}
+       {isLoading && <div className="text-center py-20 text-white/20 animate-pulse">{t("games.loadingMatches")}</div>}
 
       {/* Finished */}
       {finishedMatches.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-xs font-bold text-white/25 uppercase tracking-widest">Jogos Encerrados</h2>
+           <h2 className="text-xs font-bold text-white/25 uppercase tracking-widest">{t("predictionsPage.finishedMatches")}</h2>
           {finishedMatches.map((m) => <MatchRow key={m.id} match={m} />)}
         </div>
       )}
@@ -304,7 +306,7 @@ export default function Palpites() {
       {/* Upcoming */}
       {upcomingMatches.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-xs font-bold text-white/25 uppercase tracking-widest">Próximos Jogos</h2>
+           <h2 className="text-xs font-bold text-white/25 uppercase tracking-widest">{t("predictionsPage.upcomingMatches")}</h2>
           {upcomingMatches.map((m) => (
             <div key={m.id} className="flex items-center gap-4 px-4 py-3 bg-white/[0.02] border border-white/6 rounded-2xl opacity-40">
               <div className="w-6 h-6 rounded-full overflow-hidden ring-1 ring-white/10">
@@ -323,7 +325,7 @@ export default function Palpites() {
       )}
 
       {!isLoading && matches.length === 0 && (
-        <div className="text-center py-20 text-white/15">Nenhum jogo nesta fase ainda.</div>
+         <div className="text-center py-20 text-white/15">{t("predictionsPage.noMatchesInPhase")}</div>
       )}
     </div>
   );

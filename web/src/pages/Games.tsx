@@ -3,8 +3,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import Flag from "react-world-flags";
 import { format, isToday, isTomorrow, isYesterday } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { enUS, ptBR } from "date-fns/locale";
 import { getMatches, getMyPredictions, submitPrediction } from "../api/client";
+import { useTranslation } from "react-i18next";
 
 interface Team { id: number; name: string; code: string; }
 interface Match {
@@ -16,8 +17,8 @@ interface Match {
 interface Prediction { matchId: number; scoreA: number; scoreB: number; pointsEarned: number; }
 
 const PHASE_LABELS: Record<string, string> = {
-  group: "Fase de Grupos", r16: "Oitavas (1/16)",
-  qf: "Quartas", sf: "Semifinal", final: "Final",
+  group: "games.phases.group", r16: "games.phases.r16",
+  qf: "games.phases.qf", sf: "games.phases.sf", final: "games.phases.final",
 };
 
 const FIFA_TO_ISO: Record<string, string> = {
@@ -38,12 +39,18 @@ function getFlagCode(code: string): string { return FIFA_TO_ISO[code] ?? code; }
 
 function groupLabel(g: string): string { return "Grupo " + g.replace("GROUP_", ""); }
 
-function dayLabel(dateStr: string): string {
+function dayLabel(
+  dateStr: string,
+  labels: { today: string; tomorrow: string; yesterday: string },
+  locale: typeof ptBR | typeof enUS,
+  isPortuguese: boolean,
+): string {
   const d = new Date(dateStr);
-  if (isToday(d)) return "Hoje";
-  if (isTomorrow(d)) return "Amanhã";
-  if (isYesterday(d)) return "Ontem";
-  return format(d, "EEEE, dd 'de' MMM", { locale: ptBR });
+  if (isToday(d)) return labels.today;
+  if (isTomorrow(d)) return labels.tomorrow;
+  if (isYesterday(d)) return labels.yesterday;
+  const pattern = isPortuguese ? "EEEE, dd 'de' MMM" : "EEEE, dd MMM";
+  return format(d, pattern, { locale });
 }
 
 function groupByDay(matches: Match[]): Record<string, Match[]> {
@@ -67,6 +74,9 @@ function TeamFlag({ code, name }: { code: string; name: string }) {
 }
 
 export default function Jogos() {
+  const { t, i18n } = useTranslation();
+  const isPortuguese = i18n.language.startsWith("pt");
+  const dateLocale = isPortuguese ? ptBR : enUS;
   const qc = useQueryClient();
   const [selectedPhase, setSelectedPhase] = useState("group");
   const [selectedGroup, setSelectedGroup] = useState("ALL");
@@ -165,8 +175,8 @@ export default function Jogos() {
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white">⚽ Jogos & Palpites</h1>
-          <p className="text-white/30 text-sm mt-0.5">{myPreds.length} palpites feitos</p>
+          <h1 className="text-2xl font-black text-white">{t("games.title")}</h1>
+          <p className="text-white/30 text-sm mt-0.5">{t("games.predictionsDone", { count: myPreds.length })}</p>
         </div>
         <AnimatePresence>
           {pendingWithInput > 0 && (
@@ -182,7 +192,7 @@ export default function Jogos() {
                   : "bg-[#f5c842] text-black hover:bg-yellow-400 shadow-yellow-500/20"
               }`}
             >
-              {savingAll ? "Salvando..." : allSaved ? "✅ Todos salvos!" : `💾 Salvar todos (${pendingWithInput})`}
+               {savingAll ? t("games.saving") : allSaved ? t("games.allSaved") : t("games.saveAllWithCount", { count: pendingWithInput })}
             </motion.button>
           )}
         </AnimatePresence>
@@ -198,7 +208,7 @@ export default function Jogos() {
                 ? "bg-[#f5c842] text-black border-[#f5c842]"
                 : "bg-white/5 text-white/40 border-white/10 hover:border-white/30 hover:text-white"
             }`}
-          >{label}</button>
+           >{t(label)}</button>
         ))}
       </div>
 
@@ -213,26 +223,30 @@ export default function Jogos() {
                   ? "bg-white/15 text-white border-white/30"
                   : "bg-white/[0.03] text-white/30 border-white/8 hover:border-white/20 hover:text-white/60"
               }`}
-            >{g === "ALL" ? "Todos" : groupLabel(g)}</button>
+             >{g === "ALL" ? t("common.all") : groupLabel(g)}</button>
           ))}
         </div>
       )}
 
       {isLoading && (
-        <div className="text-center py-20 text-white/20 animate-pulse">Carregando jogos...</div>
+         <div className="text-center py-20 text-white/20 animate-pulse">{t("games.loadingMatches")}</div>
       )}
 
       {/* Days */}
       {dayKeys.map((dayKey) => {
         const dayMatches = byDay[dayKey];
-        const label = dayLabel(dayMatches[0].matchDate);
+         const label = dayLabel(dayMatches[0].matchDate, {
+           today: t("games.today"),
+           tomorrow: t("games.tomorrow"),
+           yesterday: t("games.yesterday"),
+         }, dateLocale, isPortuguese);
         return (
           <div key={dayKey}>
             {/* Day header */}
             <div className="flex items-center gap-3 mb-3">
               <span className="text-xs font-bold text-white/30 uppercase tracking-widest">{label}</span>
               <div className="flex-1 h-px bg-white/5" />
-              <span className="text-xs text-white/15">{dayMatches.length} jogo{dayMatches.length !== 1 ? "s" : ""}</span>
+               <span className="text-xs text-white/15">{t("games.matchesCount", { count: dayMatches.length })}</span>
             </div>
 
             {/* Match cards grid */}
@@ -321,10 +335,10 @@ export default function Jogos() {
                             </span>
                           )}
                           {match.isFinished && !pred && (
-                            <span className="text-[11px] text-white/15">sem palpite</span>
+                             <span className="text-[11px] text-white/15">{t("games.noPrediction")}</span>
                           )}
                           {!match.isFinished && pred && !locked && (
-                            <span className="text-[11px] text-white/25">atual: {pred.scoreA}–{pred.scoreB}</span>
+                             <span className="text-[11px] text-white/25">{t("games.currentPrediction", { a: pred.scoreA, b: pred.scoreB })}</span>
                           )}
                         </div>
                       </div>
@@ -345,7 +359,7 @@ export default function Jogos() {
                               : "bg-white/5 border border-white/10 text-white/50 hover:bg-[#f5c842]/10 hover:border-[#f5c842]/30 hover:text-[#f5c842]"
                           }`}
                         >
-                          {isSaved ? "✓ Salvo!" : "Salvar palpite"}
+                           {isSaved ? t("games.saved") : t("games.savePrediction")}
                         </button>
                       </div>
                     )}
@@ -358,7 +372,7 @@ export default function Jogos() {
       })}
 
       {!isLoading && dayKeys.length === 0 && (
-        <div className="text-center py-20 text-white/20">Nenhum jogo cadastrado nesta fase.</div>
+         <div className="text-center py-20 text-white/20">{t("games.noMatchesInPhase")}</div>
       )}
     </div>
   );

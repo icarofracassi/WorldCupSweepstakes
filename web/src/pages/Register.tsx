@@ -4,10 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useLeague } from "../context/LeagueContext";
 import { createLeague, joinLeague, api } from "../api/client";
+import { useTranslation } from "react-i18next";
 
 type Step = "account" | "league";
 
 export default function Register() {
+  const { t } = useTranslation();
   const { register } = useAuth();
   const { refetch, setActiveLeague } = useLeague();
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ export default function Register() {
       await register(name, email, password);
       setStep("league");
     } catch {
-      setError("Erro ao criar conta. Email já em uso?");
+      setError(t("register.createAccountError"));
     } finally {
       setLoading(false);
     }
@@ -51,7 +53,7 @@ export default function Register() {
       const res = await api.get(`/leagues/code/${joinCode.toUpperCase().trim()}`);
       setJoinPreview(res.data);
     } catch {
-      setJoinError("Liga não encontrada com esse código");
+      setJoinError(t("register.leagueCodeNotFound"));
     }
   };
 
@@ -61,10 +63,10 @@ export default function Register() {
     try {
       let league;
       if (leagueTab === "create") {
-        if (!leagueName.trim()) { setJoinError("Digite o nome da liga"); return; }
+        if (!leagueName.trim()) { setJoinError(t("register.enterLeagueName")); return; }
         league = await createLeague(leagueName);
       } else {
-        if (joinCode.length < 6) { setJoinError("Digite o código de 6 letras"); return; }
+        if (joinCode.length < 6) { setJoinError(t("register.enterLeagueCode")); return; }
         league = await joinLeague(joinCode.toUpperCase().trim());
       }
       await refetch();
@@ -72,7 +74,7 @@ export default function Register() {
       localStorage.removeItem("pendingLeagueCode");
       navigate("/dashboard");
     } catch (err: any) {
-      setJoinError(err.response?.data?.error ?? "Erro ao entrar na liga");
+      setJoinError(err.response?.data?.error ?? t("register.joinLeagueError"));
     } finally {
       setLeagueLoading(false);
     }
@@ -105,7 +107,7 @@ export default function Register() {
                 {i === 0 && step === "league" ? "✓" : i + 1}
               </div>
               <span className={`text-xs font-semibold hidden sm:block ${step === s ? "text-white/60" : "text-white/20"}`}>
-                {s === "account" ? "Conta" : "Liga"}
+                 {s === "account" ? t("register.accountStep") : t("register.leagueStep")}
               </span>
               {i === 0 && <div className="w-8 h-px bg-white/10" />}
             </div>
@@ -118,8 +120,8 @@ export default function Register() {
             <motion.div key="account" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="text-center mb-8">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f5c842] to-[#e8a020] text-3xl mb-4 shadow-2xl shadow-yellow-500/30">⚽</div>
-                <h1 className="text-3xl font-black text-white tracking-tight">Criar Conta</h1>
-                <p className="text-white/30 mt-1 text-sm">Bolão Copa 2026</p>
+                <h1 className="text-3xl font-black text-white tracking-tight">{t("register.title")}</h1>
+                <p className="text-white/30 mt-1 text-sm">{t("register.brand")}</p>
               </div>
 
               <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 backdrop-blur-sm">
@@ -131,9 +133,9 @@ export default function Register() {
                     </motion.div>
                   )}
                   {[
-                    { label: "Nome", value: name, onChange: setName, type: "text", placeholder: "Seu nome" },
-                    { label: "Email", value: email, onChange: setEmail, type: "email", placeholder: "seu@email.com" },
-                    { label: "Senha", value: password, onChange: setPassword, type: "password", placeholder: "Mínimo 6 caracteres" },
+                    { label: t("auth.name"), value: name, onChange: setName, type: "text", placeholder: t("register.namePlaceholder") },
+                    { label: t("auth.email"), value: email, onChange: setEmail, type: "email", placeholder: "seu@email.com" },
+                    { label: t("auth.password"), value: password, onChange: setPassword, type: "password", placeholder: t("register.passwordPlaceholder") },
                   ].map((f) => (
                     <div key={f.label}>
                       <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{f.label}</label>
@@ -144,12 +146,12 @@ export default function Register() {
                   ))}
                   <motion.button type="submit" disabled={loading} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                     className="w-full bg-gradient-to-r from-[#f5c842] to-[#e8a020] text-black font-black py-3.5 rounded-xl disabled:opacity-50 shadow-lg shadow-yellow-500/20 text-sm">
-                    {loading ? "Criando conta..." : "Continuar →"}
+                    {loading ? t("register.creatingAccount") : t("register.continue")}
                   </motion.button>
                 </form>
                 <p className="text-center text-sm text-white/20 mt-6">
-                  Já tem conta?{" "}
-                  <Link to="/login" className="text-[#f5c842] font-semibold hover:text-yellow-300 transition">Entrar</Link>
+                  {t("register.haveAccount")}{" "}
+                  <Link to="/login" className="text-[#f5c842] font-semibold hover:text-yellow-300 transition">{t("auth.login")}</Link>
                 </p>
               </div>
             </motion.div>
@@ -160,8 +162,8 @@ export default function Register() {
             <motion.div key="league" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
               <div className="text-center mb-8">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl mb-4 shadow-2xl shadow-blue-500/30">🏟️</div>
-                <h1 className="text-3xl font-black text-white tracking-tight">Sua Liga</h1>
-                <p className="text-white/30 mt-1 text-sm">Compete com seu grupo do escritório</p>
+                <h1 className="text-3xl font-black text-white tracking-tight">{t("register.yourLeagueTitle")}</h1>
+                <p className="text-white/30 mt-1 text-sm">{t("register.yourLeagueSubtitle")}</p>
               </div>
 
               <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 space-y-6">
@@ -171,42 +173,42 @@ export default function Register() {
                     className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${
                       leagueTab === "create" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/60"
                     }`}>
-                    Criar liga
+                    {t("register.createLeagueTab")}
                   </button>
                   <button onClick={() => setLeagueTab("join")}
                     className={`flex-1 py-2 rounded-lg text-sm font-bold transition ${
                       leagueTab === "join" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/60"
                     }`}>
-                    Entrar com código
+                    {t("register.joinWithCodeTab")}
                   </button>
                 </div>
 
                 <AnimatePresence mode="wait">
                   {leagueTab === "create" ? (
                     <motion.div key="create" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-                      <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Nome da Liga</label>
+                       <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t("register.leagueNameLabel")}</label>
                       <input value={leagueName} onChange={(e) => setLeagueName(e.target.value)}
-                        placeholder="Ex: Bolão do RH, Turma da TI..."
+                         placeholder={t("register.leagueNamePlaceholder")}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-white/30 transition text-sm" />
-                      <p className="text-white/20 text-xs">Um código de convite será gerado — compartilhe com o pessoal!</p>
+                       <p className="text-white/20 text-xs">{t("register.inviteCodeHint")}</p>
                     </motion.div>
                   ) : (
                     <motion.div key="join" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-                      <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Código de Convite</label>
+                       <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t("register.inviteCodeLabel")}</label>
                       <div className="flex gap-2">
                         <input value={joinCode} onChange={(e) => { setJoinCode(e.target.value.toUpperCase()); setJoinPreview(null); }}
                           maxLength={6} placeholder="ABCD12"
                           className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono font-black text-lg tracking-widest placeholder-white/15 focus:outline-none focus:border-white/30 transition uppercase" />
                         <button onClick={previewJoinCode} disabled={joinCode.length < 6} type="button"
                           className="px-4 bg-white/5 border border-white/10 text-white/40 hover:text-white rounded-xl text-sm font-semibold transition disabled:opacity-30">
-                          Buscar
+                           {t("register.search")}
                         </button>
                       </div>
                       {joinPreview && (
                         <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                           className="bg-blue-500/8 border border-blue-500/20 rounded-xl p-3">
                           <div className="font-black text-white text-sm">{joinPreview.name}</div>
-                          <div className="text-xs text-white/35 mt-0.5">{joinPreview._count?.members} participantes</div>
+                           <div className="text-xs text-white/35 mt-0.5">{t("register.participantsCount", { count: joinPreview._count?.members ?? 0 })}</div>
                         </motion.div>
                       )}
                     </motion.div>
@@ -217,11 +219,11 @@ export default function Register() {
 
                 <motion.button onClick={handleLeague} disabled={leagueLoading} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                   className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-black py-3.5 rounded-xl disabled:opacity-50 shadow-lg shadow-blue-500/20 text-sm">
-                  {leagueLoading ? "Aguarde..." : leagueTab === "create" ? "Criar Liga e Entrar →" : "Entrar na Liga →"}
+                  {leagueLoading ? t("register.pleaseWait") : leagueTab === "create" ? t("register.createLeagueAndJoin") : t("register.joinLeague")}
                 </motion.button>
 
                 <button onClick={skipLeague} className="w-full text-center text-xs text-white/20 hover:text-white/40 transition py-1">
-                  Pular por agora — entrar em uma liga depois
+                  {t("register.skipLeague")}
                 </button>
               </div>
             </motion.div>

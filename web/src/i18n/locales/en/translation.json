@@ -106,15 +106,43 @@
       "phaseMultiplier": "Multiplied by phase: Groups ×1 · Round of 16 ×1.25 · Quarterfinals ×1.5 · Semifinals ×1.75 · Final ×3",
       "preCupNote": "Shame and Surprise use the FIFA index × phase factor for tiebreakers",
       "match": {
-        "exact": { "label": "Exact score", "pts": "5 pts", "sub": "ex: pick 2×1, result 2×1" },
-        "diff": { "label": "Winner + goal difference", "pts": "3 pts", "sub": "ex: pick 2×0, result 3×1" },
-        "winner": { "label": "Winner only", "pts": "1 pt", "sub": "ex: pick 1×0, result 2×0" },
-        "wrong": { "label": "All wrong", "pts": "0 pts", "sub": "too bad" }
+        "exact": {
+          "label": "Exact score",
+          "pts": "5 pts",
+          "sub": "ex: pick 2×1, result 2×1"
+        },
+        "diff": {
+          "label": "Winner + goal difference",
+          "pts": "3 pts",
+          "sub": "ex: pick 2×0, result 3×1"
+        },
+        "winner": {
+          "label": "Winner only",
+          "pts": "1 pt",
+          "sub": "ex: pick 1×0, result 2×0"
+        },
+        "wrong": {
+          "label": "All wrong",
+          "pts": "0 pts",
+          "sub": "too bad"
+        }
       },
       "preCup": {
-        "champion": { "label": "Correct champion", "pts": "200 pts", "sub": "pick who lifts the trophy" },
-        "shame": { "label": "Correct shame pick", "pts": "100 pts", "sub": "top-14 team eliminated earliest" },
-        "surprise": { "label": "Correct surprise pick", "pts": "100 pts", "sub": "underdog that goes furthest" }
+        "champion": {
+          "label": "Correct champion",
+          "pts": "200 pts",
+          "sub": "pick who lifts the trophy"
+        },
+        "shame": {
+          "label": "Correct shame pick",
+          "pts": "100 pts",
+          "sub": "top-14 team eliminated earliest"
+        },
+        "surprise": {
+          "label": "Correct surprise pick",
+          "pts": "100 pts",
+          "sub": "underdog that goes furthest"
+        }
       }
     },
     "finalCta": {
@@ -128,7 +156,32 @@
     "countdown": "Cup starts in",
     "yourRank": "Your rank",
     "totalPoints": "Total points",
-    "predictions": "Predictions made"
+    "predictions": "Predictions made",
+    "liveBadge": "🔴 Live",
+    "liveTitle": "World Cup 2026 in progress!",
+    "openingMatch": "Mexico 🇲🇽 vs South Africa 🇿🇦 · Opening match",
+    "cupPeriod": "Jun 11 – Jul 19 · USA, Canada & Mexico",
+    "quickActions": "Quick actions",
+    "preCupAlertTitle": "Missing pre-cup picks!",
+    "preCupAlertSubtitle": "Pick champion, shame and surprise",
+    "viewMatches": "View matches",
+    "viewMatchesSubtitle": "Create and update predictions",
+    "viewLeaderboard": "View full leaderboard",
+    "viewLeaderboardSubtitle": "Ranking of all participants",
+    "top5": "Top 5",
+    "noParticipants": "No participants yet",
+    "viewLeaderboardLink": "View full leaderboard →",
+    "stats": {
+      "position": "Position",
+      "ofParticipants": "of {{count}} participants",
+      "points": "Points",
+      "pointsBreakdown": "{{match}} matches + {{preCup}} pre-cup",
+      "predictions": "Predictions",
+      "predictedMatches": "predicted matches",
+      "preCup": "Pre-cup",
+      "preCupDone": "Picks done",
+      "preCupMissing": "Missing!"
+    }
   },
   "jogos": {
     "title": "Matches",
@@ -166,6 +219,304 @@
     "loading": "Loading...",
     "error": "Something went wrong",
     "league": "League",
-    "switchLanguage": "Switch language"
+    "switchLanguage": "Switch language",
+    "all": "All"
+  },
+  "login": {
+    "title": "World Cup Pool 2026",
+    "subtitle": "Sign in to make your predictions",
+    "invalidCredentials": "Invalid email or password",
+    "passwordResetSuccess": "Password reset successfully. Sign in with your new password.",
+    "loading": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "forgotPassword": "Forgot my password"
+  },
+  "forgotPassword": {
+    "title": "Recover password",
+    "sentMessage": "If this email is registered, you'll receive instructions shortly. Check your inbox.",
+    "description": "Enter your email and we'll send a link to reset your password.",
+    "emailLabel": "Email address",
+    "sendError": "Unable to send right now. Please try again shortly.",
+    "sending": "Sending...",
+    "sendLink": "Send link"
+  },
+  "resetPassword": {
+    "title": "New password",
+    "newPasswordLabel": "Enter your new password",
+    "confirmLabel": "Confirm password",
+    "mismatch": "Passwords do not match.",
+    "minLength": "Minimum 6 characters.",
+    "invalidLink": "Invalid or expired link. Request a new one.",
+    "saving": "Saving...",
+    "submit": "Reset password"
+  },
+  "register": {
+    "createAccountError": "Error creating account. Email already in use?",
+    "leagueCodeNotFound": "No league found for this code",
+    "enterLeagueName": "Enter a league name",
+    "enterLeagueCode": "Enter the 6-character code",
+    "joinLeagueError": "Error joining league",
+    "accountStep": "Account",
+    "leagueStep": "League",
+    "title": "Create account",
+    "brand": "World Cup Pool 2026",
+    "namePlaceholder": "Your name",
+    "passwordPlaceholder": "Minimum 6 characters",
+    "creatingAccount": "Creating account...",
+    "continue": "Continue →",
+    "haveAccount": "Already have an account?",
+    "yourLeagueTitle": "Your League",
+    "yourLeagueSubtitle": "Compete with your office group",
+    "createLeagueTab": "Create league",
+    "joinWithCodeTab": "Join with code",
+    "leagueNameLabel": "League name",
+    "leagueNamePlaceholder": "Ex: HR Pool, IT Crew...",
+    "inviteCodeHint": "An invite code will be generated — share it with everyone!",
+    "inviteCodeLabel": "Invite code",
+    "search": "Search",
+    "participantsCount_one": "{{count}} participant",
+    "participantsCount_other": "{{count}} participants",
+    "pleaseWait": "Please wait...",
+    "createLeagueAndJoin": "Create League and Join →",
+    "joinLeague": "Join League →",
+    "skipLeague": "Skip for now — join a league later"
+  },
+  "games": {
+    "title": "⚽ Matches & Predictions",
+    "predictionsDone": "{{count}} predictions made",
+    "saving": "Saving...",
+    "allSaved": "✅ All saved!",
+    "saveAllWithCount": "💾 Save all ({{count}})",
+    "loadingMatches": "Loading matches...",
+    "matchesCount_one": "{{count}} match",
+    "matchesCount_other": "{{count}} matches",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "noPrediction": "no prediction",
+    "currentPrediction": "current: {{a}}–{{b}}",
+    "saved": "✓ Saved!",
+    "savePrediction": "Save prediction",
+    "noMatchesInPhase": "No matches registered in this phase.",
+    "phases": {
+      "group": "Group Stage",
+      "r16": "Round of 16",
+      "qf": "Quarterfinals",
+      "sf": "Semifinal",
+      "final": "Final"
+    }
+  },
+  "preCupPage": {
+    "title": "🎯 Pre-Cup Picks",
+    "subtitle": "Make your choices before the Cup starts — extra points available!",
+    "cards": {
+      "champion": "Champion",
+      "championSub": "pick the winner",
+      "shame": "Shame",
+      "shameSub": "lowest top-14 index",
+      "surprise": "Surprise",
+      "surpriseSub": "highest non-top-14 index"
+    },
+    "pickers": {
+      "championLabel": "World Cup Champion",
+      "championDesc": "Who will lift the trophy? Worth 200 points!",
+      "shameLabel": "World Cup Shame",
+      "shameDesc": "Which top-14 team falls earliest? Lower index = more shame",
+      "surpriseLabel": "World Cup Surprise",
+      "surpriseDesc": "Which underdog will go furthest? Higher index = bigger surprise"
+    },
+    "index": {
+      "title": "📐 How does the index work?",
+      "shameLabel": "Shame:",
+      "shameText": "FIFA rank × phase factor. Lower is worse. Ex: #1 out in groups = 1×1 = 1.0",
+      "surpriseLabel": "Surprise:",
+      "surpriseText": "same formula, but highest index wins. Ex: #90 in quarters = 90×3 = 270",
+      "phaseGroups": "Groups",
+      "phaseR16": "Round of 16",
+      "phaseQf": "Quarterfinals",
+      "phaseSf": "Semifinal",
+      "phaseChampion": "Champion"
+    },
+    "saving": "Saving...",
+    "saved": "✅ Picks saved!",
+    "save": "Save Pre-Cup Picks",
+    "saveError": "Error saving",
+    "editUntilStart": "You can update your picks until the Cup starts."
+  },
+  "leaderboardPage": {
+    "title": "🏆 Overall Leaderboard",
+    "csvError": "Failed to download leaderboard CSV:",
+    "loading": "Loading leaderboard...",
+    "allParticipants": "All participants",
+    "summary": "· {{count}} participants · updates every 30s",
+    "createLeague": "+ Create league",
+    "exportCsv": "📥 CSV",
+    "viewingAllTitle": "Viewing all participants",
+    "viewingAllSubtitle": "Create a league to compete only with your group",
+    "createLeagueLink": "Create league →",
+    "noParticipantsLeague": "No participants in this league yet.",
+    "noParticipants": "No participants yet.",
+    "you": "you",
+    "noPreCup": "no pre-cup"
+  },
+  "predictionsPage": {
+    "title": "👁 Everyone's Predictions",
+    "participant": "Participant",
+    "showingLeagueMembers": "Showing only members from {{league}}",
+    "loadingPredictions": "Loading predictions...",
+    "visibleAfterKickoff": "🔒 Predictions visible after kickoff",
+    "noPredictionsYet": "No predictions made yet.",
+    "you": "you",
+    "legendExact": "Exact score",
+    "legendWinner": "Correct winner",
+    "yourPredictionSummary": "Your prediction: {{a}}–{{b}} → {{points}} points",
+    "allParticipants": "All participants",
+    "noActiveLeague": "No active league — showing predictions from all participants.",
+    "createLeague": "Create league →",
+    "finishedMatches": "Finished Matches",
+    "upcomingMatches": "Upcoming Matches",
+    "noMatchesInPhase": "No matches in this phase yet.",
+    "groupPrefix": "Grp.",
+    "collapse": "▲",
+    "expand": "▼",
+    "phases": {
+      "group": "Groups",
+      "r16": "Round of 16",
+      "qf": "Quarterfinals",
+      "sf": "Semi",
+      "final": "Final"
+    }
+  },
+  "leaguePage": {
+    "title": "🏟️ Leagues",
+    "subtitle": "Create or join a league with your office friends",
+    "myLeagues": "My Leagues",
+    "noLeagues": "No leagues yet. Create one or join one!",
+    "create": "+ Create",
+    "join": "→ Join",
+    "createNewLeague": "Create New League",
+    "createHint": "An invite code will be generated automatically",
+    "leagueName": "League name",
+    "leagueNamePlaceholder": "Ex: HR Pool, IT Crew...",
+    "creating": "Creating...",
+    "createLeague": "Create League",
+    "joinLeagueTitle": "Join a League",
+    "joinLeagueHint": "Enter the 6-character code shared by the league owner",
+    "inviteCode": "Invite code",
+    "search": "Search",
+    "joinPreview": "{{count}} participants · created by {{owner}}",
+    "joining": "Joining...",
+    "joinLeague": "Join League",
+    "selectLeague": "Select a league or create a new one",
+    "selectLeagueHint": "Leagues isolate leaderboard and predictions by group",
+    "copied": "✓ copied!",
+    "error": "error",
+    "copy": "copy",
+    "shareText": "Join league {{league}} in World Cup Pool 2026: {{url}}",
+    "linkCopied": "Link copied!",
+    "shareFailed": "Share failed",
+    "shareLink": "Share link",
+    "joinError": "Error joining",
+    "deleteError": "Error deleting league",
+    "notFound": "League not found",
+    "leaving": "Leaving...",
+    "leaveLeague": "Leave this league",
+    "deleting": "Deleting...",
+    "confirmDelete": "Confirm delete",
+    "deleteLeague": "Delete league",
+    "leagueLeaderboard": "League leaderboard",
+    "noScoredParticipants": "No participants with points yet",
+    "participantsCount_one": "{{count}} participant",
+    "participantsCount_other": "{{count}} participants",
+    "active": "active"
+  },
+  "adminPage": {
+    "title": "⚙️ Admin Panel",
+    "subtitle": "Manage matches, results, teams and sync",
+    "newMatch": "New Match",
+    "selectPhase": "Select phase...",
+    "creatingMatch": "Creating...",
+    "createMatch": "Create Match",
+    "matchCreated": "✅ Match created successfully!",
+    "publishResults": "Publish Results",
+    "finalizing": "Finalizing...",
+    "finalizePreCup": "Finalize Pre-Cup",
+    "noPendingMatches": "No pending matches.",
+    "tabs": {
+      "matches": "Create Matches",
+      "results": "Results",
+      "teams": "Teams",
+      "import": "Import JSON",
+      "sync": "Sync API",
+      "users": "Users"
+    },
+    "phases": {
+      "group": "Group Stage",
+      "r16": "Round of 16",
+      "qf": "Quarterfinals",
+      "sf": "Semifinal",
+      "final": "Final"
+    },
+    "elim": {
+      "group": "Group Stage",
+      "r16": "Round of 16",
+      "qf": "Quarterfinals",
+      "sf": "Semifinal",
+      "third": "3rd/4th place",
+      "champion": "Champion 🏆"
+    },
+    "teamA": "Team A (Home)",
+    "teamADesc": "Home side in the match",
+    "teamB": "Team B (Away)",
+    "teamBDesc": "Away side in the match",
+    "tournamentPhase": "Tournament phase",
+    "multiplierHint": "Points multiplier is applied automatically.",
+    "preCupDone": "🎯 Pre-Cup finalized!",
+    "shameResult": "Shame: {{team}} (index: {{index}})",
+    "surpriseResult": "Surprise: {{team}} (index: {{index}})",
+    "markEliminations": "Mark Eliminations",
+    "elimPlaceholder": "Eliminated phase...",
+    "mark": "Mark",
+    "importTitle": "Import Matches via JSON",
+    "importHint": "Use FIFA codes (BRA, ARG...) and phases: group, r16, qf, sf, final.",
+    "pasteJson": "Paste JSON here...",
+    "importing": "Importing...",
+    "importMatches": "📥 Import Matches",
+    "importResult": "✅ {{created}} created · {{skipped}} skipped",
+    "syncTitle": "Sync with football-data.org",
+    "syncSubtitle": "Connects to the external API to import matches and results automatically.",
+    "syncFixturesTitle": "Import Fixtures",
+    "syncFixturesDesc": "Imports all World Cup 2026 matches from the API. Safe to re-run — uses upsert by externalId.",
+    "syncResultsTitle": "Sync Results",
+    "syncResultsDesc": "Fetches finished matches and calculates prediction points automatically.",
+    "apiStatus": "API Status",
+    "apiStatusDesc": "Information about external API usage",
+    "stats": {
+      "totalMatches": "Total matches",
+      "pending": "Pending",
+      "finished": "Finished",
+      "teams": "Teams"
+    },
+    "freeTierHint": "💡 Free tier: 100 req/day. Run sync/results once per day after matches.",
+    "syncing": "Syncing...",
+    "run": "Run",
+    "done": "✅ Done",
+    "createdIgnored": "Created: {{created}} · Skipped: {{skipped}}",
+    "matchesScored": "Scored matches: {{value}}",
+    "totalApi": "API total: {{value}}",
+    "otherErrors": "+{{value}} more errors..."
+  },
+  "teamPicker": {
+    "selectTeam": "Select a team...",
+    "searchPlaceholder": "Search team...",
+    "noResults": "No teams found"
+  },
+  "datePicker": {
+    "label": "Match Date",
+    "selectDate": "Select a date"
+  },
+  "phasePicker": {
+    "clearSelection": "Clear selection",
+    "placeholder": "Phase..."
   }
 }
