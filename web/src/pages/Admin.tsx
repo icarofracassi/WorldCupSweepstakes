@@ -513,10 +513,12 @@ export default function Admin() {
           {tab === "users" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-white font-black">Usuários ({users.length})</h2>
+                <h2 className="text-white font-black">
+                  {t("adminPage.usersTitle", { count: users.length, defaultValue: `Usuários (${users.length})` })}
+                </h2>
                 <button onClick={() => refetchUsers()}
                   className="text-xs text-white/30 hover:text-white transition px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
-                  ↻ Atualizar
+                  ↻ {t("adminPage.refresh", "Atualizar")}
                 </button>
               </div>
 
@@ -539,12 +541,12 @@ export default function Admin() {
                           <span className="text-sm font-bold text-white truncate">{u.name}</span>
                           {u.isAdmin && (
                             <span className="text-[10px] bg-[#f5c842]/15 text-[#f5c842] px-1.5 py-0.5 rounded font-bold">
-                              ADMIN
+                              {t("common.adminRole", "ADMIN")}
                             </span>
                           )}
                           {!u.hasPrecupPick && (
-                            <span className="text-[10px] bg-orange-500/10 text-orange-400 px-1.5 py-0.5 rounded">
-                              sem pré-copa
+                            <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">
+                              {t("adminPage.noPreCup", "sem pré-copa")}
                             </span>
                           )}
                         </div>
@@ -556,15 +558,20 @@ export default function Admin() {
                     <div className="flex items-center gap-4 text-xs text-white/30 flex-shrink-0">
                       <div className="text-center hidden sm:block">
                         <div className="font-black text-white">{u.totalPoints}</div>
-                        <div>pts</div>
+                        <div>{t("adminPage.pointsAbbreviation", "pts")}</div>
                       </div>
                       <div className="text-center hidden sm:block">
                         <div className="font-black text-white">{u.predictionsCount}</div>
-                        <div>palpites</div>
+                        <div>{t("adminPage.guessesPlural", "palpites")}</div>
                       </div>
                       <div className="text-center hidden md:block">
                         <div className="font-black text-white">{u.leagues.length}</div>
-                        <div>liga{u.leagues.length !== 1 ? "s" : ""}</div>
+                        <div>
+                          {t("adminPage.leaguesCount", { 
+                            count: u.leagues.length, 
+                            defaultValue: u.leagues.length !== 1 ? "ligas" : "liga" 
+                          })}
+                        </div>
                       </div>
                     </div>
 
@@ -573,14 +580,14 @@ export default function Admin() {
                       <button
                         onClick={() => toggleAdminMutation.mutate(u.id)}
                         disabled={toggleAdminMutation.isPending}
-                        title={u.isAdmin ? "Remover admin" : "Tornar admin"}
+                        title={u.isAdmin ? t("adminPage.removeAdminTitle", "Remover admin") : t("adminPage.makeAdminTitle", "Tornar admin")}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
                           u.isAdmin
                             ? "bg-[#f5c842]/10 border-[#f5c842]/25 text-[#f5c842] hover:bg-red-500/10 hover:border-red-500/25 hover:text-red-400"
                             : "bg-white/5 border-white/10 text-white/40 hover:bg-[#f5c842]/10 hover:border-[#f5c842]/25 hover:text-[#f5c842]"
                         }`}
                       >
-                        {u.isAdmin ? "★ Admin" : "☆ Admin"}
+                        {u.isAdmin ? `★ ${t("common.adminRole", "Admin")}` : `☆ ${t("common.adminRole", "Admin")}`}
                       </button>
 
                       {confirmDeleteId === u.id ? (
@@ -589,31 +596,27 @@ export default function Admin() {
                             onClick={() => { deleteUserMutation.mutate(u.id); setConfirmDeleteId(null); }}
                             className="px-3 py-1.5 rounded-lg text-xs font-black bg-red-500 text-white hover:bg-red-600 transition"
                           >
-                            Confirmar
+                            {t("adminPage.common.confirm", "Confirmar")}
                           </button>
                           <button
                             onClick={() => setConfirmDeleteId(null)}
                             className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 text-white/40 hover:text-white transition"
                           >
-                            Cancelar
+                            {t("adminPage.common.cancel", "Cancelar")}
                           </button>
                         </div>
                       ) : (
                         <button
                           onClick={() => setConfirmDeleteId(u.id)}
-                          title="Deletar usuário"
+                          title={t("adminPage.deleteUserTitle", "Deletar usuário")}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition"
                         >
-                          🗑 Deletar
+                          🗑 {t("adminPage.common.delete", "Deletar")}
                         </button>
                       )}
                     </div>
                   </div>
                 ))}
-
-                {users.length === 0 && (
-                  <div className="text-center py-10 text-white/20 text-sm">Nenhum usuário encontrado.</div>
-                )}
               </div>
             </div>
           )}

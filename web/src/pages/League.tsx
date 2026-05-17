@@ -407,10 +407,13 @@ export default function Liga() {
                                         <Flag code={getFlagCode(entry.preCupPick.champion.code ?? "")}
                                           style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                                       </div>
-                                      <span className="text-[10px] text-white/20">{entry.preCupPick.champion.name}</span>
+                                      <span className="text-[10px] text-white/20">
+                                        {/* Localized lookup using the team code with the backend name as a fallback */}
+                                        {t(`teams.${entry.preCupPick.champion.code}`, { defaultValue: entry.preCupPick.champion.name })}
+                                      </span>
                                     </div>
                                   ) : (
-                                     <span className="text-[10px] text-orange-400/50">{t("leaderboardPage.noPreCup")}</span>
+                                    <span className="text-[10px] text-orange-400/50">{t("leaderboardPage.noPreCup")}</span>
                                   )}
                                 </div>
                                 <div className="text-right">
