@@ -19,7 +19,7 @@ router.post("/register", async (req: Request, res: Response) => {
       data: { name, email, passwordHash: hash },
     });
     const token = jwt.sign(
-      { userId: user.id, isAdmin: user.isAdmin },
+      { userId: user.id, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion },
       SECRET,
       { expiresIn: "7d" }
     );
@@ -39,7 +39,7 @@ router.post("/login", async (req: Request, res: Response) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
   const token = jwt.sign(
-    { userId: user.id, isAdmin: user.isAdmin },
+    { userId: user.id, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion },
     SECRET,
     { expiresIn: "7d" }
   );
