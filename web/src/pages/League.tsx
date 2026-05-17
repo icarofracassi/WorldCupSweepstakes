@@ -59,7 +59,7 @@ function CodeBadge({ code, t }: { code: string; t: (key: string) => string }) {
   );
 }
 
-function ShareButton({ league, t }: { league: LeagueSummary; t: (key: string, options?: any) => string }) {
+function ShareButton({ league, t }: { league: LeagueSummary; t: (key: string, options?: Record<string, unknown>) => string }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   const inviteUrl = `${window.location.origin}/convite/${league.code}`;
 
@@ -88,7 +88,7 @@ function ShareButton({ league, t }: { league: LeagueSummary; t: (key: string, op
 }
 
 function LeagueCard({ league, isActive, onClick, t }: {
-  league: LeagueSummary; isActive: boolean; onClick: () => void; t: (key: string, options?: any) => string;
+  league: LeagueSummary; isActive: boolean; onClick: () => void; t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   return (
     <motion.button whileHover={{ y: -2 }} onClick={onClick}

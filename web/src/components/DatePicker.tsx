@@ -21,7 +21,8 @@ export function DatePicker({ date, setDate, label }: DatePickerProps) {
   const [time, setTime] = React.useState(
     date ? format(date, "HH:mm") : "18:00"
   );
-  const locale = i18n.language.startsWith("en") ? enUS : ptBR;
+  const isPortuguese = i18n.language.startsWith("pt");
+  const locale = isPortuguese ? ptBR : enUS;
 
   const handleDaySelect = (day: Date | undefined) => {
     if (!day) { setDate(undefined); return; }
@@ -52,7 +53,7 @@ export function DatePicker({ date, setDate, label }: DatePickerProps) {
               className={cn("flex-1 justify-start text-left font-normal", !date && "text-white/25")}
             >
               <CalendarIcon className="mr-2 h-4 w-4 opacity-40" />
-              {date ? format(date, "dd MMM yyyy", { locale }) : t("datePicker.selectDate")}
+              {date ? format(date, isPortuguese ? "dd 'de' MMM yyyy" : "dd MMM yyyy", { locale }) : t("datePicker.selectDate")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">

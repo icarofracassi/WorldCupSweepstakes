@@ -43,12 +43,14 @@ function dayLabel(
   dateStr: string,
   labels: { today: string; tomorrow: string; yesterday: string },
   locale: typeof ptBR | typeof enUS,
+  isPortuguese: boolean,
 ): string {
   const d = new Date(dateStr);
   if (isToday(d)) return labels.today;
   if (isTomorrow(d)) return labels.tomorrow;
   if (isYesterday(d)) return labels.yesterday;
-  return format(d, "EEEE, dd MMM", { locale });
+  const pattern = isPortuguese ? "EEEE, dd 'de' MMM" : "EEEE, dd MMM";
+  return format(d, pattern, { locale });
 }
 
 function groupByDay(matches: Match[]): Record<string, Match[]> {
@@ -73,7 +75,8 @@ function TeamFlag({ code, name }: { code: string; name: string }) {
 
 export default function Jogos() {
   const { t, i18n } = useTranslation();
-  const dateLocale = i18n.language.startsWith("en") ? enUS : ptBR;
+  const isPortuguese = i18n.language.startsWith("pt");
+  const dateLocale = isPortuguese ? ptBR : enUS;
   const qc = useQueryClient();
   const [selectedPhase, setSelectedPhase] = useState("group");
   const [selectedGroup, setSelectedGroup] = useState("ALL");
@@ -236,7 +239,7 @@ export default function Jogos() {
            today: t("games.today"),
            tomorrow: t("games.tomorrow"),
            yesterday: t("games.yesterday"),
-         }, dateLocale);
+         }, dateLocale, isPortuguese);
         return (
           <div key={dayKey}>
             {/* Day header */}
